@@ -36,6 +36,9 @@
       "airbnb",
       "prettier"
     ],
+    "plugins": [
+      "prettier"
+    ],
     "rules": {
       "react/jsx-filename-extension": 0,
       "no-undef": 0
