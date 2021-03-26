@@ -15,9 +15,9 @@ namespace backend.EntityConfigurations
         public void Configure(EntityTypeBuilder<Video> builder)
         {
             builder.HasKey(c => c.Id);
-            builder.Property(c => c.Title).HasMaxLength(50).IsRequired();
+            builder.Property(c => c.Title).HasMaxLength(250);
             builder.Property(c => c.Description).HasMaxLength(500);
-            builder.Property(c => c.UploadDate).IsRequired();
+            builder.Property(c => c.UploadDate);
             builder.Property(c => c.DeleteDate);
 
             builder.HasOne(c => c.User)

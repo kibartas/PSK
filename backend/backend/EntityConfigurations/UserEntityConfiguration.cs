@@ -15,11 +15,11 @@ namespace backend.EntityConfigurations
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.HasKey(c => c.Id);
-            builder.Property(c => c.Firstname).HasMaxLength(20).IsRequired();
-            builder.Property(c => c.Lastname).HasMaxLength(20).IsRequired();
-            builder.Property(c => c.Email).HasMaxLength(30).IsRequired();
-            builder.Property(c => c.Password).HasMaxLength(20).IsRequired();
-            builder.Property(c => c.Confirmed).IsRequired();
+            builder.Property(c => c.Firstname).HasMaxLength(250);
+            builder.Property(c => c.Lastname).HasMaxLength(250);
+            builder.Property(c => c.Email).HasMaxLength(250);
+            builder.Property(c => c.Password).HasMaxLength(250);
+            builder.Property(c => c.Confirmed);
 
             builder.HasMany(c => c.Videos)
                 .WithOne(c => c.User)
