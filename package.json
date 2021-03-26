@@ -1,5 +1,6 @@
 {
   "devDependencies": {
-    "husky": "^5.2.0"
+    "husky": "^5.2.0",
+    "jira-prepare-commit-msg": "^1.5.2"
   }
 }
