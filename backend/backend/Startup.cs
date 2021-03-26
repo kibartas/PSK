@@ -28,6 +28,7 @@ namespace backend
         {
             services.RegisterDependencies(Configuration);
             services.AddControllers();
+            services.AddCors();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "backend", Version = "v1" });
@@ -49,6 +50,12 @@ namespace backend
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors(x =>
+            x.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .SetIsOriginAllowed(origin => true)
+            .AllowCredentials());
 
             app.UseEndpoints(endpoints =>
             {
