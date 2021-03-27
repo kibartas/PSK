@@ -2,15 +2,21 @@
 ## Frontend and husky setup:
 1. Run `yarn` at root directory
 2. Run `yarn` at frontend directory
+3. Run `yarn start` at frontend to launch
 
-### Good job, you're done
+## Backend setup
 
-Backend setup
+First way:
 1. You must have SQLEXPRESS installed.
 2. Make sure that your SQLEXPRESS connection string matches the one in appsettings.json.
-3. Open up CMD OR use Package manager console to run command "update-database".
 4. Start the backend project.
 
-# To run the project
-1. Run `yarn start` at at frontend directory
-2. Run x in backend
+Second way:
+1. Have docker-compose installed
+2. Run `sudo docker-compose up` to launch both DB and backend at the same time (ignore the errors)
+3. The backend will be running at http://localhost:5000
+
+Third way:
+1. Have docker-compose installed
+2. Run `sudo docker-compose up db` to launch the DB
+3. After DB is setup, start the backend project
