@@ -1,20 +1,41 @@
+import React from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+
+import LoginPage from './containers/LoginPage';
+import RegisterPage from './containers/RegisterPage';
+import LibraryPage from './containers/LibraryPage';
+import TrashBinPage from './containers/TrashBinPage';
+import ProfilePage from './containers/ProfilePage';
+import ForgotPasswordPage from './containers/ForgotPasswordPage';
+import ResetPasswordPage from './containers/ResetPasswordPage';
+
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Switch>
+        <Route exact path="/">
+          <LibraryPage />
+        </Route>
+        <Route exact path="/login">
+          <LoginPage />
+        </Route>
+        <Route exact path="/register">
+          <RegisterPage />
+        </Route>
+        <Route exact path="/bin">
+          <TrashBinPage />
+        </Route>
+        <Route exact path="/profile">
+          <ProfilePage />
+        </Route>
+        <Route exact path="/forgot-password">
+          <ForgotPasswordPage />
+        </Route>
+        <Route exact path="/reset-password">
+          <ResetPasswordPage />
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 
