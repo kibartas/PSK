@@ -19,6 +19,7 @@ namespace backend.EntityConfigurations
             builder.Property(c => c.Lastname).HasMaxLength(250);
             builder.Property(c => c.Email).HasMaxLength(250);
             builder.Property(c => c.Password).HasMaxLength(250);
+            builder.Property(c => c.Salt).HasMaxLength(250);
             builder.Property(c => c.Confirmed);
 
             builder.HasMany(c => c.Videos)

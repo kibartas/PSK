@@ -23,6 +23,9 @@ namespace backend.Models
 
         [Required]
         public string Password { get; set; }
+        
+        [Required]
+        public byte[] Salt { get; set; }
 
         [Required]
         public bool Confirmed { get; set; }
