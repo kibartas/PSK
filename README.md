@@ -18,5 +18,6 @@ Second way:
 
 Third way:
 1. Have docker-compose installed
-2. Run `sudo docker-compose up db` to launch the DB
-3. After DB is setup, start the backend project
+2. Change the connection string in appsettings.json to `Server=.,1433;Database=WeDontByte;User=sa;Password=Password@123;`
+3. Run `sudo docker-compose up db` to launch the DB
+4. After DB is setup, start the backend project
