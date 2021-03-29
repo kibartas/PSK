@@ -1,6 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -21,7 +20,8 @@ namespace backend.JwtAuthentication
 
         public string Authenticate(string email, string password)
         {
-            if (!_db.Users.Any(u => u.Password == password && u.Email == email))
+            var user = _db.Users.FirstOrDefault(u => u.Password == password && u.Email == email);
+            if (user is null)
             {
                 return null;
             }
@@ -32,7 +32,8 @@ namespace backend.JwtAuthentication
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Name, email)
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(
