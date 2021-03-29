@@ -14,7 +14,7 @@ First way:
 Second way:
 1. Have docker-compose installed
 2. Run `sudo docker-compose up` to launch both DB and backend at the same time (ignore the errors)
-3. The backend will be running at http://localhost:5000
+3. The backend will be running at http://localhost:44344
 
 Third way:
 1. Have docker-compose installed

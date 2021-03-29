@@ -5,7 +5,7 @@ COPY *.csproj ./
 RUN dotnet restore
 
 COPY . ./
-RUN sed -i 's/Server=\.\\\\SQLEXPRESS/Server=172.17.0.1\\\\SQLEXPRESS/g' appsettings.json
+RUN sed -i 's/Server=\./Server=172.17.0.1/g' appsettings.json
 RUN dotnet publish -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet
