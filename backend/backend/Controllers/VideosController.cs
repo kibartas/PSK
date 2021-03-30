@@ -2,24 +2,26 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class VideosController : ControllerBase
     {
-        private readonly BackendContext db;
+        private readonly BackendContext _db;
 
         public VideosController(BackendContext context)
         {
-            db = context;
+            _db = context;
         }
 
         [HttpGet,Route("all")]
         public ActionResult<List<Video>> GetAllVideos()
         {
-            return db.Videos.ToList();
+            return _db.Videos.ToList();
         }
     }
 }
