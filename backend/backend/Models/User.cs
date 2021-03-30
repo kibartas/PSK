@@ -6,9 +6,11 @@ namespace backend.Models
 {
     public class User
     {
-        public User()
+        private User() {}
+        public User(string password)
         {
             Confirmed = false;
+            (Salt, Password) = Utils.Hasher.HashPassword(password);
         }
         public Guid Id { get; set; }
 
@@ -21,11 +23,10 @@ namespace backend.Models
         [Required]
         public string Email { get; set; }
 
+        [Required] public string Password { get; }
+
         [Required]
-        public string Password { get; set; }
-        
-        [Required]
-        public byte[] Salt { get; set; }
+        public byte[] Salt { get; }
 
         [Required]
         public bool Confirmed { get; set; }
