@@ -27,9 +27,17 @@ namespace backend.Controllers
         // Endpoint to test the hash function
         
         /*[HttpPost, Route("test-password")]
-        public ActionResult<string> TestPasswordHash(string password)
+        public ActionResult<User> TestPasswordHash(string password)
         {
-            return JsonConvert.SerializeObject(Hasher.HashPassword(password));
+            var user = new User(password)
+            {
+                Email = "gee@gee.com",
+                Firstname = "public",
+                Lastname = "private"
+            };
+            db.Users.Add(user);
+            db.SaveChanges();
+            return user;
         }*/
     }
 }
