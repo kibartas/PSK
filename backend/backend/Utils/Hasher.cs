@@ -7,10 +7,6 @@ namespace backend.Utils
     public class Hasher
     {
         // Returns `byte[] salt` and hashed password `string hashed` 
-        // Usage:
-        // - If you're registering a new user, input just the password
-        // - If you're logging in an existing user input their plaintext password (from the request)
-        //  + the salt taken from their database table
         public static (byte[], string) HashPassword(string password, byte[] salt = null)
         {
             if (salt == null)
@@ -29,6 +25,11 @@ namespace backend.Utils
                 numBytesRequested: 256 / 8));
 
             return (salt, hashed);
+        }
+
+        public static bool CheckPlaintextAgainstHash(string plaintext, string hash, byte[] salt)
+        {
+            return HashPassword(plaintext, salt).Item2 == hash;
         }
     }
 }
