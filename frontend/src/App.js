@@ -14,6 +14,7 @@ import TrashBinPage from './containers/TrashBinPage';
 import ProfilePage from './containers/ProfilePage';
 import ForgotPasswordPage from './containers/ForgotPasswordPage';
 import ResetPasswordPage from './containers/ResetPasswordPage';
+import './style.css';
 
 function App() {
   return (
