@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
 import LoginForm from '../components/LoginForm/LoginForm';
-import sideImage from '../assets/LoginPage/side-image.svg';
+import sideImage from '../assets/generic/side-image.svg';
 
 class LoginPage extends React.Component {
   render() {
