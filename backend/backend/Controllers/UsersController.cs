@@ -1,4 +1,5 @@
-﻿using backend.Models;
+﻿using System;
+using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,9 +36,14 @@ namespace backend.Controllers
                 Firstname = "public",
                 Lastname = "private"
             };
+            Console.WriteLine("Password: " + user.Password + "; Salt: " + user.Salt[0] + ";\n" 
+                              +  Hasher.CheckPlaintextAgainstHash(password, user.Password, user.Salt));
+            user.SetNewPassword("foofoo");
             db.Users.Add(user);
             db.SaveChanges();
-            return user;
+            Console.WriteLine("Password: " + user.Password + "; Salt: " + user.Salt[0] + ";\n" +  
+                              Hasher.CheckPlaintextAgainstHash("foofoo", user.Password, user.Salt));
+            return db.Users.Find(user.Id);
         }*/
     }
 }
