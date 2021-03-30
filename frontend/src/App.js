@@ -5,6 +5,7 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom';
+import { CssBaseline } from '@material-ui/core';
 
 import LoginPage from './containers/LoginPage';
 import RegisterPage from './containers/RegisterPage';
@@ -14,11 +15,11 @@ import TrashBinPage from './containers/TrashBinPage';
 import ProfilePage from './containers/ProfilePage';
 import ForgotPasswordPage from './containers/ForgotPasswordPage';
 import ResetPasswordPage from './containers/ResetPasswordPage';
-import './style.css';
 
 function App() {
   return (
     <Router>
+      <CssBaseline />
       {!window.sessionStorage.getItem('token') ? (
         <Switch>
           <Route exact path="/">
