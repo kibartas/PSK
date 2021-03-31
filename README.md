@@ -9,7 +9,7 @@
 First way:
 1. You must have SQLEXPRESS installed.
 2. Make sure that your SQLEXPRESS connection string matches the one in appsettings.json.
-4. Start the backend project.
+3. Start the backend project.
 
 Second way:
 1. Have docker-compose installed
