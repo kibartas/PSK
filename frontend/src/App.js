@@ -7,14 +7,14 @@ import {
 } from 'react-router-dom';
 import { CssBaseline } from '@material-ui/core';
 
-import LoginPage from './containers/LoginPage';
-import RegisterPage from './containers/RegisterPage';
-import ConfirmEmailPage from './containers/ConfirmEmailPage';
-import LibraryPage from './containers/LibraryPage';
-import TrashBinPage from './containers/TrashBinPage';
-import ProfilePage from './containers/ProfilePage';
-import ForgotPasswordPage from './containers/ForgotPasswordPage';
-import ResetPasswordPage from './containers/ResetPasswordPage';
+import LoginPage from './containers/LoginPage/LoginPage';
+import RegisterPage from './containers/RegisterPage/RegisterPage';
+import ConfirmEmailPage from './containers/ConfirmEmailPage/ConfirmEmailPage';
+import LibraryPage from './containers/LibraryPage/LibraryPage';
+import TrashBinPage from './containers/TrashBinPage/TrashBinPage';
+import ProfilePage from './containers/ProfilePage/ProfilePage';
+import ForgotPasswordPage from './containers/ForgotPasswordPage/ForgotPasswordPage';
+import ResetPasswordPage from './containers/ResetPasswordPage/ResetPasswordPage';
 
 function App() {
   return (
