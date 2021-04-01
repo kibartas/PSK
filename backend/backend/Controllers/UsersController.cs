@@ -1,4 +1,10 @@
 ﻿using System;
+using backend.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using backend.Utils;
+using Newtonsoft.Json;
 using backend.JwtAuthentication;
 using backend.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +30,7 @@ namespace backend.Controllers
             _db = context;
             _jwtAuthentication = jwtAuthentication;
         }
-
+        
         [HttpGet,Route("all")]
         public ActionResult<List<User>> GetAllUsers()
         {
