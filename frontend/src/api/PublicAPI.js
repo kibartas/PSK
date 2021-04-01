@@ -1,19 +1,22 @@
-import axios from "axios";
-let baseUri = "https://localhost:44344/api";
+import axios from 'axios';
 
-let Api = axios.create({
-    baseURL: baseUri,
-    headers: {
-        "Content-Type": "application/json"
-    }
+const baseUri = 'https://localhost:44344/api';
+
+const Api = axios.create({
+  baseURL: baseUri,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-//example public request
+export default Api;
+
+// example public request
 // export const Register = async (data) => {
-//     return await Api.post("/Users/register/", data)
-//         .then((response) => {
-//             return response.data;
-//         }).catch(error => {
-//             console.log(error);
-//         })
+//     try {
+//         const response = await Api.post("/Users/register/", data);
+//         return response.data;
+//     } catch(error) {
+//         console.log(error);
+//     }
 // };
