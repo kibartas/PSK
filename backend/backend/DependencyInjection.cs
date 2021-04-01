@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using backend.Services;
 
 namespace backend
 {
@@ -10,6 +11,7 @@ namespace backend
         {
             services.AddDbContext<BackendContext>(options => 
             options.UseSqlServer(configuration.GetConnectionString(nameof(BackendContext))));
+            services.AddScoped<IEmailService, EmailService>();
         }
     }
 }
