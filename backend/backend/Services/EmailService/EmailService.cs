@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using MimeKit;
 
-namespace backend.Services
+namespace backend.Services.EmailService
 {
     public class EmailService : IEmailService
     {
