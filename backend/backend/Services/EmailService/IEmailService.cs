@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace backend.Services.EmailService
+﻿namespace backend.Services.EmailService
 {
     public interface IEmailService
     {
