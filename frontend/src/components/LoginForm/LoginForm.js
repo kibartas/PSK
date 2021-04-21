@@ -15,24 +15,46 @@ import {
 import visibilityIcon from '../../assets/generic/visibility.svg';
 import visibilityOffIcon from '../../assets/generic/visibility-off.svg';
 import productIcon from "../../assets/generic/product-icon.svg"
+import { emailRegex, passwordRegex } from "../../constants/regex"
 
 export default function LoginForm(props) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [showError, setShowError] = useState({ errorEmail: false, errorPassword: false })
 
-  const handleOnLogin = () => {
+  const handleLogin = (event) => {
+    event.preventDefault()
+    if (!emailRegex.test(email)) {
+      setShowError({ ...showError, errorEmail: true })
+      return
+    }
+    if (!passwordRegex.test(password)) {
+      setShowError({ ...showError, errorPassword: true })
+      return
+    }
+    // [TM]: TODO WDB-13
     props.onLogin(email, password)
   }
 
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value)
+    setShowError({ ...showError, errorEmail: false })
+  }
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value)
+    setShowError({ ...showError, errorPassword: false })
+  }
+
   const handleRememberMeCheck = (event) => {
-    /* TODO WDB-16 */
+    // [TM]: TODO WDB-16
     setRememberMe(event.target.checked)
   }
 
   const handleClickShowPassword = () => setShowPassword(!showPassword)
-  const handleMouseDownPassword = (event) => event.preventDefault();
+  const handleMouseDownPassword = (event) => event.preventDefault()
 
   return (
     <Paper elevation={3}>
@@ -48,30 +70,34 @@ export default function LoginForm(props) {
           height={50}
         />
         <Typography gutterBottom variant="h4">Login</Typography>
-        <form noValidate>
+        <form noValidate onSubmit={handleLogin}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <TextField
                 required
+                error={showError.errorEmail}
+                helperText={showError.errorEmail ? "Please enter a valid email" : ""}
                 type="email"
                 id="email-field"
                 label="Email Address"
                 placeholder="email@domain.com"
                 variant="outlined"
                 fullWidth
-                onChange={setEmail}
+                onChange={handleEmailChange}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 required
+                error={showError.errorPassword}
+                helperText={showError.errorPassword ? "Password must have at least 8 symbols with at least one capital letter and at least one number" : ""}
                 type={showPassword ? "text" : "password"}
                 id="password-field"
                 label="Password"
                 placeholder="**********"
                 variant="outlined"
                 fullWidth
-                onChange={setPassword}
+                onChange={handlePasswordChange}
                 InputProps={{
                   endAdornment: (
                       <InputAdornment position="end">
@@ -116,7 +142,6 @@ export default function LoginForm(props) {
                 variant="contained"
                 color="primary"
                 fullWidth
-                onClick={handleOnLogin}
               >
                 Login
               </Button>
@@ -130,5 +155,5 @@ export default function LoginForm(props) {
         </form>
       </CardContent>
     </Paper>
-  );
+  )
 }
