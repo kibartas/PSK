@@ -9,8 +9,8 @@ class LoginPage extends React.Component {
     return (
       <Grid
         container
-        justify="space-evenly"
         className="root"
+        justify="space-evenly"
         direction="row"
         alignItems="center"
       >
@@ -22,7 +22,7 @@ class LoginPage extends React.Component {
             />
           </Grid>
         </Hidden>
-        <Grid item>
+        <Grid item xs={10} sm={6} md={3}>
           <LoginForm />
         </Grid>
       </Grid>

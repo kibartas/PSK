@@ -1,22 +1,45 @@
-import { Box, Button, Card, CardContent, Grid, Link, TextField, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
+import { 
+  Button,
+  CardContent,
+  Checkbox,
+  IconButton,
+  InputAdornment,
+  Grid,
+  FormControlLabel,
+  Link,
+  Paper,
+  TextField,
+  Typography
+} from '@material-ui/core';
+import visibilityIcon from '../../assets/generic/visibility.svg';
+import visibilityOffIcon from '../../assets/generic/visibility-off.svg';
 import productIcon from "../../assets/generic/product-icon.svg"
 
 export default function LoginForm(props) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [rememberMe, setRememberMe] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleOnLogin = () => {
     props.onLogin(email, password)
   }
 
+  const handleRememberMeCheck = (event) => {
+    /* TODO WDB-16 */
+    setRememberMe(event.target.checked)
+  }
+
+  const handleClickShowPassword = () => setShowPassword(!showPassword)
+  const handleMouseDownPassword = (event) => event.preventDefault();
+
   return (
-    <Card>
+    <Paper elevation={3}>
       <CardContent
-        align="center"
         direction="column"
+        align="center"
         justify="center"
-        fullWidth
       >
         <img
           src={productIcon}
@@ -24,65 +47,88 @@ export default function LoginForm(props) {
           width={50}
           height={50}
         />
-        <Typography
-          gutterBottom
-          variant="h4"
-        >
-          Login
-        </Typography>
-        <Box pb={2}>
-          <TextField
-            required
-            type="email"
-            id="email-field"
-            label="Email Address"
-            placeholder="email@domain.com"
-            variant="outlined"
-            fullWidth
-            onChange={setEmail}
-          />
-        </Box>
-        <Box pb={1}>
-          <TextField
-            required
-            type="password"
-            id="password-field"
-            label="Password"
-            placeholder="**********"
-            variant="outlined"
-            onChange={setPassword}
-          />
-        </Box>
-        <Box display="flex">
-          <Typography gutterBottom>
-            <Link href="/forgot-password" variant="body2">
-              Forgot your password?
-            </Link>
-          </Typography>
-        </Box>
-        <Box display="flex">
-          {/* TODO WDB-16 */}
-          {/* TODO Add UI elements for remember me */}
-        </Box>
-        <Grid container>
-          <Box width="50%" pr={1}>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              onClick={handleOnLogin}
-            >
-              Login
-            </Button>
-          </Box>
-          <Box width="50%" pl={1}>
-            <Button variant="outlined" fullWidth href="/register">
-              Register
-            </Button>
-          </Box>
-        </Grid>
+        <Typography gutterBottom variant="h4">Login</Typography>
+        <form noValidate>
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
+              <TextField
+                required
+                type="email"
+                id="email-field"
+                label="Email Address"
+                placeholder="email@domain.com"
+                variant="outlined"
+                fullWidth
+                onChange={setEmail}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                type={showPassword ? "text" : "password"}
+                id="password-field"
+                label="Password"
+                placeholder="**********"
+                variant="outlined"
+                fullWidth
+                onChange={setPassword}
+                InputProps={{
+                  endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {
+                            showPassword ? 
+                              <img src={visibilityOffIcon} alt="Password visibility icon" width={24} height={24} />
+                              : <img src={visibilityIcon} alt="Password visibility off icon" width={24} height={24} />
+                          }
+                        </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography align="left">
+                <Link href="/forgot-password" variant="body2">
+                  Forgot your password?
+                </Link>
+              </Typography>
+            </Grid>
+            <Grid item xs={12} align="left">
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={rememberMe}
+                    onChange={handleRememberMeCheck}
+                    name="remember-me-checkbox"
+                    color="primary"
+                  />
+                }
+                label="Remember me"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={handleOnLogin}
+              >
+                Login
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button variant="outlined" fullWidth href="/register">
+                Register
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
       </CardContent>
-    </Card>
+    </Paper>
   );
 }
