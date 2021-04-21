@@ -6,8 +6,8 @@ class RegisterPage extends React.Component {
   render() {
     return (
       <Grid 
-        className="root"
         container
+        className="root"
         direction="column"
         alignItems="center"
         justify="center"
