@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Hidden } from '@material-ui/core';
 import LoginForm from '../../components/LoginForm/LoginForm';
-import sideImage from '../../assets/LoginPage/side-image.svg';
+import { videoTimeIll } from '../../assets/index';
 import './styles.css';
 
 class LoginPage extends React.Component {
@@ -17,7 +17,7 @@ class LoginPage extends React.Component {
         <Hidden smDown>
           <Grid item>
             <img
-              src={sideImage}
+              src={videoTimeIll}
               alt="Two people looking at their smart devices in front of a video screen"
             />
           </Grid>

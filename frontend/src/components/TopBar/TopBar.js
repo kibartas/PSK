@@ -1,15 +1,17 @@
 import React from 'react';
 import { AppBar, Button, Toolbar, IconButton, Typography, Grid, Avatar, Hidden } from '@material-ui/core';
+import {
+  uploadIcon,
+  selectAllIcon,
+  restoreIcon,
+  deleteForeverIcon,
+  productIcon
+} from '../../assets/index';
 import { ReactComponent as MenuIcon } from '../../assets/generic/menu.svg';
 import { ReactComponent as ArrowBackIcon } from '../../assets/generic/arrow-back.svg';
 import { ReactComponent as DownloadIcon } from '../../assets/generic/download.svg';
 import { ReactComponent as DeleteIcon } from '../../assets/generic/delete.svg';
 import { ReactComponent as InfoIcon } from '../../assets/generic/info.svg';
-import uploadIcon from '../../assets/generic/upload.svg';
-import selectAllIcon from '../../assets/generic/select-all.svg';
-import restoreIcon from '../../assets/generic/restore-from-trash.svg';
-import deleteForeverIcon from '../../assets/generic/delete-forever.svg';
-import productIcon from '../../assets/generic/product-icon.svg';
 import './styles.css';
 
 export default function TopBar(props) {

@@ -9,10 +9,8 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
-import visibilityIcon from '../../assets/generic/visibility.svg';
-import visibilityOffIcon from '../../assets/generic/visibility-off.svg';
-import productIcon from "../../assets/generic/product-icon.svg"
-import { emailRegex, passwordRegex, nameRegex } from "../../constants/regex"
+import { productIcon, visibilityIcon, visibilityOffIcon } from '../../assets/index';
+import { EMAIL_REGEX, PASSWORD_REGEX, NAME_REGEX } from "../../constants/index";
 
 export default function RegistrationForm(props) {
   const [firstName, setFirstName] = useState("")
@@ -32,19 +30,19 @@ export default function RegistrationForm(props) {
 
   const handleRegister = (event) => {
     event.preventDefault()
-    if (!nameRegex.test(firstName)) {
+    if (!NAME_REGEX.test(firstName)) {
       setShowError({ ...showError, errorFirstName: true })
       return
     }
-    if (!nameRegex.test(lastName)) {
+    if (!NAME_REGEX.test(lastName)) {
       setShowError({ ...showError, errorLastName: true })
       return
     }
-    if (!emailRegex.test(email)) {
+    if (!EMAIL_REGEX.test(email)) {
       setShowError({ ...showError, errorEmail: true })
       return
     }
-    if (!passwordRegex.test(password)) {
+    if (!PASSWORD_REGEX.test(password)) {
       setShowError({ ...showError, errorPassword: true })
       return
     }
