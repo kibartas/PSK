@@ -1,8 +1,9 @@
 import React from 'react';
+import TopBar from '../../components/TopBar/TopBar';
 
 class LibraryPage extends React.Component {
   render() {
-    return <h1>Library page</h1>;
+    return <TopBar title="Video Library" />;
   }
 }
 
