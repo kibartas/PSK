@@ -1,5 +1,6 @@
 import { Grid } from '@material-ui/core';
 import React from 'react';
+import { UploadIcon } from '../../assets';
 import TopBar from '../../components/TopBar/TopBar';
 
 class LibraryPage extends React.Component {
@@ -9,11 +10,15 @@ class LibraryPage extends React.Component {
         <Grid item>
           <TopBar
             title="Video Library"
+            showAvatarAndLogout
             firstName="Juris"
             lastName="Jurgaitis"
-            showIcons={{
-              upload: true,
-            }}
+            iconsToShow={[
+              UploadIcon
+            ]}
+            onIconsClick={[
+              () => { "[TM]: TODO WDB-5" }
+            ]}
           />
         </Grid>
       </Grid>
