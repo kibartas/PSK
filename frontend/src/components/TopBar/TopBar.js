@@ -12,11 +12,12 @@ import { ReactComponent as ArrowBackIcon } from '../../assets/generic/arrow-back
 import { ReactComponent as DownloadIcon } from '../../assets/generic/download.svg';
 import { ReactComponent as DeleteIcon } from '../../assets/generic/delete.svg';
 import { ReactComponent as InfoIcon } from '../../assets/generic/info.svg';
+import { GRAY_1, GRAY_5 } from '../../constants/index';
 import './styles.css';
 
-export default function TopBar(props) {
-  const { title, videoOpened, videoSelected, firstName, lastName, showIcons } = props
+export default function TopBar({ title, videoOpened, videoSelected, firstName, lastName, showIcons }) {
   const selectedState = videoOpened || videoSelected
+  const iconFillColor = videoOpened ? GRAY_5 : GRAY_1
 
   const renderIcons = () => {
     const { 
@@ -47,7 +48,7 @@ export default function TopBar(props) {
           download &&
             <Grid item>
               <IconButton edge="end">
-                <DownloadIcon fill={videoOpened ? "#E0E0E0" : "333333"} alt="Download icon" width={24} height={24} />
+                <DownloadIcon fill={iconFillColor} alt="Download icon" width={24} height={24} />
               </IconButton>
             </Grid>
         }
@@ -55,7 +56,7 @@ export default function TopBar(props) {
           moveToBin &&
             <Grid item>
               <IconButton edge="end">
-                <DeleteIcon fill={videoOpened ? "#E0E0E0" : "333333"} alt="Move to bin icon" width={24} height={24} />
+                <DeleteIcon fill={iconFillColor} alt="Move to bin icon" width={24} height={24} />
               </IconButton>
             </Grid>
         }
@@ -63,7 +64,7 @@ export default function TopBar(props) {
           information &&
             <Grid item>
               <IconButton edge="end">
-                <InfoIcon fill="#E0E0E0" alt="Information icon" width={24} height={24} />
+                <InfoIcon fill={GRAY_5} alt="Information icon" width={24} height={24} />
               </IconButton>
             </Grid>
         }
@@ -107,9 +108,9 @@ export default function TopBar(props) {
             <IconButton edge="start">
               {
                 selectedState ?
-                  <ArrowBackIcon fill={videoOpened ? "#E0E0E0" : "333333"} alt="Arrow back icon" width={24} height={24}/>
+                  <ArrowBackIcon fill={iconFillColor} alt="Arrow back icon" width={24} height={24}/>
                   :
-                  <MenuIcon fill={videoOpened ? "#E0E0E0" : "333333"} alt="Menu icon" width={24} height={24} />
+                  <MenuIcon fill={iconFillColor} alt="Menu icon" width={24} height={24} />
               }
             </IconButton>
           </Grid>
