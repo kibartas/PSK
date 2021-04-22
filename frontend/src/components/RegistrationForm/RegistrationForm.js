@@ -12,7 +12,7 @@ import {
 import { productIcon, visibilityIcon, visibilityOffIcon } from '../../assets/index';
 import { EMAIL_REGEX, PASSWORD_REGEX, NAME_REGEX } from "../../constants/index";
 
-export default function RegistrationForm(props) {
+export default function RegistrationForm({ onRegister }) {
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
@@ -51,7 +51,7 @@ export default function RegistrationForm(props) {
       return
     }
     // [TM]: TODO WDB-28
-    props.onRegister(firstName, lastName, email, password)
+    onRegister(firstName, lastName, email, password)
   }
 
   const handleFirstNameChange = (event) => {

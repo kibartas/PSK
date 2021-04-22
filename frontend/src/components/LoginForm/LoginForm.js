@@ -15,7 +15,7 @@ import {
 import { visibilityIcon, visibilityOffIcon, productIcon } from '../../assets/index';
 import { EMAIL_REGEX, PASSWORD_REGEX } from "../../constants/index";
 
-export default function LoginForm(props) {
+export default function LoginForm({ onLogin }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
@@ -33,7 +33,7 @@ export default function LoginForm(props) {
       return
     }
     // [TM]: TODO WDB-13
-    props.onLogin(email, password)
+    onLogin(email, password)
   }
 
   const handleEmailChange = (event) => {
