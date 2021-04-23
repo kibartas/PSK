@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, CardContent, Grid, Paper, Typography } from '@material-ui/core';
-import confirmEmailIll from '../../assets/index';
+import { confirmEmailIll } from '../../assets/index';
 
 export default function ConfirmEmailCard() {
   return (
