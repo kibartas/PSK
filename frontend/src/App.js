@@ -32,7 +32,7 @@ function App() {
             <ResetPasswordPage />
           </Route>
           <Route exact path="/confirm-email">
-              <ConfirmEmailPage />
+            <ConfirmEmailPage />
           </Route>
           <Route exact path="/register">
             <RegisterPage />

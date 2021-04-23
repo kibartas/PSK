@@ -10,20 +10,22 @@ class LibraryPage extends React.Component {
         <Grid item>
           <TopBar
             title="Video Library"
-            onActionIconClick={() => { /* [TM:] TODO WDB-29 */ }}
+            onActionIconClick={() => {
+              /* [TM:] TODO WDB-29 */
+            }}
             showAvatarAndLogout
             firstName="Juris"
             lastName="Jurgaitis"
-            iconsToShow={[
-              UploadIcon
-            ]}
+            iconsToShow={[UploadIcon]}
             onIconsClick={[
-              () => { /* [TM]: TODO WDB-5 */ }
+              () => {
+                /* [TM]: TODO WDB-5 */
+              },
             ]}
           />
         </Grid>
       </Grid>
-    )
+    );
   }
 }
 

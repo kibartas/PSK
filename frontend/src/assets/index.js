@@ -16,7 +16,7 @@ import confirmEmailIll from './ConfirmEmailPage/ill-mail.svg';
 
 import videoTimeIll from './LoginPage/ill-video-time.svg';
 
-export { 
+export {
   ArrowBackIcon,
   DeleteForeverIcon,
   DeleteIcon,
@@ -25,16 +25,11 @@ export {
   MenuIcon,
   RestoreIcon,
   SelectAllIcon,
-  UploadIcon
+  UploadIcon,
 };
 
-export {
-  productIcon,
-  visibilityIcon,
-  visibilityOffIcon
-}
+export { productIcon, visibilityIcon, visibilityOffIcon };
 
-export { confirmEmailIll }
+export { confirmEmailIll };
 
-export { videoTimeIll }
-
+export { videoTimeIll };

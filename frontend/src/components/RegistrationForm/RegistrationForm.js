@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { 
+import {
   Button,
   CardContent,
   IconButton,
@@ -7,96 +7,99 @@ import {
   Grid,
   Paper,
   TextField,
-  Typography
+  Typography,
 } from '@material-ui/core';
-import { productIcon, visibilityIcon, visibilityOffIcon } from '../../assets/index';
-import { EMAIL_REGEX, PASSWORD_REGEX, NAME_REGEX } from "../../constants/index";
+import {
+  productIcon,
+  visibilityIcon,
+  visibilityOffIcon,
+} from '../../assets/index';
+import { EMAIL_REGEX, PASSWORD_REGEX, NAME_REGEX } from '../../constants/index';
 
 export default function RegistrationForm({ onRegister }) {
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [showError, setShowError] = useState({ 
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showError, setShowError] = useState({
     errorFirstName: false,
     errorLastName: false,
     errorEmail: false,
     errorPassword: false,
-    errorConfirmPassword: false
-  })
+    errorConfirmPassword: false,
+  });
 
   const handleRegister = (event) => {
-    event.preventDefault()
+    event.preventDefault();
     if (!NAME_REGEX.test(firstName)) {
-      setShowError({ ...showError, errorFirstName: true })
-      return
+      setShowError({ ...showError, errorFirstName: true });
+      return;
     }
     if (!NAME_REGEX.test(lastName)) {
-      setShowError({ ...showError, errorLastName: true })
-      return
+      setShowError({ ...showError, errorLastName: true });
+      return;
     }
     if (!EMAIL_REGEX.test(email)) {
-      setShowError({ ...showError, errorEmail: true })
-      return
+      setShowError({ ...showError, errorEmail: true });
+      return;
     }
     if (!PASSWORD_REGEX.test(password)) {
-      setShowError({ ...showError, errorPassword: true })
-      return
+      setShowError({ ...showError, errorPassword: true });
+      return;
     }
     if (confirmPassword !== password) {
-      setShowError({ ...showError, errorConfirmPassword: true })
-      return
+      setShowError({ ...showError, errorConfirmPassword: true });
+      return;
     }
     // [TM]: TODO WDB-28
-    onRegister(firstName, lastName, email, password)
-  }
+    onRegister(firstName, lastName, email, password);
+  };
 
   const handleFirstNameChange = (event) => {
-    setFirstName(event.target.value)
-    setShowError({ ...showError, errorFirstName: false })
-  }
+    setFirstName(event.target.value);
+    setShowError({ ...showError, errorFirstName: false });
+  };
 
   const handleLastNameChange = (event) => {
-    setLastName(event.target.value)
-    setShowError({ ...showError, errorLastName: false })
-  }
+    setLastName(event.target.value);
+    setShowError({ ...showError, errorLastName: false });
+  };
 
   const handleEmailChange = (event) => {
-    setEmail(event.target.value)
-    setShowError({ ...showError, errorEmail: false })
-  }
+    setEmail(event.target.value);
+    setShowError({ ...showError, errorEmail: false });
+  };
 
   const handlePasswordChange = (event) => {
-    setPassword(event.target.value)
-    setShowError({ ...showError, errorPassword: false })
-  }
+    setPassword(event.target.value);
+    setShowError({ ...showError, errorPassword: false });
+  };
 
   const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value)
-    setShowError({ ...showError, errorConfirmPassword: false })
-  }
+    setConfirmPassword(event.target.value);
+    setShowError({ ...showError, errorConfirmPassword: false });
+  };
 
-  const handleClickShowPassword = () => setShowPassword(!showPassword)
-  const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword)
-  const handleMouseDownPassword = (event) => event.preventDefault()
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleClickShowConfirmPassword = () =>
+    setShowConfirmPassword(!showConfirmPassword);
+  const handleMouseDownPassword = (event) => event.preventDefault();
 
   return (
     <Paper elevation={3}>
-      <CardContent
-        direction="column"
-        align="center"
-        justify="center"
-      >
+      <CardContent direction="column" align="center" justify="center">
         <img
           src={productIcon}
           alt="Video library logo"
           width={50}
           height={50}
         />
-        <Typography gutterBottom variant="h4">Register</Typography>
+        <Typography gutterBottom variant="h4">
+          Register
+        </Typography>
         <form noValidate onSubmit={handleRegister}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -105,7 +108,11 @@ export default function RegistrationForm({ onRegister }) {
                   <TextField
                     required
                     error={showError.errorFirstName}
-                    helperText={showError.errorFirstName ? "Please enter a valid name" : ""}
+                    helperText={
+                      showError.errorFirstName
+                        ? 'Please enter a valid name'
+                        : ''
+                    }
                     type="text"
                     id="first-name-field"
                     label="First Name"
@@ -119,7 +126,9 @@ export default function RegistrationForm({ onRegister }) {
                   <TextField
                     required
                     error={showError.errorLastName}
-                    helperText={showError.errorLastName ? "Please enter a valid name" : ""}
+                    helperText={
+                      showError.errorLastName ? 'Please enter a valid name' : ''
+                    }
                     type="text"
                     id="last-name-field"
                     label="Last Name"
@@ -133,7 +142,9 @@ export default function RegistrationForm({ onRegister }) {
                   <TextField
                     required
                     error={showError.errorEmail}
-                    helperText={showError.errorEmail ? "Please enter a valid email" : ""}
+                    helperText={
+                      showError.errorEmail ? 'Please enter a valid email' : ''
+                    }
                     type="email"
                     id="email-field"
                     label="Email Address"
@@ -147,8 +158,12 @@ export default function RegistrationForm({ onRegister }) {
                   <TextField
                     required
                     error={showError.errorPassword}
-                    helperText={showError.errorPassword ? "Password must have at least 8 symbols with at least one capital letter and at least one number" : ""}
-                    type={showPassword ? "text" : "password"}
+                    helperText={
+                      showError.errorPassword
+                        ? 'Password must have at least 8 symbols with at least one capital letter and at least one number'
+                        : ''
+                    }
+                    type={showPassword ? 'text' : 'password'}
                     id="password-field"
                     label="Password"
                     placeholder="**********"
@@ -157,19 +172,29 @@ export default function RegistrationForm({ onRegister }) {
                     onChange={handlePasswordChange}
                     InputProps={{
                       endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              onClick={handleClickShowPassword}
-                              onMouseDown={handleMouseDownPassword}
-                            >
-                              {
-                                showPassword ? 
-                                  <img src={visibilityOffIcon} alt="Password visibility icon" width={24} height={24} />
-                                  : <img src={visibilityIcon} alt="Password visibility off icon" width={24} height={24} />
-                              }
-                            </IconButton>
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                          >
+                            {showPassword ? (
+                              <img
+                                src={visibilityOffIcon}
+                                alt="Password visibility icon"
+                                width={24}
+                                height={24}
+                              />
+                            ) : (
+                              <img
+                                src={visibilityIcon}
+                                alt="Password visibility off icon"
+                                width={24}
+                                height={24}
+                              />
+                            )}
+                          </IconButton>
                         </InputAdornment>
-                      )
+                      ),
                     }}
                   />
                 </Grid>
@@ -178,8 +203,12 @@ export default function RegistrationForm({ onRegister }) {
                     className="form__last-text-field"
                     required
                     error={showError.errorConfirmPassword}
-                    helperText={showError.errorConfirmPassword ? "Passwords do not match" : ""}
-                    type={showConfirmPassword ? "text" : "password"}
+                    helperText={
+                      showError.errorConfirmPassword
+                        ? 'Passwords do not match'
+                        : ''
+                    }
+                    type={showConfirmPassword ? 'text' : 'password'}
                     id="confirm-password-field"
                     label="Confirm Password"
                     placeholder="**********"
@@ -188,19 +217,29 @@ export default function RegistrationForm({ onRegister }) {
                     onChange={handleConfirmPasswordChange}
                     InputProps={{
                       endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              onClick={handleClickShowConfirmPassword}
-                              onMouseDown={handleMouseDownPassword}
-                            >
-                              {
-                                showConfirmPassword ? 
-                                  <img src={visibilityOffIcon} alt="Password visibility icon" width={24} height={24} />
-                                  : <img src={visibilityIcon} alt="Password visibility off icon" width={24} height={24} />
-                              }
-                            </IconButton>
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={handleClickShowConfirmPassword}
+                            onMouseDown={handleMouseDownPassword}
+                          >
+                            {showConfirmPassword ? (
+                              <img
+                                src={visibilityOffIcon}
+                                alt="Password visibility icon"
+                                width={24}
+                                height={24}
+                              />
+                            ) : (
+                              <img
+                                src={visibilityIcon}
+                                alt="Password visibility off icon"
+                                width={24}
+                                height={24}
+                              />
+                            )}
+                          </IconButton>
                         </InputAdornment>
-                      )
+                      ),
                     }}
                   />
                 </Grid>
@@ -229,5 +268,5 @@ export default function RegistrationForm({ onRegister }) {
         </form>
       </CardContent>
     </Paper>
-  )
+  );
 }
