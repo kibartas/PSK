@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Hidden } from '@material-ui/core';
 import LoginForm from '../../components/LoginForm/LoginForm';
-import sideImage from '../../assets/generic/side-image.svg';
+import sideImage from '../../assets/LoginPage/side-image.svg';
 import './styles.css';
 
 class LoginPage extends React.Component {
@@ -9,8 +9,8 @@ class LoginPage extends React.Component {
     return (
       <Grid
         container
-        justify="space-around"
         className="root"
+        justify="space-evenly"
         direction="row"
         alignItems="center"
       >
@@ -22,7 +22,7 @@ class LoginPage extends React.Component {
             />
           </Grid>
         </Hidden>
-        <Grid item>
+        <Grid item xs={10} sm={6} md={3}>
           <LoginForm />
         </Grid>
       </Grid>
