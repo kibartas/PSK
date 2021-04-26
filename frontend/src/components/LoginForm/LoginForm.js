@@ -54,7 +54,6 @@ export default function LoginForm(props) {
   }
 
   const handleClickShowPassword = () => setShowPassword(!showPassword)
-  const handleMouseDownPassword = (event) => event.preventDefault()
 
   return (
     <Paper elevation={3}>
@@ -105,7 +104,6 @@ export default function LoginForm(props) {
                           <InputAdornment position="end">
                             <IconButton
                               onClick={handleClickShowPassword}
-                              onMouseDown={handleMouseDownPassword}
                             >
                               {
                                 showPassword ? 
