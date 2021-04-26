@@ -52,7 +52,6 @@ export default function RegistrationForm(props) {
       setShowError({ ...showError, errorConfirmPassword: true })
       return
     }
-    // [TM]: TODO WDB-28
     props.onRegister(firstName, lastName, email, password)
   }
 
