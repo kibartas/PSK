@@ -84,9 +84,7 @@ export default function RegistrationForm({ onRegister }) {
   };
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleClickShowConfirmPassword = () =>
-    setShowConfirmPassword(!showConfirmPassword);
-  const handleMouseDownPassword = (event) => event.preventDefault();
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
 
   return (
     <Paper elevation={3}>
@@ -175,7 +173,6 @@ export default function RegistrationForm({ onRegister }) {
                         <InputAdornment position="end">
                           <IconButton
                             onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
                           >
                             {showPassword ? (
                               <img
@@ -220,7 +217,6 @@ export default function RegistrationForm({ onRegister }) {
                         <InputAdornment position="end">
                           <IconButton
                             onClick={handleClickShowConfirmPassword}
-                            onMouseDown={handleMouseDownPassword}
                           >
                             {showConfirmPassword ? (
                               <img
@@ -259,7 +255,7 @@ export default function RegistrationForm({ onRegister }) {
                 </Grid>
                 <Grid item xs={6}>
                   <Button variant="outlined" fullWidth href="/">
-                    Login
+                    Back to login
                   </Button>
                 </Grid>
               </Grid>

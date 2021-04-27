@@ -59,7 +59,6 @@ export default function LoginForm({ onLogin }) {
   };
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleMouseDownPassword = (event) => event.preventDefault();
 
   return (
     <Paper elevation={3}>

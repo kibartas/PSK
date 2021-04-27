@@ -34,9 +34,7 @@ function App() {
           <Route exact path="/confirm-email">
             <ConfirmEmailPage />
           </Route>
-          <Route exact path="/register">
-            <RegisterPage />
-          </Route>
+          <Route exact path="/register" component={RegisterPage} />
           <Route path="*">
             <Redirect to="/">
               <LoginPage />
