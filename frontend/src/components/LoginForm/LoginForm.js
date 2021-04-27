@@ -20,6 +20,7 @@ import {
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../../constants/index';
 
 export default function LoginForm({ onLogin }) {
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -113,7 +114,6 @@ export default function LoginForm({ onLogin }) {
                         <InputAdornment position="end">
                           <IconButton
                             onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
                           >
                             {showPassword ? (
                               <img

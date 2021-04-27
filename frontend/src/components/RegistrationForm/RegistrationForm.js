@@ -17,6 +17,7 @@ import {
 import { EMAIL_REGEX, PASSWORD_REGEX, NAME_REGEX } from '../../constants/index';
 
 export default function RegistrationForm({ onRegister }) {
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
