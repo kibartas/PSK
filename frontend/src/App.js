@@ -30,13 +30,11 @@ function App() {
           </Route>
           <Route exact path="/reset-password">
             <ResetPasswordPage />
-            <Route exact path="/confirm-email">
+          </Route>
+          <Route exact path="/confirm-email">
               <ConfirmEmailPage />
-            </Route>
           </Route>
-          <Route exact path="/register">
-            <RegisterPage />
-          </Route>
+          <Route exact path="/register" component={RegisterPage} />
           <Route path="*">
             <Redirect to="/">
               <LoginPage />
