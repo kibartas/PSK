@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, CardContent, Grid, Paper, Typography } from '@material-ui/core';
-import confirmEmailIll from '../../assets/ConfirmEmailPage/ill-mail.svg';
+import confirmEmailDrawing from '../../assets/ConfirmEmailPage/ill-mail.svg';
 
 export default function ConfirmEmailCard() {
   return (
@@ -11,7 +11,7 @@ export default function ConfirmEmailCard() {
         justify="center"
       >
         <img
-          src={confirmEmailIll}
+          src={confirmEmailDrawing}
           alt="Illustration of a mail with notification"
         />
         <Typography variant="h4" gutterBottom>Confirm registration</Typography>
