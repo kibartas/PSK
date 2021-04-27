@@ -12,9 +12,9 @@ import productIcon from './generic/product-icon.svg';
 import visibilityIcon from './generic/visibility.svg';
 import visibilityOffIcon from './generic/visibility-off.svg';
 
-import confirmEmailIll from './ConfirmEmailPage/ill-mail.svg';
+import confirmEmailDrawing from './ConfirmEmailPage/ill-mail.svg';
 
-import videoTimeIll from './LoginPage/ill-video-time.svg';
+import videoTimeDrawing from './LoginPage/ill-video-time.svg';
 
 export {
   ArrowBackIcon,
@@ -30,6 +30,6 @@ export {
 
 export { productIcon, visibilityIcon, visibilityOffIcon };
 
-export { confirmEmailIll };
+export { confirmEmailDrawing };
 
-export { videoTimeIll };
+export { videoTimeDrawing };

@@ -6,14 +6,14 @@ import {
   Paper,
   Typography,
 } from '@material-ui/core';
-import { confirmEmailIll } from '../../assets/index';
+import { confirmEmailDrawing } from '../../assets/index';
 
 export default function ConfirmEmailCard() {
   return (
     <Paper elevation={3}>
       <CardContent direction="column" align="center" justify="center">
         <img
-          src={confirmEmailIll}
+          src={confirmEmailDrawing}
           alt="Illustration of a mail with notification"
         />
         <Typography variant="h4" gutterBottom>
