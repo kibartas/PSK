@@ -72,5 +72,11 @@ namespace backend.Controllers
 
             return Ok(token);
         }
+
+        [HttpPost, Route("register"), AllowAnonymous]
+        public ActionResult Register([FromBody] RegistrationRequest registrationRequest)
+        {
+            return Ok();
+        }
     }
 }

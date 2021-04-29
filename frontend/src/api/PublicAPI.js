@@ -20,3 +20,7 @@ export default Api;
 //         console.log(error);
 //     }
 // };
+
+export const Register = (data) => (
+  Api.post("/users/register", data)
+)

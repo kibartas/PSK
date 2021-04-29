@@ -15,6 +15,7 @@ import TrashBinPage from './containers/TrashBinPage/TrashBinPage';
 import ProfilePage from './containers/ProfilePage/ProfilePage';
 import ForgotPasswordPage from './containers/ForgotPasswordPage/ForgotPasswordPage';
 import ResetPasswordPage from './containers/ResetPasswordPage/ResetPasswordPage';
+import VerifyAccountPage from './containers/VerifyAccountPage/VerifyAccountPage';
 
 function App() {
   return (
@@ -32,7 +33,10 @@ function App() {
             <ResetPasswordPage />
           </Route>
           <Route exact path="/confirm-email">
-              <ConfirmEmailPage />
+            <ConfirmEmailPage />
+          </Route>
+          <Route path="/verify/">
+            <VerifyAccountPage />
           </Route>
           <Route exact path="/register" component={RegisterPage} />
           <Route path="*">
