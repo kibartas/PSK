@@ -35,7 +35,7 @@ function App() {
           <Route exact path="/confirm-email">
             <ConfirmEmailPage />
           </Route>
-          <Route path="/verify/">
+          <Route path="/verify/:userId">
             <VerifyAccountPage />
           </Route>
           <Route exact path="/register" component={RegisterPage} />

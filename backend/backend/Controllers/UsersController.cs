@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using backend.DTOs;
+using backend.Services.EmailService;
 
 namespace backend.Controllers
 {
@@ -74,8 +76,27 @@ namespace backend.Controllers
         }
 
         [HttpPost, Route("register"), AllowAnonymous]
-        public ActionResult Register([FromBody] RegistrationRequest registrationRequest)
+        public ActionResult Register([FromBody]RegistrationRequest registrationRequest)
         {
+            if (!Regex_validation.isEmailValid(registrationRequest.email)) return BadRequest();
+            if (!Regex_validation.isNameValid(registrationRequest.firstname) || !Regex_validation.isNameValid(registrationRequest.lastname)) return BadRequest();
+            if (!Regex_validation.isPasswordValid(registrationRequest.password)) return BadRequest();
+            if (_db.Users.FirstOrDefault(user => user.Email == registrationRequest.email) != null) return Conflict();
+
+            User user = new User(registrationRequest.password)
+            {
+                Firstname = registrationRequest.firstname,
+                Lastname = registrationRequest.lastname,
+                Email = registrationRequest.email
+            };
+
+            _db.Users.Add(user);
+            _db.SaveChanges();
+
+            EmailService emailService = new EmailService();
+            string endpoint = "http:/localhost:3000/verify/" + user.Id;
+            emailService.SendVerificationEmail(user.Firstname, user.Email, endpoint);
+
             return Ok();
         }
     }

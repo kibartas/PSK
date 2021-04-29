@@ -7,9 +7,9 @@ namespace backend.DTOs
 {
     public class RegistrationRequest
     {
-        private string firstname { get; set; }
-        private string lastname { get; set; }
-        private string email { get; set; }
-        private string password { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+        public string email { get; set; }
+        public string password { get; set; }
     }
 }

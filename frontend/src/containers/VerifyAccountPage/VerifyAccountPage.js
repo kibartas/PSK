@@ -1,9 +1,16 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
 import './styles.css';
+import { withRouter } from 'react-router';
 import VerifyAccountCard from '../../components/VerifyAccountCard/VerifyAccountCard';
 
 class VerifyAccountPage extends React.Component {
+
+    componentDidMount() {
+        const { userId } = this.props;
+        console.log(userId)
+    }
+
     render() {
         return (
             <Grid
@@ -21,4 +28,4 @@ class VerifyAccountPage extends React.Component {
     }
 }
 
-export default VerifyAccountPage;
+export default withRouter(VerifyAccountPage);

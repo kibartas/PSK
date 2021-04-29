@@ -8,9 +8,9 @@ namespace backend.Utils
 {
     public static class Regex_validation
     {
-        private static readonly string EMAIL_REGEX = "/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/";
-        private static readonly string NAME_REGEX = "/^[A-Za-z]+$/";
-        private static readonly string PASSWORD_REGEX = "/^(?=.*\\d)(?=.*[A-Z])(?!.*[^a-zA-Z0-9@#$^+=])(.{8,})$/";
+        private static readonly string EMAIL_REGEX = @"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+        private static readonly string NAME_REGEX = @"^[A-Za-z]+$";
+        private static readonly string PASSWORD_REGEX = @"^(?=.*\d)(?=.*[A-Z])(?!.*[^a-zA-Z0-9@#$^+=])(.{8,})$";
 
         public static bool isEmailValid(string email)
         {

@@ -15,15 +15,12 @@ export default function VerifyAccountCard() {
                     src={confirmEmailDrawing}
                     alt="Illustration of a mail with notification"
                 />
-                <Typography variant="h4" gutterBottom>Confirm registration</Typography>
+                <Typography variant="h4" gutterBottom>Account verified</Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Grid container>
                             <Grid item xs={12}>
-                                <Typography>A link was sent to your email.</Typography>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Typography>Click it to confirm your registration</Typography>
+                                <Typography>You can now sign in</Typography>
                             </Grid>
                         </Grid>
                     </Grid>
