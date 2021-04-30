@@ -33,8 +33,7 @@ class RegisterPage extends React.Component {
   }
 
   render() {
-    const { showGeneralError } = this.state;
-    const { showUserExistsError } = this.state;
+    const { showGeneralError, showUserExistsError } = this.state;
 
     const hideGeneralError = () => {
       this.setState({ showGeneralError: false });

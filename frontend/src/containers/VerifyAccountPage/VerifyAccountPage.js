@@ -24,8 +24,7 @@ class VerifyAccountPage extends React.Component {
     }
 
     render() {
-        const { showVerificationError } = this.state;
-        const { showVerificationSuccess } = this.state;
+        const { showVerificationError, showVerificationSuccess } = this.state;
 
         const hideVerificationError = () => {
             this.setState({ showVerificationError: false })
