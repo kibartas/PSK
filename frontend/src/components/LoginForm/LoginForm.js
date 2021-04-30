@@ -34,7 +34,6 @@ export default function LoginForm(props) {
       setShowError({ ...showError, errorPassword: true })
       return
     }
-    // [TM]: TODO WDB-13
     props.onLogin(email, password)
   }
 

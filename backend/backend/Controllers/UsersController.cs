@@ -38,7 +38,7 @@ namespace backend.Controllers
         }
 
         [HttpGet, Route("currentuser")]
-        public ActionResult<User> GetCurrentUser()
+        public ActionResult<UserDto> GetCurrentUser()
         {
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null)
@@ -57,7 +57,15 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            return user;
+            UserDto userDto = new UserDto()
+            {
+                id = user.Id,
+                firstname = user.Firstname,
+                lastname = user.Lastname,
+                email = user.Email
+            };
+
+            return userDto;
         }
 
         [HttpGet, Route("authentication"), AllowAnonymous]

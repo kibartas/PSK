@@ -3,12 +3,23 @@ import { Grid, Hidden } from '@material-ui/core';
 import LoginForm from '../../components/LoginForm/LoginForm';
 import sideImage from '../../assets/LoginPage/side-image.svg';
 import './styles.css';
-import { authenticate } from '../../api/PublicAPI';
+import { authenticate, getCurrentUser } from '../../api/PublicAPI';
 
 class LoginPage extends React.Component {
 
-  handleLogin = (email, password) => {
-    authenticate(email, password).then(response => console.log(response))
+  handleLogin = (mail, password) => {
+    authenticate(mail, password).then(responseToken => {
+      const token = responseToken.data;
+      getCurrentUser(token).then(responseUserData => {
+        const { id, firstname, lastname, email } = responseUserData.data;
+        sessionStorage.setItem("token", token);
+        sessionStorage.setItem("id", id);
+        sessionStorage.setItem("firstname", firstname);
+        sessionStorage.setItem("lastname", lastname);
+        sessionStorage.setItem("email", email);
+        window.location.reload();
+      });
+    })
   }
 
   render() {

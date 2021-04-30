@@ -22,3 +22,7 @@ export const verify = (id) => (
 export const authenticate = (email, password) => (
   Api.get("/users/authentication", { params: { email, password } })
 )
+
+export const getCurrentUser = (token) => (
+  Api.get("/users/currentuser", { headers: { Authorization: `Bearer ${token}` } })
+)
