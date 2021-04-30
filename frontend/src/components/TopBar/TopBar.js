@@ -17,7 +17,7 @@ export default function TopBar({
   showArrow,
   onActionIconClick, // For arrow back or navigation drawer icons
   title,
-  iconsToShow = [], // Array of Icon Components(like in DownloadIcon.js)
+  iconsToShow = [], // Array of Icon Components(like in DownloadIcon.js). These icons will be shown on right side of TopBar
   onIconsClick = [], // Array of on click callbacks for each icon in iconsToShow. NOTE: order of callbacks must match order of icons
   showAvatarAndLogout,
   firstName,
