@@ -19,13 +19,16 @@ namespace backend.Controllers
     {
         private readonly BackendContext _db;
         private readonly IJwtAuthentication _jwtAuthentication;
+        private readonly IEmailService _emailService;
 
         public UsersController(
             BackendContext context, 
-            IJwtAuthentication jwtAuthentication)
+            IJwtAuthentication jwtAuthentication,
+            IEmailService emailService)
         {
             _db = context;
             _jwtAuthentication = jwtAuthentication;
+            _emailService = emailService;
         }
         
         [HttpGet,Route("all")]
@@ -87,10 +90,8 @@ namespace backend.Controllers
 
             _db.Users.Add(user);
             _db.SaveChanges();
-
-            EmailService emailService = new EmailService();
-            string endpoint = "http:/localhost:3000/verify/" + user.Id;
-            emailService.SendVerificationEmail(user.Firstname, user.Email, endpoint);
+            string endpoint = "http://localhost:3000/verify/" + user.Id;
+            _emailService.SendVerificationEmail(user.Firstname, user.Email, endpoint);
 
             return Ok();
         }

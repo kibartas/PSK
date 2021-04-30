@@ -9,10 +9,10 @@ namespace backend.Services.EmailService
         private readonly string _weDontByteEmail;
         private readonly string _weDontBytePassword;
 
-        public EmailService()
+        public EmailService(IConfiguration configuration)
         {
-            //_weDontByteEmail = configuration.GetValue<string>("EmailConfiguration:EmailAddress");
-            //_weDontBytePassword = configuration.GetValue<string>("EmailConfiguration:EmailPassword");
+            _weDontByteEmail = configuration.GetValue<string>("EmailConfiguration:EmailAddress");
+            _weDontBytePassword = configuration.GetValue<string>("EmailConfiguration:EmailPassword");
         }
 
         public void SendVerificationEmail(string receiverName, string receiverEmail, string verificationLink)

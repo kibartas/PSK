@@ -1,6 +1,6 @@
 import { Grid } from '@material-ui/core';
 import React from 'react';
-import { Register } from '../../api/PublicAPI';
+import { register } from '../../api/PublicAPI';
 import RegistrationForm from '../../components/RegistrationForm/RegistrationForm';
 
 class RegisterPage extends React.Component {
@@ -14,7 +14,7 @@ class RegisterPage extends React.Component {
       email,
       password
     };
-    Register(data).then(() => {
+    register(data).then(() => {
       const { history } = this.props;
       history.push('/confirm-email');
     });

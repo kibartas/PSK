@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { 
+import {
   Button,
   CardContent,
   Checkbox,
@@ -101,16 +101,16 @@ export default function LoginForm(props) {
                     onChange={handlePasswordChange}
                     InputProps={{
                       endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              onClick={handleClickShowPassword}
-                            >
-                              {
-                                showPassword ? 
-                                  <img src={visibilityOffIcon} alt="Password visibility icon" width={24} height={24} />
-                                  : <img src={visibilityIcon} alt="Password visibility off icon" width={24} height={24} />
-                              }
-                            </IconButton>
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={handleClickShowPassword}
+                          >
+                            {
+                              showPassword ?
+                                <img src={visibilityOffIcon} alt="Password visibility icon" width={24} height={24} />
+                                : <img src={visibilityIcon} alt="Password visibility off icon" width={24} height={24} />
+                            }
+                          </IconButton>
                         </InputAdornment>
                       )
                     }}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, CardContent, Grid, Paper, Typography } from '@material-ui/core';
-import confirmEmailDrawing from '../../assets/ConfirmEmailPage/ill-mail.svg';
+import confirmEmailDrawing from '../../assets/VerifyAccountPage/ill-confirmation.svg';
 
 
 export default function VerifyAccountCard() {

@@ -11,20 +11,10 @@ const Api = axios.create({
 
 export default Api;
 
-// example public request
-// export const Register = async (data) => {
-//     try {
-//         const response = await Api.post("/Users/register/", data);
-//         return response.data;
-//     } catch(error) {
-//         console.log(error);
-//     }
-// };
-
-export const Register = (data) => (
+export const register = (data) => (
   Api.post("/users/register", data)
 )
 
-export const Verify = (id) => (
+export const verify = (id) => (
   Api.post("/users/verify", null, { params: { id } })
 )
