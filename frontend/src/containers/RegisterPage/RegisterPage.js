@@ -44,31 +44,33 @@ class RegisterPage extends React.Component {
       this.setState({ showUserExistsError: false });
     }
     return (
-      <Grid
-        container
-        className="root"
-        direction="column"
-        alignItems="center"
-        justify="center"
-      >
-        {showGeneralError && <Grid item>
+      <>
+        {showGeneralError &&
           <CustomSnackbar
             topCenter
             message="A server error has occured"
             onClose={hideGeneralError}
             severity="error" />
-        </Grid>}
-        {showUserExistsError && <Grid item>
+        }
+        {showUserExistsError &&
           <CustomSnackbar
             topCenter
             message="User with this email already exists"
             onClose={hideUserExistsError}
             severity="error" />
-        </Grid>}
-        <Grid item xs={10} sm={6} md={4}>
-          <RegistrationForm onRegister={this.handleRegister} />
+        }
+        <Grid
+          container
+          className="root"
+          direction="column"
+          alignItems="center"
+          justify="center"
+        >
+          <Grid item xs={10} sm={6} md={4}>
+            <RegistrationForm onRegister={this.handleRegister} />
+          </Grid>
         </Grid>
-      </Grid>
+      </>
     )
   }
 }

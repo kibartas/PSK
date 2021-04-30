@@ -36,31 +36,33 @@ class VerifyAccountPage extends React.Component {
         }
 
         return (
-            <Grid
-                container
-                className="root"
-                direction="column"
-                alignItems="center"
-                justify="center"
-            >
-                {showVerificationError && <Grid item>
+            <>
+                {showVerificationError &&
                     <CustomSnackbar
                         topCenter
                         message="Error has occured during verification"
                         onClose={hideVerificationError}
                         severity="error" />
-                </Grid>}
-                {showVerificationSuccess && <Grid item>
+                }
+                {showVerificationSuccess &&
                     <CustomSnackbar
                         topCenter
                         message="Account verified successfully"
                         onClose={hideVerificationSuccess}
                         severity="success" />
-                </Grid>}
-                <Grid item xs={10} sm={6} md={4} lg={3}>
-                    <VerifyAccountCard />
+                }
+                <Grid
+                    container
+                    className="root"
+                    direction="column"
+                    alignItems="center"
+                    justify="center"
+                >
+                    <Grid item xs={10} sm={6} md={4} lg={3}>
+                        <VerifyAccountCard />
+                    </Grid>
                 </Grid>
-            </Grid>
+            </>
         );
     }
 }
