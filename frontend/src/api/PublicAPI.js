@@ -18,3 +18,7 @@ export const register = (data) => (
 export const verify = (id) => (
   Api.post("/users/verify", null, { params: { id } })
 )
+
+export const authenticate = (email, password) => (
+  Api.get("/users/authentication", { params: { email, password } })
+)

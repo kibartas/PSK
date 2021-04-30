@@ -60,10 +60,10 @@ namespace backend.Controllers
             return user;
         }
 
-        [HttpPost, Route("authentication"), AllowAnonymous]
-        public ActionResult<string> Authenticate([FromBody]UserCredentials userCredentials)
+        [HttpGet, Route("authentication"), AllowAnonymous]
+        public ActionResult<string> Authenticate(string email, string password)
         {
-            var token = _jwtAuthentication.Authenticate(userCredentials.Email, userCredentials.Password);
+            var token = _jwtAuthentication.Authenticate(email, password);
 
             if(token is null)
             {

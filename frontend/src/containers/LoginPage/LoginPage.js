@@ -3,8 +3,14 @@ import { Grid, Hidden } from '@material-ui/core';
 import LoginForm from '../../components/LoginForm/LoginForm';
 import sideImage from '../../assets/LoginPage/side-image.svg';
 import './styles.css';
+import { authenticate } from '../../api/PublicAPI';
 
 class LoginPage extends React.Component {
+
+  handleLogin = (email, password) => {
+    authenticate(email, password).then(response => console.log(response))
+  }
+
   render() {
     return (
       <Grid
@@ -23,7 +29,8 @@ class LoginPage extends React.Component {
           </Grid>
         </Hidden>
         <Grid item xs={10} sm={6} md={3}>
-          <LoginForm />
+          <LoginForm
+            onLogin={this.handleLogin} />
         </Grid>
       </Grid>
     );

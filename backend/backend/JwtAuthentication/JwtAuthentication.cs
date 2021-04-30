@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using backend.Utils;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace backend.JwtAuthentication
 
         public string Authenticate(string email, string password)
         {
-            var user = _db.Users.FirstOrDefault(u => u.Password == password && u.Email == email);
+            var user = _db.Users.ToList().FirstOrDefault(u => Hasher.CheckPlaintextAgainstHash(password, u.Password, u.Salt) && u.Email == email);
             if (user is null)
             {
                 return null;
