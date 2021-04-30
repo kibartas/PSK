@@ -32,7 +32,7 @@ export default function VerifyAccountCard() {
                             href="/login"
                         >
                             Back to login
-            </Button>
+                        </Button>
                     </Grid>
                 </Grid>
             </CardContent>
