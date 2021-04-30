@@ -24,3 +24,7 @@ export default Api;
 export const Register = (data) => (
   Api.post("/users/register", data)
 )
+
+export const Verify = (id) => (
+  Api.post("/users/verify", null, { params: { id } })
+)

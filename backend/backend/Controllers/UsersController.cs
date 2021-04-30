@@ -4,13 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using backend.Utils;
-using Newtonsoft.Json;
 using backend.JwtAuthentication;
-using backend.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using backend.DTOs;
 using backend.Services.EmailService;
@@ -98,6 +93,19 @@ namespace backend.Controllers
             emailService.SendVerificationEmail(user.Firstname, user.Email, endpoint);
 
             return Ok();
+        }
+
+        [HttpPost, Route("verify"), AllowAnonymous]
+        public ActionResult Verify(Guid id)
+        {
+            if (id == Guid.Empty) return BadRequest();
+            User user = _db.Users.Find(id);
+            if (user == null) return BadRequest();
+
+            user.Confirmed = true;
+            _db.SaveChanges();
+            return Ok();
+
         }
     }
 }

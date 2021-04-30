@@ -3,12 +3,14 @@ import { Grid } from '@material-ui/core';
 import './styles.css';
 import { withRouter } from 'react-router';
 import VerifyAccountCard from '../../components/VerifyAccountCard/VerifyAccountCard';
+import { Verify } from '../../api/PublicAPI';
 
 class VerifyAccountPage extends React.Component {
 
     componentDidMount() {
-        const { userId } = this.props;
-        console.log(userId)
+        const { match } = this.props;
+        const id = match.params.userId;
+        Verify(id);
     }
 
     render() {
