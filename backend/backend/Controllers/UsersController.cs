@@ -85,13 +85,13 @@ namespace backend.Controllers
         public ActionResult Register([FromBody]RegistrationRequest registrationRequest)
         {
             if (!RegexValidation.IsEmailValid(registrationRequest.Email)) return BadRequest();
-            if (!RegexValidation.IsNameValid(registrationRequest.FirsNname) || !RegexValidation.IsNameValid(registrationRequest.LastName)) return BadRequest();
+            if (!RegexValidation.IsNameValid(registrationRequest.FirstName) || !RegexValidation.IsNameValid(registrationRequest.LastName)) return BadRequest();
             if (!RegexValidation.IsPasswordValid(registrationRequest.Password)) return BadRequest();
             if (_db.Users.FirstOrDefault(user => user.Email == registrationRequest.Email) != null) return Conflict();
 
             User user = new User(registrationRequest.Password)
             {
-                Firstname = registrationRequest.FirsNname,
+                Firstname = registrationRequest.FirstName,
                 Lastname = registrationRequest.LastName,
                 Email = registrationRequest.Email
             };

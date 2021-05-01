@@ -57,7 +57,7 @@ class LoginPage extends React.Component {
         {showGeneralError &&
           <CustomSnackbar
             topCenter
-            message="A server error has occured"
+            message="A server error has occurred"
             onClose={hideGeneralError}
             severity="error" />
         }
