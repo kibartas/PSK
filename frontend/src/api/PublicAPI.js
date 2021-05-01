@@ -24,5 +24,5 @@ export const authenticate = (email, password) => (
 )
 
 export const getCurrentUser = (token) => (
-  Api.get("/users/currentuser", { headers: { Authorization: `Bearer ${token}` } })
+  Api.get("/users/current", { headers: { Authorization: `Bearer ${token}` } })
 )

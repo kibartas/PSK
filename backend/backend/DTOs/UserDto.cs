@@ -7,9 +7,9 @@ namespace backend.DTOs
 {
     public class UserDto
     {
-        public Guid id { get; set; }
-        public string firstname { get; set; }
-        public string lastname { get; set; }
-        public string email { get; set; }
+        public Guid Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
     }
 }

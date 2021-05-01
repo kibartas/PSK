@@ -37,7 +37,7 @@ namespace backend.Controllers
             return _db.Users.ToList();
         }
 
-        [HttpGet, Route("currentuser")]
+        [HttpGet, Route("current")]
         public ActionResult<UserDto> GetCurrentUser()
         {
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
@@ -59,10 +59,10 @@ namespace backend.Controllers
 
             UserDto userDto = new UserDto()
             {
-                id = user.Id,
-                firstname = user.Firstname,
-                lastname = user.Lastname,
-                email = user.Email
+                Id = user.Id,
+                FirstName = user.Firstname,
+                LastName = user.Lastname,
+                Email = user.Email
             };
 
             return userDto;
@@ -84,16 +84,16 @@ namespace backend.Controllers
         [HttpPost, Route("register"), AllowAnonymous]
         public ActionResult Register([FromBody]RegistrationRequest registrationRequest)
         {
-            if (!Regex_validation.isEmailValid(registrationRequest.email)) return BadRequest();
-            if (!Regex_validation.isNameValid(registrationRequest.firstname) || !Regex_validation.isNameValid(registrationRequest.lastname)) return BadRequest();
-            if (!Regex_validation.isPasswordValid(registrationRequest.password)) return BadRequest();
-            if (_db.Users.FirstOrDefault(user => user.Email == registrationRequest.email) != null) return Conflict();
+            if (!RegexValidation.IsEmailValid(registrationRequest.Email)) return BadRequest();
+            if (!RegexValidation.IsNameValid(registrationRequest.FirsNname) || !RegexValidation.IsNameValid(registrationRequest.LastName)) return BadRequest();
+            if (!RegexValidation.IsPasswordValid(registrationRequest.Password)) return BadRequest();
+            if (_db.Users.FirstOrDefault(user => user.Email == registrationRequest.Email) != null) return Conflict();
 
-            User user = new User(registrationRequest.password)
+            User user = new User(registrationRequest.Password)
             {
-                Firstname = registrationRequest.firstname,
-                Lastname = registrationRequest.lastname,
-                Email = registrationRequest.email
+                Firstname = registrationRequest.FirsNname,
+                Lastname = registrationRequest.LastName,
+                Email = registrationRequest.Email
             };
 
             _db.Users.Add(user);
