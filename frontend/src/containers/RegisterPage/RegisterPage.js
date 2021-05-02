@@ -23,14 +23,12 @@ class RegisterPage extends React.Component {
     register(data)
       .then(() => {
         const { history } = this.props;
-        const ha = 'ha';
-        console.log(ha);
         history.push('/confirm-email');
       })
       .catch((ex) => {
         const { status } = ex.response;
-        if (status === 400) this.setState({ showGeneralError: true });
-        else if (status === 409) this.setState({ showUserExistsError: true });
+        if (status === 409) this.setState({ showUserExistsError: true });
+        else this.setState({ showGeneralError: true });
       });
   };
 
@@ -49,7 +47,7 @@ class RegisterPage extends React.Component {
         {showGeneralError && (
           <CustomSnackbar
             topCenter
-            message="A server error has occured"
+            message="Bad request"
             onClose={hideGeneralError}
             severity="error"
           />

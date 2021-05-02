@@ -6,9 +6,9 @@ import {
   Paper,
   Typography,
 } from '@material-ui/core';
-import confirmEmailDrawing from '../../assets/ConfirmEmailPage/ill-mail.svg';
+import confirmEmailDrawing from '../../assets/VerifyAccountPage/ill-confirmation.svg';
 
-export default function ConfirmEmailCard() {
+export default function VerifiedAccountCard() {
   return (
     <Paper elevation={3}>
       <CardContent direction="column" align="center" justify="center">
@@ -17,16 +17,14 @@ export default function ConfirmEmailCard() {
           alt="Illustration of a mail with notification"
         />
         <Typography variant="h4" gutterBottom>
-          Confirm registration
+          Email verified
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Grid container>
               <Grid item xs={12}>
-                <Typography>A link was sent to your email.</Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography>Click it to confirm your registration</Typography>
+                <Typography>Your registration was confirmed.</Typography>
+                <Typography>You are good to go!</Typography>
               </Grid>
             </Grid>
           </Grid>

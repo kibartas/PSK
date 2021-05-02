@@ -21,11 +21,11 @@ class LoginPage extends React.Component {
         const token = responseToken.data;
         getCurrentUser(token)
           .then((responseUserData) => {
-            const { id, firstname, lastname, email } = responseUserData.data;
+            const { id, firstName, lastName, email } = responseUserData.data;
             sessionStorage.setItem('token', token);
             sessionStorage.setItem('id', id);
-            sessionStorage.setItem('firstname', firstname);
-            sessionStorage.setItem('lastname', lastname);
+            sessionStorage.setItem('firstName', firstName);
+            sessionStorage.setItem('lastName', lastName);
             sessionStorage.setItem('email', email);
             window.location.reload();
           })
@@ -34,7 +34,7 @@ class LoginPage extends React.Component {
       .catch((ex) => {
         const { status } = ex.response;
         if (status === 401) this.setState({ showWrongCredentialsError: true });
-        else if (status === 500) this.setState({ showGeneralError: true });
+        else this.setState({ showGeneralError: true });
       });
   };
 
