@@ -5,12 +5,11 @@ import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import RegistrationForm from '../../components/RegistrationForm/RegistrationForm';
 
 class RegisterPage extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
       showGeneralError: false,
-      showUserExistsError: false
+      showUserExistsError: false,
     };
   }
 
@@ -19,45 +18,50 @@ class RegisterPage extends React.Component {
       firstName,
       lastName,
       email,
-      password
+      password,
     };
-    register(data).then(() => {
-      const { history } = this.props;
-      history.push('/confirm-email');
-    })
-      .catch(ex => {
+    register(data)
+      .then(() => {
+        const { history } = this.props;
+        const ha = 'ha';
+        console.log(ha);
+        history.push('/confirm-email');
+      })
+      .catch((ex) => {
         const { status } = ex.response;
         if (status === 400) this.setState({ showGeneralError: true });
         else if (status === 409) this.setState({ showUserExistsError: true });
-      })
-  }
+      });
+  };
 
   render() {
     const { showGeneralError, showUserExistsError } = this.state;
 
     const hideGeneralError = () => {
       this.setState({ showGeneralError: false });
-    }
+    };
 
     const hideUserExistsError = () => {
       this.setState({ showUserExistsError: false });
-    }
+    };
     return (
       <>
-        {showGeneralError &&
+        {showGeneralError && (
           <CustomSnackbar
             topCenter
             message="A server error has occured"
             onClose={hideGeneralError}
-            severity="error" />
-        }
-        {showUserExistsError &&
+            severity="error"
+          />
+        )}
+        {showUserExistsError && (
           <CustomSnackbar
             topCenter
             message="User with this email already exists"
             onClose={hideUserExistsError}
-            severity="error" />
-        }
+            severity="error"
+          />
+        )}
         <Grid
           container
           className="root"
@@ -70,7 +74,7 @@ class RegisterPage extends React.Component {
           </Grid>
         </Grid>
       </>
-    )
+    );
   }
 }
 
