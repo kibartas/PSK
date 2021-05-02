@@ -14,5 +14,5 @@ services:
             ASPNETCORE_ENVIRONMENT: "Development"
             ASPNETCORE_URLS: "http://*:80"
         ports:
-            - "44344:80"
+            - "61346:80"
         restart: always
