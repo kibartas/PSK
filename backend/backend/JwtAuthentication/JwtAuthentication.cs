@@ -22,7 +22,7 @@ namespace backend.JwtAuthentication
         public string Authenticate(string email, string password)
         {
             var user = _db.Users.ToList().FirstOrDefault(u => Hasher.CheckPlaintextAgainstHash(password, u.Password, u.Salt) && u.Email == email);
-            if (user is null)
+            if (user is null || !user.Confirmed)
             {
                 return null;
             }
