@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { 
+import {
   Button,
   CardContent,
   Checkbox,
@@ -10,65 +10,69 @@ import {
   Link,
   Paper,
   TextField,
-  Typography
+  Typography,
 } from '@material-ui/core';
-import visibilityIcon from '../../assets/generic/visibility.svg';
-import visibilityOffIcon from '../../assets/generic/visibility-off.svg';
-import productIcon from "../../assets/generic/product-icon.svg"
-import { emailRegex, passwordRegex } from "../../constants/regex"
+import {
+  visibilityIcon,
+  visibilityOffIcon,
+  productIcon,
+} from '../../assets';
+import { EMAIL_REGEX, PASSWORD_REGEX } from '../../constants';
 
-export default function LoginForm(props) {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [rememberMe, setRememberMe] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [showError, setShowError] = useState({ errorEmail: false, errorPassword: false })
+export default function LoginForm({ onLogin }) {
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showError, setShowError] = useState({
+    errorEmail: false,
+    errorPassword: false,
+  });
 
   const handleLogin = (event) => {
-    event.preventDefault()
-    if (!emailRegex.test(email)) {
-      setShowError({ ...showError, errorEmail: true })
-      return
+    event.preventDefault();
+    if (!EMAIL_REGEX.test(email)) {
+      setShowError({ ...showError, errorEmail: true });
+      return;
     }
-    if (!passwordRegex.test(password)) {
-      setShowError({ ...showError, errorPassword: true })
-      return
+    if (!PASSWORD_REGEX.test(password)) {
+      setShowError({ ...showError, errorPassword: true });
+      return;
     }
     // [TM]: TODO WDB-13
-    props.onLogin(email, password)
-  }
+    onLogin(email, password);
+  };
 
   const handleEmailChange = (event) => {
-    setEmail(event.target.value)
-    setShowError({ ...showError, errorEmail: false })
-  }
+    setEmail(event.target.value);
+    setShowError({ ...showError, errorEmail: false });
+  };
 
   const handlePasswordChange = (event) => {
-    setPassword(event.target.value)
-    setShowError({ ...showError, errorPassword: false })
-  }
+    setPassword(event.target.value);
+    setShowError({ ...showError, errorPassword: false });
+  };
 
   const handleRememberMeCheck = (event) => {
     // [TM]: TODO WDB-16
-    setRememberMe(event.target.checked)
-  }
+    setRememberMe(event.target.checked);
+  };
 
-  const handleClickShowPassword = () => setShowPassword(!showPassword)
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
 
   return (
     <Paper elevation={3}>
-      <CardContent
-        direction="column"
-        align="center"
-        justify="center"
-      >
+      <CardContent direction="column" align="center" justify="center">
         <img
           src={productIcon}
           alt="Video library logo"
           width={50}
           height={50}
         />
-        <Typography gutterBottom variant="h4">Login</Typography>
+        <Typography gutterBottom variant="h4">
+          Login
+        </Typography>
         <form noValidate onSubmit={handleLogin}>
           <Grid container spacing={1}>
             <Grid item>
@@ -77,7 +81,9 @@ export default function LoginForm(props) {
                   <TextField
                     required
                     error={showError.errorEmail}
-                    helperText={showError.errorEmail ? "Please enter a valid email" : ""}
+                    helperText={
+                      showError.errorEmail ? 'Please enter a valid email' : ''
+                    }
                     type="email"
                     id="email-field"
                     label="Email Address"
@@ -91,8 +97,12 @@ export default function LoginForm(props) {
                   <TextField
                     required
                     error={showError.errorPassword}
-                    helperText={showError.errorPassword ? "Password must have at least 8 symbols with at least one capital letter and at least one number" : ""}
-                    type={showPassword ? "text" : "password"}
+                    helperText={
+                      showError.errorPassword
+                        ? 'Password must have at least 8 symbols with at least one capital letter and at least one number'
+                        : ''
+                    }
+                    type={showPassword ? 'text' : 'password'}
                     id="password-field"
                     label="Password"
                     placeholder="**********"
@@ -101,18 +111,28 @@ export default function LoginForm(props) {
                     onChange={handlePasswordChange}
                     InputProps={{
                       endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              onClick={handleClickShowPassword}
-                            >
-                              {
-                                showPassword ? 
-                                  <img src={visibilityOffIcon} alt="Password visibility icon" width={24} height={24} />
-                                  : <img src={visibilityIcon} alt="Password visibility off icon" width={24} height={24} />
-                              }
-                            </IconButton>
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={handleClickShowPassword}
+                          >
+                            {showPassword ? (
+                              <img
+                                src={visibilityOffIcon}
+                                alt="Password visibility icon"
+                                width={24}
+                                height={24}
+                              />
+                            ) : (
+                              <img
+                                src={visibilityIcon}
+                                alt="Password visibility off icon"
+                                width={24}
+                                height={24}
+                              />
+                            )}
+                          </IconButton>
                         </InputAdornment>
-                      )
+                      ),
                     }}
                   />
                 </Grid>
@@ -157,5 +177,5 @@ export default function LoginForm(props) {
         </form>
       </CardContent>
     </Paper>
-  )
+  );
 }

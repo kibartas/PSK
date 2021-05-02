@@ -15,7 +15,7 @@ class RegisterPage extends React.Component {
 
   render() {
     return (
-      <Grid 
+      <Grid
         container
         className="root"
         direction="column"
@@ -26,7 +26,7 @@ class RegisterPage extends React.Component {
           <RegistrationForm onRegister={this.handleRegister} />
         </Grid>
       </Grid>
-    )
+    );
   }
 }
 
