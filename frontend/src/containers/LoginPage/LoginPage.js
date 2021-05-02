@@ -32,9 +32,14 @@ class LoginPage extends React.Component {
           .catch(() => this.setState({ showGeneralError: true }));
       })
       .catch((ex) => {
-        const { status } = ex.response;
-        if (status === 401) this.setState({ showWrongCredentialsError: true });
-        else this.setState({ showGeneralError: true });
+        try {
+          const { status } = ex.response;
+          if (status === 401)
+            this.setState({ showWrongCredentialsError: true });
+          else this.setState({ showGeneralError: true });
+        } catch {
+          this.setState({ showGeneralError: true });
+        }
       });
   };
 
@@ -77,7 +82,7 @@ class LoginPage extends React.Component {
           <Hidden smDown>
             <Grid item>
               <img
-                src={sideImage}
+                src={videoTimeDrawing}
                 alt="Two people looking at their smart devices in front of a video screen"
               />
             </Grid>

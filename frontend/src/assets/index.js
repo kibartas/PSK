@@ -16,6 +16,8 @@ import confirmEmailDrawing from './ConfirmEmailPage/ill-mail.svg';
 
 import videoTimeDrawing from './LoginPage/ill-video-time.svg';
 
+import verifiedAccountDrawing from './VerifiedAccountPage/ill-confirmation.svg';
+
 export {
   ArrowBackIcon,
   DeleteForeverIcon,
@@ -33,3 +35,5 @@ export { productIcon, visibilityIcon, visibilityOffIcon };
 export { confirmEmailDrawing };
 
 export { videoTimeDrawing };
+
+export { verifiedAccountDrawing };

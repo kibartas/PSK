@@ -6,14 +6,14 @@ import {
   Paper,
   Typography,
 } from '@material-ui/core';
-import confirmEmailDrawing from '../../assets/VerifyAccountPage/ill-confirmation.svg';
+import { verifiedAccountDrawing } from '../../assets';
 
 export default function VerifiedAccountCard() {
   return (
     <Paper elevation={3}>
       <CardContent direction="column" align="center" justify="center">
         <img
-          src={confirmEmailDrawing}
+          src={verifiedAccountDrawing}
           alt="Illustration of a mail with notification"
         />
         <Typography variant="h4" gutterBottom>
