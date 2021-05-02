@@ -9,8 +9,8 @@ import {
   Avatar,
   Hidden,
 } from '@material-ui/core';
-import { ArrowBackIcon, MenuIcon, productIcon } from '../../assets/index';
-import { GRAY_1, GRAY_5, GRAY_6, SUNFLOWER } from '../../constants/index';
+import { ArrowBackIcon, MenuIcon, productIcon } from '../../assets';
+import { GRAY_1, GRAY_5, GRAY_6, SUNFLOWER } from '../../constants';
 
 export default function TopBar({
   darkMode,
@@ -32,16 +32,13 @@ export default function TopBar({
   };
 
   const renderIcons = () => {
-    const iconItems = iconsToShow.map((icon, index) => {
-      const Icon = icon;
-      return (
-        <Grid item key={index.toString()}>
-          <IconButton onClick={onIconsClick[index]} edge="end">
-            <Icon fill={iconFillColor} />
-          </IconButton>
-        </Grid>
-      );
-    });
+    const iconItems = iconsToShow.map((Icon, index) =>
+      <Grid item key={index.toString()}>
+        <IconButton onClick={onIconsClick[index]} edge="end">
+          <Icon fill={iconFillColor} />
+        </IconButton>
+      </Grid>
+    );
 
     return (
       <Grid container alignItems="center" spacing={1}>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Hidden } from '@material-ui/core';
 import LoginForm from '../../components/LoginForm/LoginForm';
-import { videoTimeDrawing } from '../../assets/index';
+import { videoTimeDrawing } from '../../assets';
 import './styles.css';
 
 class LoginPage extends React.Component {

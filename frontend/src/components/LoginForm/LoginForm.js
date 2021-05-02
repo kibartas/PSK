@@ -16,8 +16,8 @@ import {
   visibilityIcon,
   visibilityOffIcon,
   productIcon,
-} from '../../assets/index';
-import { EMAIL_REGEX, PASSWORD_REGEX } from '../../constants/index';
+} from '../../assets';
+import { EMAIL_REGEX, PASSWORD_REGEX } from '../../constants';
 
 export default function LoginForm({ onLogin }) {
 

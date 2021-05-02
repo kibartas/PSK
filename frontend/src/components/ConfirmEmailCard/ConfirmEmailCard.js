@@ -6,7 +6,7 @@ import {
   Paper,
   Typography,
 } from '@material-ui/core';
-import { confirmEmailDrawing } from '../../assets/index';
+import { confirmEmailDrawing } from '../../assets';
 
 export default function ConfirmEmailCard() {
   return (

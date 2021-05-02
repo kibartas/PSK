@@ -13,8 +13,8 @@ import {
   productIcon,
   visibilityIcon,
   visibilityOffIcon,
-} from '../../assets/index';
-import { EMAIL_REGEX, PASSWORD_REGEX, NAME_REGEX } from '../../constants/index';
+} from '../../assets';
+import { EMAIL_REGEX, PASSWORD_REGEX, NAME_REGEX } from '../../constants';
 
 export default function RegistrationForm({ onRegister }) {
 
