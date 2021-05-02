@@ -1,9 +1,9 @@
 import React from 'react';
 import { Grid, Hidden } from '@material-ui/core';
 import LoginForm from '../../components/LoginForm/LoginForm';
-import sideImage from '../../assets/LoginPage/side-image.svg';
 import { authenticate, getCurrentUser } from '../../api/PublicAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
+import { videoTimeDrawing } from '../../assets';
 import './styles.css';
 
 class LoginPage extends React.Component {
