@@ -1,6 +1,6 @@
 import React from "react"
 import { Snackbar } from "@material-ui/core";
-import { Alert as MuiAlert } from '@material-ui/lab/';
+import { Alert as MuiAlert } from '@material-ui/lab';
 
 /* eslint-disable react/jsx-props-no-spreading */
 function Alert(props) {
