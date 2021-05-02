@@ -26,9 +26,13 @@ class RegisterPage extends React.Component {
         history.push('/confirm-email');
       })
       .catch((ex) => {
-        const { status } = ex.response;
-        if (status === 409) this.setState({ showUserExistsError: true });
-        else this.setState({ showGeneralError: true });
+        try {
+          const { status } = ex.response;
+          if (status === 409) this.setState({ showUserExistsError: true });
+          else this.setState({ showGeneralError: true });
+        } catch {
+          this.setState({ showGeneralError: true });
+        }
       });
   };
 

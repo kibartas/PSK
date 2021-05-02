@@ -9,12 +9,10 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import visibilityIcon from '../../assets/generic/visibility.svg';
-import visibilityOffIcon from '../../assets/generic/visibility-off.svg';
-import productIcon from '../../assets/generic/product-icon.svg';
-import { emailRegex, passwordRegex, nameRegex } from '../../constants/regex';
+import { productIcon, visibilityIcon, visibilityOffIcon } from '../../assets';
+import { EMAIL_REGEX, PASSWORD_REGEX, NAME_REGEX } from '../../constants';
 
-export default function RegistrationForm(props) {
+export default function RegistrationForm({ onRegister }) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -32,19 +30,19 @@ export default function RegistrationForm(props) {
 
   const handleRegister = (event) => {
     event.preventDefault();
-    if (!nameRegex.test(firstName)) {
+    if (!NAME_REGEX.test(firstName)) {
       setShowError({ ...showError, errorFirstName: true });
       return;
     }
-    if (!nameRegex.test(lastName)) {
+    if (!NAME_REGEX.test(lastName)) {
       setShowError({ ...showError, errorLastName: true });
       return;
     }
-    if (!emailRegex.test(email)) {
+    if (!EMAIL_REGEX.test(email)) {
       setShowError({ ...showError, errorEmail: true });
       return;
     }
-    if (!passwordRegex.test(password)) {
+    if (!PASSWORD_REGEX.test(password)) {
       setShowError({ ...showError, errorPassword: true });
       return;
     }
@@ -52,7 +50,7 @@ export default function RegistrationForm(props) {
       setShowError({ ...showError, errorConfirmPassword: true });
       return;
     }
-    props.onRegister(firstName, lastName, email, password);
+    onRegister(firstName, lastName, email, password);
   };
 
   const handleFirstNameChange = (event) => {

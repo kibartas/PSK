@@ -12,12 +12,10 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import visibilityIcon from '../../assets/generic/visibility.svg';
-import visibilityOffIcon from '../../assets/generic/visibility-off.svg';
-import productIcon from '../../assets/generic/product-icon.svg';
-import { emailRegex, passwordRegex } from '../../constants/regex';
+import { visibilityIcon, visibilityOffIcon, productIcon } from '../../assets';
+import { EMAIL_REGEX, PASSWORD_REGEX } from '../../constants';
 
-export default function LoginForm(props) {
+export default function LoginForm({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -29,15 +27,15 @@ export default function LoginForm(props) {
 
   const handleLogin = (event) => {
     event.preventDefault();
-    if (!emailRegex.test(email)) {
+    if (!EMAIL_REGEX.test(email)) {
       setShowError({ ...showError, errorEmail: true });
       return;
     }
-    if (!passwordRegex.test(password)) {
+    if (!PASSWORD_REGEX.test(password)) {
       setShowError({ ...showError, errorPassword: true });
       return;
     }
-    props.onLogin(email, password);
+    onLogin(email, password);
   };
 
   const handleEmailChange = (event) => {
