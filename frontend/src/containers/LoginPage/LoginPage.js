@@ -32,14 +32,13 @@ class LoginPage extends React.Component {
           .catch(() => this.setState({ showGeneralError: true }));
       })
       .catch((ex) => {
-        try {
-          const { status } = ex.response;
-          if (status === 401)
-            this.setState({ showWrongCredentialsError: true });
-          else this.setState({ showGeneralError: true });
-        } catch {
+        if (ex.response === undefined) {
           this.setState({ showGeneralError: true });
+          return;
         }
+        const { status } = ex.response;
+        if (status === 401) this.setState({ showWrongCredentialsError: true });
+        else this.setState({ showGeneralError: true });
       });
   };
 

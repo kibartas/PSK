@@ -121,9 +121,9 @@ namespace backend.Controllers
         [HttpPost, Route("verify"), AllowAnonymous]
         public ActionResult Verify(Guid id)
         {
-            if (id == Guid.Empty) return NotFound();
+            if (id == Guid.Empty) return BadRequest();
             User user = _db.Users.Find(id);
-            if (user == null) return BadRequest();
+            if (user == null) return NotFound();
 
             user.Confirmed = true;
             _db.SaveChanges();
