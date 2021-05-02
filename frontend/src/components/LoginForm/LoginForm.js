@@ -12,15 +12,10 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import {
-  visibilityIcon,
-  visibilityOffIcon,
-  productIcon,
-} from '../../assets';
+import { visibilityIcon, visibilityOffIcon, productIcon } from '../../assets';
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../../constants';
 
 export default function LoginForm({ onLogin }) {
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -40,7 +35,6 @@ export default function LoginForm({ onLogin }) {
       setShowError({ ...showError, errorPassword: true });
       return;
     }
-    // [TM]: TODO WDB-13
     onLogin(email, password);
   };
 
@@ -112,9 +106,7 @@ export default function LoginForm({ onLogin }) {
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          <IconButton
-                            onClick={handleClickShowPassword}
-                          >
+                          <IconButton onClick={handleClickShowPassword}>
                             {showPassword ? (
                               <img
                                 src={visibilityOffIcon}

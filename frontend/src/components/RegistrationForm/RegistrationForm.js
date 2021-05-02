@@ -9,15 +9,10 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import {
-  productIcon,
-  visibilityIcon,
-  visibilityOffIcon,
-} from '../../assets';
+import { productIcon, visibilityIcon, visibilityOffIcon } from '../../assets';
 import { EMAIL_REGEX, PASSWORD_REGEX, NAME_REGEX } from '../../constants';
 
 export default function RegistrationForm({ onRegister }) {
-
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -55,7 +50,6 @@ export default function RegistrationForm({ onRegister }) {
       setShowError({ ...showError, errorConfirmPassword: true });
       return;
     }
-    // [TM]: TODO WDB-28
     onRegister(firstName, lastName, email, password);
   };
 
@@ -85,7 +79,8 @@ export default function RegistrationForm({ onRegister }) {
   };
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+  const handleClickShowConfirmPassword = () =>
+    setShowConfirmPassword(!showConfirmPassword);
 
   return (
     <Paper elevation={3}>
@@ -172,9 +167,7 @@ export default function RegistrationForm({ onRegister }) {
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          <IconButton
-                            onClick={handleClickShowPassword}
-                          >
+                          <IconButton onClick={handleClickShowPassword}>
                             {showPassword ? (
                               <img
                                 src={visibilityOffIcon}
@@ -216,9 +209,7 @@ export default function RegistrationForm({ onRegister }) {
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          <IconButton
-                            onClick={handleClickShowConfirmPassword}
-                          >
+                          <IconButton onClick={handleClickShowConfirmPassword}>
                             {showConfirmPassword ? (
                               <img
                                 src={visibilityOffIcon}

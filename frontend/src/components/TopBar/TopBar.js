@@ -32,13 +32,13 @@ export default function TopBar({
   };
 
   const renderIcons = () => {
-    const iconItems = iconsToShow.map((Icon, index) =>
+    const iconItems = iconsToShow.map((Icon, index) => (
       <Grid item key={index.toString()}>
         <IconButton onClick={onIconsClick[index]} edge="end">
           <Icon fill={iconFillColor} />
         </IconButton>
       </Grid>
-    );
+    ));
 
     return (
       <Grid container alignItems="center" spacing={1}>

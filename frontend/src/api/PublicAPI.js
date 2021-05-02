@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseUri = 'https://localhost:44344/api';
+const baseUri = 'http://localhost:61346/api';
 
 const Api = axios.create({
   baseURL: baseUri,
@@ -9,14 +9,13 @@ const Api = axios.create({
   },
 });
 
-export default Api;
+export const register = (data) => Api.post('/users/register', data);
 
-// example public request
-// export const Register = async (data) => {
-//     try {
-//         const response = await Api.post("/Users/register/", data);
-//         return response.data;
-//     } catch(error) {
-//         console.log(error);
-//     }
-// };
+export const verify = (id) =>
+  Api.post('/users/verify', null, { params: { id } });
+
+export const authenticate = (email, password) =>
+  Api.post('/users/authentication', null, { params: { email, password } });
+
+export const getCurrentUser = (token) =>
+  Api.get('/users/current', { headers: { Authorization: `Bearer ${token}` } });

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseUri = 'https://localhost:44344/api';
+const baseUri = 'http://localhost:61346/api';
 
 const Api = axios.create({
   baseURL: baseUri,
@@ -9,8 +9,6 @@ const Api = axios.create({
     Authorization: `Bearer ${window.sessionStorage.getItem('token')}`,
   },
 });
-
-export default Api;
 
 // example file download
 // export const DownloadVideo = async (id) => {
