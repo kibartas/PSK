@@ -22,7 +22,7 @@ namespace backend.Controllers
         private readonly IEmailService _emailService;
 
         public UsersController(
-            BackendContext context, 
+            BackendContext context,
             IJwtAuthentication jwtAuthentication,
             IEmailService emailService)
         {
@@ -30,8 +30,8 @@ namespace backend.Controllers
             _jwtAuthentication = jwtAuthentication;
             _emailService = emailService;
         }
-        
-        [HttpGet,Route("all")]
+
+        [HttpGet, Route("all")]
         public ActionResult<List<User>> GetAllUsers()
         {
             return _db.Users.ToList();
@@ -68,12 +68,17 @@ namespace backend.Controllers
             return userDto;
         }
 
-        [HttpGet, Route("authentication"), AllowAnonymous]
+        [HttpPost, Route("authentication"), AllowAnonymous]
         public ActionResult<string> Authenticate(string email, string password)
         {
+            if(String.IsNullOrWhiteSpace(email) || String.IsNullOrWhiteSpace(password))
+            {
+                return BadRequest();
+            }
+
             var token = _jwtAuthentication.Authenticate(email, password);
 
-            if(token is null)
+            if (token is null)
             {
                 return Unauthorized();
             }
@@ -82,11 +87,12 @@ namespace backend.Controllers
         }
 
         [HttpPost, Route("register"), AllowAnonymous]
-        public ActionResult Register([FromBody]RegistrationRequest registrationRequest)
+        public ActionResult Register([FromBody] RegistrationRequest registrationRequest)
         {
-            if (!RegexValidation.IsEmailValid(registrationRequest.Email)) return BadRequest();
-            if (!RegexValidation.IsNameValid(registrationRequest.FirstName) || !RegexValidation.IsNameValid(registrationRequest.LastName)) return BadRequest();
-            if (!RegexValidation.IsPasswordValid(registrationRequest.Password)) return BadRequest();
+            if (String.IsNullOrWhiteSpace(registrationRequest.Email) || !RegexValidation.IsEmailValid(registrationRequest.Email)) return BadRequest();
+            if (String.IsNullOrWhiteSpace(registrationRequest.FirstName) || String.IsNullOrWhiteSpace(registrationRequest.LastName)
+                || !RegexValidation.IsNameValid(registrationRequest.FirstName) || !RegexValidation.IsNameValid(registrationRequest.LastName)) return BadRequest();
+            if (String.IsNullOrWhiteSpace(registrationRequest.Password) || !RegexValidation.IsPasswordValid(registrationRequest.Password)) return BadRequest();
             if (_db.Users.FirstOrDefault(user => user.Email == registrationRequest.Email) != null) return Conflict();
 
             User user = new User(registrationRequest.Password)
@@ -97,9 +103,17 @@ namespace backend.Controllers
             };
 
             _db.Users.Add(user);
-            _db.SaveChanges();
-            string endpoint = "http://localhost:3000/verify/" + user.Id;
-            _emailService.SendVerificationEmail(user.Firstname, user.Email, endpoint);
+
+            try
+            {
+                string endpoint = "http://localhost:3000/verify/" + user.Id;
+                _emailService.SendVerificationEmail(user.Firstname, user.Email, endpoint);
+                _db.SaveChanges();
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
 
             return Ok();
         }
@@ -107,14 +121,14 @@ namespace backend.Controllers
         [HttpPost, Route("verify"), AllowAnonymous]
         public ActionResult Verify(Guid id)
         {
-            if (id == Guid.Empty) return BadRequest();
+            if (id == Guid.Empty) return NotFound();
             User user = _db.Users.Find(id);
             if (user == null) return BadRequest();
 
             user.Confirmed = true;
             _db.SaveChanges();
-            return Ok();
 
+            return Ok();
         }
     }
 }

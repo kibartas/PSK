@@ -8,7 +8,7 @@ import {
 } from '@material-ui/core';
 import confirmEmailDrawing from '../../assets/VerifyAccountPage/ill-confirmation.svg';
 
-export default function VerifyAccountCard() {
+export default function VerifiedAccountCard() {
   return (
     <Paper elevation={3}>
       <CardContent direction="column" align="center" justify="center">

@@ -10,8 +10,6 @@ const Api = axios.create({
   },
 });
 
-export default Api;
-
 // example request with auth
 // export const GetUserInfo = async () => {
 //     return await Api.get("/users/info")

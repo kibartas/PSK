@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid } from '@material-ui/core';
 import './styles.css';
 import { withRouter } from 'react-router';
-import VerifyAccountCard from '../../components/VerifyAccountCard/VerifyAccountCard';
+import VerifiedAccountCard from '../../components/VerifiedAccountCard/VerifiedAccountCard';
 import { verify } from '../../api/PublicAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 
@@ -60,7 +60,7 @@ class VerifyAccountPage extends React.Component {
           justify="center"
         >
           <Grid item xs={10} sm={6} md={4} lg={3}>
-            <VerifyAccountCard />
+            <VerifiedAccountCard />
           </Grid>
         </Grid>
       </>

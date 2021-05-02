@@ -10,8 +10,6 @@ const Api = axios.create({
   },
 });
 
-export default Api;
-
 // example file upload
 // export const UploadFiles = async (files) => {
 //     try {
