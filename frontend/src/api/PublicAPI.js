@@ -9,6 +9,8 @@ const Api = axios.create({
   },
 });
 
+// eslint-disable-next-line
+
 export const register = (data) => Api.post('/users/register', data);
 
 export const verify = (id) =>
@@ -19,3 +21,6 @@ export const authenticate = (email, password) =>
 
 export const sendForgotPasswordEmail = (email) =>
   Api.post('/users/forgot-password', null, { params: { email } });
+
+export const getCurrentUser = (token) =>
+  Api.get('/users/current', { headers: { Authorization: `Bearer ${token}` } });
