@@ -12,6 +12,7 @@ class ProfilePage extends React.Component {
       showGeneralError: false,
       showConflictError: false,
       showSuccess: false,
+      showWrongPasswordError: false,
     };
   }
 
@@ -19,7 +20,12 @@ class ProfilePage extends React.Component {
     const firstName = window.sessionStorage.getItem('firstName');
     const lastName = window.sessionStorage.getItem('lastName');
     const email = window.sessionStorage.getItem('email');
-    const { showSuccess, showConflictError, showGeneralError } = this.state;
+    const {
+      showSuccess,
+      showConflictError,
+      showGeneralError,
+      showWrongPasswordError,
+    } = this.state;
 
     const handleArrowBackClick = () => {
       window.location.href = '/library';
@@ -35,6 +41,10 @@ class ProfilePage extends React.Component {
 
     const hideSuccess = () => {
       this.setState({ showSuccess: false });
+    };
+
+    const hideWrongPasswordError = () => {
+      this.setState({ showWrongPasswordError: false });
     };
 
     const handleSaveChanges = (mail, oldPassword, newPassword) => {
@@ -54,8 +64,15 @@ class ProfilePage extends React.Component {
             return;
           }
           const { status } = ex.response;
-          if (status === 409) this.setState({ showConflictError: true });
-          else this.setState({ showGeneralError: true });
+          if (status === 409) {
+            this.setState({ showConflictError: true });
+            return;
+          }
+          if (status === 401) {
+            this.setState({ showWrongPasswordError: true });
+            return;
+          }
+          this.setState({ showGeneralError: true });
         });
     };
 
@@ -74,6 +91,14 @@ class ProfilePage extends React.Component {
             topCenter
             message="User with the email you specified already exists"
             onClose={hideConflictError}
+            severity="error"
+          />
+        )}
+        {showWrongPasswordError && (
+          <CustomSnackbar
+            topCenter
+            message="Old password is not correct"
+            onClose={hideWrongPasswordError}
             severity="error"
           />
         )}
