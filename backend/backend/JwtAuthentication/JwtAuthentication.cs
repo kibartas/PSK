@@ -44,5 +44,31 @@ namespace backend.JwtAuthentication
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+        public string CreateResetPasswordToken(string email)
+        {
+            var user = _db.Users.FirstOrDefault(x => x.Email == email);
+            if (user == null)
+            {
+                return null;
+            }
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_tokenKey);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim("ResetPassword", "True"),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddMinutes(10),
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
     }
 }

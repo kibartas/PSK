@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using backend.DTOs;
 using backend.Services.EmailService;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace backend.Controllers
 {
@@ -34,6 +35,11 @@ namespace backend.Controllers
         [HttpGet, Route("current")]
         public ActionResult<UserDto> GetCurrentUser()
         {
+            var resetPasswordClaim = User.FindFirst(x => x.Type == "ResetPassword");
+            if (resetPasswordClaim is not null && resetPasswordClaim.Value == "True")
+            {
+                return Unauthorized();
+            }
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null)
             {
@@ -125,6 +131,73 @@ namespace backend.Controllers
             return Ok();
         }
 
+        [HttpPost, Route("forgot-password"), AllowAnonymous]
+        public ActionResult ForgotPassword(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequest();
+            }
+
+            var user = _db.Users.FirstOrDefault(x => x.Email == email);
+            if (user == null)
+            {
+                return Ok();
+            }
+
+            var token = _jwtAuthentication.CreateResetPasswordToken(user.Email);
+            
+            var endpoint = "http://localhost:3000/reset-password/" + token;
+            try
+            {
+                _emailService.SendForgotPasswordEmail(user.Firstname, user.Email, endpoint);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost, Route("reset-password")]
+        public ActionResult ResetPassword(string newPassword)
+        {
+            var resetPasswordClaim = User.FindFirst(x => x.Type == "ResetPassword");
+            if (resetPasswordClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (resetPasswordClaim.Value != "True")
+            {
+                return Unauthorized();
+            }
+
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+            
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = _db.Users.FirstOrDefault(x => x.Id == userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+            
+            user.SetNewPassword(newPassword);
+
+            _db.SaveChanges();
+
+            return Ok();
+        } 
         [HttpPut, Route("update-credentials")]
         public ActionResult UpdateCredentials([FromBody] ChangeCredentialsRequest request)
         {
