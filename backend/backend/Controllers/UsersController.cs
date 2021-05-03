@@ -130,5 +130,29 @@ namespace backend.Controllers
 
             return Ok();
         }
+
+        [HttpPut, Route("update-credentials")]
+        public ActionResult UpdateCredentials([FromBody] ChangeCredentialsRequest request)
+        {
+            if (String.IsNullOrWhiteSpace(request.Email) || !RegexValidation.IsEmailValid(request.Email)) return BadRequest();
+            if (String.IsNullOrWhiteSpace(request.Password) || !RegexValidation.IsPasswordValid(request.Password)) return BadRequest();
+
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null) return NotFound();
+            if (!Guid.TryParse(userIdClaim.Value, out var userId)) return NotFound();
+            var user = _db.Users.FirstOrDefault(x => x.Id == userId);
+            if (user is null) return NotFound();
+
+            byte[] salt;
+            string hashed;
+            (salt, hashed) = Hasher.HashPassword(request.Password);
+
+            user.Email = request.Email;
+            user.Salt = salt;
+            user.Password = hashed;
+
+            _db.SaveChanges();
+            return Ok();
+        }
     }
 }

@@ -86,7 +86,7 @@ class LoginPage extends React.Component {
               />
             </Grid>
           </Hidden>
-          <Grid item xs={10} sm={7} md={6} lg={5}>
+          <Grid item xs={10} sm={6} md={3}>
             <LoginForm onLogin={this.handleLogin} />
           </Grid>
         </Grid>

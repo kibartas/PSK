@@ -1,5 +1,6 @@
-import { Grid, Typography } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import React from 'react';
+import { updateCredentials } from '../../api/UserAPI';
 import ChangeProfileForm from '../../components/ChangeProfileForm/ChangeProfileForm';
 import TopBar from '../../components/TopBar/TopBar';
 
@@ -11,6 +12,14 @@ class ProfilePage extends React.Component {
 
     const handleArrowBackClick = () => {
       window.location.href = '/library';
+    };
+
+    const handleSaveChanges = (mail, password) => {
+      const credentials = {
+        email: mail,
+        password,
+      };
+      updateCredentials(credentials).then((response) => console.log(response));
     };
 
     return (
@@ -26,11 +35,12 @@ class ProfilePage extends React.Component {
           />
         </Grid>
         <Grid container className="root" alignItems="center" justify="center">
-          <Grid item xs={10} sm={6} md={4} lg={3}>
+          <Grid item xs={11} sm={6} md={4} lg={3}>
             <ChangeProfileForm
               firstName={firstName}
               lastName={lastName}
               mail={email}
+              onSaveChanges={handleSaveChanges}
             />
           </Grid>
         </Grid>

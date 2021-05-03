@@ -10,12 +10,8 @@ const Api = axios.create({
   },
 });
 
-// example request with auth
-// export const GetUserInfo = async () => {
-//     return await Api.get("/users/info")
-//         .then((response) => {
-//             return response.data;
-//         }).catch(error => {
-//             console.log(error);
-//         })
-// };
+//  should be removed after more endpoint will be created
+export default Api;
+
+export const updateCredentials = (credentials) =>
+  Api.put('/users/update-credentials', credentials);

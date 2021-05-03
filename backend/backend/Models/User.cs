@@ -26,10 +26,10 @@ namespace backend.Models
         [Required]
         public string Email { get; set; }
 
-        [Required] public string Password { get; private set; }
+        [Required] public string Password { get; set; }
 
         [Required]
-        public byte[] Salt { get; private set; }
+        public byte[] Salt { get; set; }
 
         [Required]
         public bool Confirmed { get; set; }
