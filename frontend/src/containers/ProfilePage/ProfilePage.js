@@ -79,7 +79,7 @@ class ProfilePage extends React.Component {
         {showSuccess && (
           <CustomSnackbar
             topCenter
-            message="Credentials changed successfuly"
+            message="Credentials changed successfully"
             onClose={hideSuccess}
             severity="success"
           />
