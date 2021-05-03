@@ -6,23 +6,12 @@ const Api = axios.create({
   baseURL: baseUri,
   headers: {
     'Content-Type': 'application/json',
+    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
   },
 });
 
 // eslint-disable-next-line
-export const getCurrentUser = () =>
-  Api.get('/users/current', {
-    headers: {
-      Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-    },
-  });
+export const getCurrentUser = () => Api.get('/users/current');
 
-// example request with auth
-// export const GetUserInfo = async () => {
-//     return await Api.get("/users/info")
-//         .then((response) => {
-//             return response.data;
-//         }).catch(error => {
-//             console.log(error);
-//         })
-// };
+export const updateCredentials = (credentials) =>
+  Api.put('/users/update-credentials', credentials);
