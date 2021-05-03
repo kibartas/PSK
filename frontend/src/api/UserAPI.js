@@ -6,9 +6,16 @@ const Api = axios.create({
   baseURL: baseUri,
   headers: {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${window.sessionStorage.getItem('token')}`,
   },
 });
+
+// eslint-disable-next-line
+export const getCurrentUser = () =>
+  Api.get('/users/current', {
+    headers: {
+      Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+    },
+  });
 
 // example request with auth
 // export const GetUserInfo = async () => {
