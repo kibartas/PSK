@@ -31,12 +31,6 @@ namespace backend.Controllers
             _emailService = emailService;
         }
 
-        [HttpGet, Route("all")]
-        public ActionResult<List<User>> GetAllUsers()
-        {
-            return _db.Users.ToList();
-        }
-
         [HttpGet, Route("current")]
         public ActionResult<UserDto> GetCurrentUser()
         {
@@ -135,7 +129,10 @@ namespace backend.Controllers
         public ActionResult UpdateCredentials([FromBody] ChangeCredentialsRequest request)
         {
             if (String.IsNullOrWhiteSpace(request.Email) || !RegexValidation.IsEmailValid(request.Email)) return BadRequest();
-            if (String.IsNullOrWhiteSpace(request.Password) || !RegexValidation.IsPasswordValid(request.Password)) return BadRequest();
+            if (String.IsNullOrWhiteSpace(request.OldPassword) || !RegexValidation.IsPasswordValid(request.OldPassword)) return BadRequest();
+            if (String.IsNullOrWhiteSpace(request.NewPassword) || !RegexValidation.IsPasswordValid(request.NewPassword)) return BadRequest();
+
+            if (request.OldPassword == request.NewPassword) return BadRequest();
 
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null) return NotFound();
@@ -143,10 +140,11 @@ namespace backend.Controllers
             var user = _db.Users.FirstOrDefault(x => x.Id == userId);
             if (user is null) return NotFound();
 
+            if (user.Password == request.OldPassword) return BadRequest();
             if (user.Email != request.Email && _db.Users.FirstOrDefault(u => u.Email == request.Email) != null) return Conflict();
 
             user.Email = request.Email;
-            user.SetNewPassword(request.Password);
+            user.SetNewPassword(request.NewPassword);
 
             _db.SaveChanges();
             return Ok();

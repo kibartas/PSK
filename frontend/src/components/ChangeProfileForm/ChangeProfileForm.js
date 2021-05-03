@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   CardContent,
@@ -21,14 +21,28 @@ export default function ChangeProfileForm({
 }) {
   const [email, setEmail] = useState(mail);
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [newPasswordHelperText, setNewPasswordHelperText] = useState('');
   const [showError, setShowError] = useState({
     errorEmail: false,
     errorPassword: false,
-    errorConfirmPassword: false,
+    errorNewPasswordMatch: false,
+    errorNewPasswordRegex: false,
   });
+
+  useEffect(() => {
+    if (showError.errorNewPasswordMatch)
+      setNewPasswordHelperText(
+        'New password cannot be the same as the old password',
+      );
+    else if (showError.errorNewPasswordRegex)
+      setNewPasswordHelperText(
+        'Password must have at least 8 symbols with at least one capital letter and at least one number',
+      );
+    else setNewPasswordHelperText('');
+  }, [showError]);
 
   const handleSaveChanges = (event) => {
     event.preventDefault();
@@ -40,11 +54,15 @@ export default function ChangeProfileForm({
       setShowError({ ...showError, errorPassword: true });
       return;
     }
-    if (confirmPassword !== password) {
-      setShowError({ ...showError, errorConfirmPassword: true });
+    if (!PASSWORD_REGEX.test(newPassword)) {
+      setShowError({ ...showError, errorNewPasswordRegex: true });
       return;
     }
-    onSaveChanges(email, password);
+    if (newPassword === password) {
+      setShowError({ ...showError, errorNewPasswordMatch: true });
+      return;
+    }
+    onSaveChanges(email, password, newPassword);
   };
 
   const handleEmailChange = (event) => {
@@ -53,17 +71,24 @@ export default function ChangeProfileForm({
   };
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
-    setShowError({ ...showError, errorPassword: false });
+    setShowError({
+      ...showError,
+      errorPassword: false,
+      errorNewPasswordMatch: false,
+    });
   };
 
-  const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value);
-    setShowError({ ...showError, errorConfirmPassword: false });
+  const handleNewPasswordChange = (event) => {
+    setNewPassword(event.target.value);
+    setShowError({
+      ...showError,
+      errorNewPasswordMatch: false,
+      errorNewPasswordRegex: false,
+    });
   };
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleClickShowConfirmPassword = () =>
-    setShowConfirmPassword(!showConfirmPassword);
+  const handleClickShowNewPassword = () => setShowNewPassword(!showNewPassword);
 
   return (
     <Paper elevation={3}>
@@ -117,7 +142,7 @@ export default function ChangeProfileForm({
                   }
                   type={showPassword ? 'text' : 'password'}
                   id="password-field"
-                  label="Password"
+                  label="Old password"
                   placeholder="**********"
                   variant="outlined"
                   fullWidth
@@ -151,24 +176,23 @@ export default function ChangeProfileForm({
                 <TextField
                   className="form__last-text-field"
                   required
-                  error={showError.errorConfirmPassword}
-                  helperText={
-                    showError.errorConfirmPassword
-                      ? 'Passwords do not match'
-                      : ''
+                  error={
+                    showError.errorNewPasswordMatch ||
+                    showError.errorNewPasswordRegex
                   }
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  id="confirm-password-field"
-                  label="Confirm Password"
+                  helperText={newPasswordHelperText}
+                  type={showNewPassword ? 'text' : 'password'}
+                  id="new-password-field"
+                  label="New Password"
                   placeholder="**********"
                   variant="outlined"
                   fullWidth
-                  onChange={handleConfirmPasswordChange}
+                  onChange={handleNewPasswordChange}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton onClick={handleClickShowConfirmPassword}>
-                          {showConfirmPassword ? (
+                        <IconButton onClick={handleClickShowNewPassword}>
+                          {showNewPassword ? (
                             <img
                               src={visibilityOffIcon}
                               alt="Password visibility icon"

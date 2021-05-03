@@ -37,10 +37,11 @@ class ProfilePage extends React.Component {
       this.setState({ showSuccess: false });
     };
 
-    const handleSaveChanges = (mail, password) => {
+    const handleSaveChanges = (mail, oldPassword, newPassword) => {
       const credentials = {
         email: mail,
-        password,
+        oldPassword,
+        newPassword,
       };
       updateCredentials(credentials)
         .then(() => {
