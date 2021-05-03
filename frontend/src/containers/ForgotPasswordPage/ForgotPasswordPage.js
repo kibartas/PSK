@@ -13,17 +13,18 @@ class ForgotPasswordPage extends React.Component {
     };
   }
 
-  handleSendClick = async (email) => {
-    try {
-      const response = await sendForgotPasswordEmail(email);
-      if (response.status !== 200) {
+  handleSendClick = (email) => {
+    sendForgotPasswordEmail(email)
+      .then((response) => {
+        if (response.status !== 200) {
+          this.setState({ showServerError: true });
+        } else {
+          this.setState({ showSuccessMessage: true });
+        }
+      })
+      .catch(() => {
         this.setState({ showServerError: true });
-      } else {
-        this.setState({ showSuccessMessage: true });
-      }
-    } catch {
-      this.setState({ showServerError: true });
-    }
+      });
   };
 
   render() {
