@@ -18,4 +18,4 @@ export const authenticate = (email, password) =>
   Api.post('/users/authentication', null, { params: { email, password } });
 
 export const sendForgotPasswordEmail = (email) =>
-  Api.post('/users/forgot-password', email);
+  Api.post('/users/forgot-password', null, { params: { email } });
