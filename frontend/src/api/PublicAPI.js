@@ -17,5 +17,5 @@ export const verify = (id) =>
 export const authenticate = (email, password) =>
   Api.post('/users/authentication', null, { params: { email, password } });
 
-export const getCurrentUser = (token) =>
-  Api.get('/users/current', { headers: { Authorization: `Bearer ${token}` } });
+export const sendForgotPasswordEmail = (email) =>
+  Api.post('/users/forgot-password', null, { params: { email } });
