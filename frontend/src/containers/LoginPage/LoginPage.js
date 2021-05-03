@@ -30,7 +30,10 @@ class LoginPage extends React.Component {
             sessionStorage.setItem('email', email);
             window.location.reload();
           })
-          .catch(() => this.setState({ showGeneralError: true }));
+          .catch(() => {
+            this.setState({ showGeneralError: true });
+            window.sessionStorage.clear();
+          });
       })
       .catch((ex) => {
         if (ex.response === undefined) {
