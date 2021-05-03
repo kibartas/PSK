@@ -28,7 +28,8 @@ export default function TopBar({
   const fontColor = darkMode ? GRAY_5 : GRAY_1;
 
   const onLogout = () => {
-    /* [TM:] TODO WDB-17 */
+    window.sessionStorage.clear();
+    window.location.reload();
   };
 
   const renderIcons = () => {

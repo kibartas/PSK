@@ -14,8 +14,8 @@ class LibraryPage extends React.Component {
               /* [TM:] TODO WDB-29 */
             }}
             showAvatarAndLogout
-            firstName="Juris"
-            lastName="Jurgaitis"
+            firstName={window.sessionStorage.getItem('firstName')}
+            lastName={window.sessionStorage.getItem('lastName')}
             iconsToShow={[UploadIcon]}
             onIconsClick={[
               () => {
