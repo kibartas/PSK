@@ -1,7 +1,8 @@
 import React from 'react';
 import { Grid, Hidden } from '@material-ui/core';
 import LoginForm from '../../components/LoginForm/LoginForm';
-import { authenticate, getCurrentUser } from '../../api/PublicAPI';
+import { authenticate } from '../../api/PublicAPI';
+import { getCurrentUser } from '../../api/UserAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import { videoTimeDrawing } from '../../assets';
 import './styles.css';
@@ -19,10 +20,10 @@ class LoginPage extends React.Component {
     authenticate(mail, password)
       .then((responseToken) => {
         const token = responseToken.data;
-        getCurrentUser(token)
+        window.sessionStorage.setItem('token', token);
+        getCurrentUser()
           .then((responseUserData) => {
             const { id, firstName, lastName, email } = responseUserData.data;
-            sessionStorage.setItem('token', token);
             sessionStorage.setItem('id', id);
             sessionStorage.setItem('firstName', firstName);
             sessionStorage.setItem('lastName', lastName);
