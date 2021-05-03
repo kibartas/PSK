@@ -18,6 +18,8 @@ import videoTimeDrawing from './LoginPage/ill-video-time.svg';
 
 import verifiedAccountDrawing from './VerifiedAccountPage/ill-confirmation.svg';
 
+import forgotPasswordDrawing from './ForgotPasswordPage/forgot-password.svg';
+
 export {
   ArrowBackIcon,
   DeleteForeverIcon,
@@ -37,3 +39,5 @@ export { confirmEmailDrawing };
 export { videoTimeDrawing };
 
 export { verifiedAccountDrawing };
+
+export { forgotPasswordDrawing };
