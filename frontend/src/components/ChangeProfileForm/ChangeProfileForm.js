@@ -69,7 +69,13 @@ export default function ChangeProfileForm({
     <Paper elevation={3}>
       <CardContent>
         <Grid item xs={12}>
-          <Grid container spacing={3} justify="flex-start" alignItems="center">
+          <Grid
+            style={{ marginBottom: 10 }}
+            container
+            spacing={3}
+            justify="flex-start"
+            alignItems="center"
+          >
             <Grid item>
               <Avatar style={{ backgroundColor: SUNFLOWER }}>
                 {firstName[0] + lastName[0]}
