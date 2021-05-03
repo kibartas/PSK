@@ -29,7 +29,7 @@ function App() {
           <Route exact path="/forgot-password">
             <ForgotPasswordPage />
           </Route>
-          <Route exact path="/reset-password">
+          <Route exact path="/reset-password/:token">
             <ResetPasswordPage />
           </Route>
           <Route exact path="/confirm-email">
