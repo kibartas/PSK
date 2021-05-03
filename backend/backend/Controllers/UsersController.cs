@@ -143,6 +143,8 @@ namespace backend.Controllers
             var user = _db.Users.FirstOrDefault(x => x.Id == userId);
             if (user is null) return NotFound();
 
+            if (user.Email != request.Email && _db.Users.FirstOrDefault(u => u.Email == request.Email) != null) return Conflict();
+
             user.Email = request.Email;
             user.SetNewPassword(request.Password);
 
