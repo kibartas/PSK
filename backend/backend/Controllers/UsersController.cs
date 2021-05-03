@@ -35,6 +35,11 @@ namespace backend.Controllers
         [HttpGet, Route("current")]
         public ActionResult<UserDto> GetCurrentUser()
         {
+            var resetPasswordClaim = User.FindFirst(x => x.Type == "ResetPassword");
+            if (resetPasswordClaim is not null && resetPasswordClaim.Value == "True")
+            {
+                return Unauthorized();
+            }
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null)
             {
