@@ -11,27 +11,20 @@ class VerifyAccountPage extends React.Component {
     super(props);
     this.state = {
       showVerificationError: false,
-      showVerificationSuccess: false,
     };
   }
 
   componentDidMount() {
     const { match } = this.props;
     const id = match.params.userId;
-    verify(id)
-      .then(() => this.setState({ showVerificationSuccess: true }))
-      .catch(() => this.setState({ showVerificationError: true }));
+    verify(id).catch(() => this.setState({ showVerificationError: true }));
   }
 
   render() {
-    const { showVerificationError, showVerificationSuccess } = this.state;
+    const { showVerificationError } = this.state;
 
     const hideVerificationError = () => {
       this.setState({ showVerificationError: false });
-    };
-
-    const hideVerificationSuccess = () => {
-      this.setState({ showVerificationSuccess: false });
     };
 
     return (
@@ -42,14 +35,6 @@ class VerifyAccountPage extends React.Component {
             message="Error has occured during verification"
             onClose={hideVerificationError}
             severity="error"
-          />
-        )}
-        {showVerificationSuccess && (
-          <CustomSnackbar
-            topCenter
-            message="Account verified successfully"
-            onClose={hideVerificationSuccess}
-            severity="success"
           />
         )}
         <Grid
