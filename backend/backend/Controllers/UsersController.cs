@@ -143,13 +143,8 @@ namespace backend.Controllers
             var user = _db.Users.FirstOrDefault(x => x.Id == userId);
             if (user is null) return NotFound();
 
-            byte[] salt;
-            string hashed;
-            (salt, hashed) = Hasher.HashPassword(request.Password);
-
             user.Email = request.Email;
-            user.Salt = salt;
-            user.Password = hashed;
+            user.SetNewPassword(request.Password);
 
             _db.SaveChanges();
             return Ok();
