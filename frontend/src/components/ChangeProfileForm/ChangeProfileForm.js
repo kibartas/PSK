@@ -64,6 +64,8 @@ export default function ChangeProfileForm({
         return;
       }
     }
+    setNewPassword('');
+    setPassword('');
     onSaveChanges(email, password, newPassword);
   };
 
@@ -135,6 +137,7 @@ export default function ChangeProfileForm({
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  value={password}
                   required
                   error={showError.errorPassword}
                   helperText={
@@ -176,6 +179,7 @@ export default function ChangeProfileForm({
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  value={newPassword}
                   className="form__last-text-field"
                   required
                   error={

@@ -11,8 +11,8 @@ class ProfilePage extends React.Component {
     this.state = {
       showGeneralError: false,
       showConflictError: false,
-      showBadRequestError: false,
       showSuccess: false,
+      showWrongPasswordError: false,
     };
   }
 
@@ -24,7 +24,7 @@ class ProfilePage extends React.Component {
       showSuccess,
       showConflictError,
       showGeneralError,
-      showBadRequestError,
+      showWrongPasswordError,
     } = this.state;
 
     const handleArrowBackClick = () => {
@@ -43,8 +43,8 @@ class ProfilePage extends React.Component {
       this.setState({ showSuccess: false });
     };
 
-    const hideBadRequestError = () => {
-      this.setState({ showBadRequestError: false });
+    const hideWrongPasswordError = () => {
+      this.setState({ showWrongPasswordError: false });
     };
 
     const handleSaveChanges = (mail, oldPassword, newPassword) => {
@@ -64,10 +64,15 @@ class ProfilePage extends React.Component {
             return;
           }
           const { status } = ex.response;
-          if (status === 409) this.setState({ showConflictError: true });
-          else if (status === 400) {
-            this.setState({ showBadRequestError: true });
-          } else this.setState({ showGeneralError: true });
+          if (status === 409) {
+            this.setState({ showConflictError: true });
+            return;
+          }
+          if (status === 400) {
+            this.setState({ showWrongPasswordError: true });
+            return;
+          }
+          this.setState({ showGeneralError: true });
         });
     };
 
@@ -89,11 +94,11 @@ class ProfilePage extends React.Component {
             severity="error"
           />
         )}
-        {showBadRequestError && (
+        {showWrongPasswordError && (
           <CustomSnackbar
             topCenter
-            message="Old password is incorrect"
-            onClose={hideBadRequestError}
+            message="Old password is not correct"
+            onClose={hideWrongPasswordError}
             severity="error"
           />
         )}
