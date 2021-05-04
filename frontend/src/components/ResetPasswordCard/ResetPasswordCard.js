@@ -17,14 +17,14 @@ import {
 } from '../../assets';
 
 const ResetPasswordCard = ({ onSend }) => {
-  const [showPasswordError, setShowPasswordError] = useState(false);
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPasswordError, setShowPasswordError] = useState(false);
   const [showConfirmPasswordError, setShowConfirmPasswordError] = useState(
     false,
   );
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
