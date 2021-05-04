@@ -160,7 +160,7 @@ namespace backend.Controllers
             return Ok();
         }
 
-        [HttpPost, Route("reset-password")]
+        [HttpPatch, Route("reset-password")]
         public ActionResult ResetPassword(string newPassword)
         {
             var resetPasswordClaim = User.FindFirst(x => x.Type == "ResetPassword");
@@ -191,6 +191,11 @@ namespace backend.Controllers
             {
                 return NotFound();
             }
+
+            if (string.IsNullOrWhiteSpace(newPassword) || !RegexValidation.IsPasswordValid(newPassword))
+            {
+                return BadRequest();
+            }
             
             user.SetNewPassword(newPassword);
 
@@ -198,29 +203,62 @@ namespace backend.Controllers
 
             return Ok();
         } 
-        [HttpPut, Route("update-credentials")]
-        public ActionResult UpdateCredentials([FromBody] ChangeCredentialsRequest request)
+        [HttpPatch, Route("{id}")]
+        public ActionResult UpdateUser([FromBody] ChangeCredentialsRequest request, [FromRoute] Guid id)
         {
-            if (String.IsNullOrWhiteSpace(request.Email) || !RegexValidation.IsEmailValid(request.Email)) return BadRequest();
-            if (String.IsNullOrWhiteSpace(request.OldPassword) || !RegexValidation.IsPasswordValid(request.OldPassword)) return BadRequest();
-            if (String.IsNullOrWhiteSpace(request.NewPassword) || !RegexValidation.IsPasswordValid(request.NewPassword)) return BadRequest();
-
-            if (request.OldPassword == request.NewPassword) return BadRequest();
-
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
-            if (userIdClaim is null) return NotFound();
-            if (!Guid.TryParse(userIdClaim.Value, out var userId)) return NotFound();
+            if (userIdClaim is null) return NotFound("JWT doesn't correspond to any user");
+            if (!Guid.TryParse(userIdClaim.Value, out var userId)) return NotFound("JWT token is malformed");
+            if (id != userId) return BadRequest("Something wrong has happened");
             var user = _db.Users.FirstOrDefault(x => x.Id == userId);
-            if (user is null) return NotFound();
+            
+            if (user is null) return NotFound("JWT doesn't correspond to any user");
 
-            if (user.Password == request.OldPassword) return BadRequest();
-            if (user.Email != request.Email && _db.Users.FirstOrDefault(u => u.Email == request.Email) != null) return Conflict();
+            if (request.Email != user.Email && _db.Users.FirstOrDefault(u => u.Email == request.Email) != null)
+                return Conflict("User with this email already exists");
 
-            user.Email = request.Email;
-            user.SetNewPassword(request.NewPassword);
+            if (string.IsNullOrWhiteSpace(request.Email) && string.IsNullOrWhiteSpace(request.OldPassword)
+                                                         && string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                return BadRequest("Request is empty");
+            }
 
-            _db.SaveChanges();
-            return Ok();
+
+            if (!string.IsNullOrWhiteSpace(request.Email)) user.Email = request.Email;
+            
+            if (string.IsNullOrWhiteSpace(request.OldPassword) ^ string.IsNullOrWhiteSpace(request.NewPassword))
+                return BadRequest("Only one password field provided");
+
+            if ((string.IsNullOrWhiteSpace(request.OldPassword) && !string.IsNullOrWhiteSpace(request.NewPassword)) 
+                || !string.IsNullOrWhiteSpace(request.OldPassword) && string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                return BadRequest("Only one password field provided");
+            }
+            
+            if (!string.IsNullOrWhiteSpace(request.OldPassword) && !string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                if (request.OldPassword == request.NewPassword) 
+                    return BadRequest("Old password is the same as the new");
+                
+                if(Hasher.CheckPlaintextAgainstHash(request.OldPassword, user.Password, user.Salt))
+                {
+                    user.SetNewPassword(request.NewPassword);
+                }
+                else
+                {
+                    return BadRequest("Old password is incorrect");
+                }
+            }
+            
+            try
+            {
+                _db.SaveChanges();
+            }
+            catch
+            {
+                return StatusCode(500, "Error while saving user data");
+            }
+            return NoContent();
         }
     }
 }
