@@ -11,6 +11,7 @@ class ProfilePage extends React.Component {
     this.state = {
       showGeneralError: false,
       showConflictError: false,
+      showBadRequestError: false,
       showSuccess: false,
     };
   }
@@ -19,7 +20,12 @@ class ProfilePage extends React.Component {
     const firstName = window.sessionStorage.getItem('firstName');
     const lastName = window.sessionStorage.getItem('lastName');
     const email = window.sessionStorage.getItem('email');
-    const { showSuccess, showConflictError, showGeneralError } = this.state;
+    const {
+      showSuccess,
+      showConflictError,
+      showGeneralError,
+      showBadRequestError,
+    } = this.state;
 
     const handleArrowBackClick = () => {
       window.location.href = '/library';
@@ -37,13 +43,17 @@ class ProfilePage extends React.Component {
       this.setState({ showSuccess: false });
     };
 
+    const hideBadRequestError = () => {
+      this.setState({ showBadRequestError: false });
+    };
+
     const handleSaveChanges = (mail, oldPassword, newPassword) => {
       const credentials = {
         email: mail,
         oldPassword,
         newPassword,
       };
-      updateCredentials(credentials)
+      updateCredentials(window.sessionStorage.getItem('id'), credentials)
         .then(() => {
           window.sessionStorage.setItem('email', mail);
           this.setState({ showSuccess: true });
@@ -55,7 +65,9 @@ class ProfilePage extends React.Component {
           }
           const { status } = ex.response;
           if (status === 409) this.setState({ showConflictError: true });
-          else this.setState({ showGeneralError: true });
+          else if (status === 400) {
+            this.setState({ showBadRequestError: true });
+          } else this.setState({ showGeneralError: true });
         });
     };
 
@@ -74,6 +86,14 @@ class ProfilePage extends React.Component {
             topCenter
             message="User with the email you specified already exists"
             onClose={hideConflictError}
+            severity="error"
+          />
+        )}
+        {showBadRequestError && (
+          <CustomSnackbar
+            topCenter
+            message="Old password is incorrect"
+            onClose={hideBadRequestError}
             severity="error"
           />
         )}
