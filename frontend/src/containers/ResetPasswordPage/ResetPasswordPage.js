@@ -22,9 +22,13 @@ class ResetPasswordPage extends React.Component {
   }
 
   onSend = (password) => {
+    const { history } = this.props;
     const { token } = this.state;
     resetPassword(token, password)
-      .then(() => this.setState({ showSuccess: true }))
+      .then(() => {
+        this.setState({ showSuccess: true });
+        setTimeout(() => history.push('/login'), 1000);
+      })
       .catch(() => this.setState({ showVerificationError: true }));
   };
 
