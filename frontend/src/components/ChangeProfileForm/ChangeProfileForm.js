@@ -50,17 +50,19 @@ export default function ChangeProfileForm({
       setShowError({ ...showError, errorEmail: true });
       return;
     }
-    if (!PASSWORD_REGEX.test(password)) {
-      setShowError({ ...showError, errorPassword: true });
-      return;
-    }
-    if (!PASSWORD_REGEX.test(newPassword)) {
-      setShowError({ ...showError, errorNewPasswordRegex: true });
-      return;
-    }
-    if (newPassword === password) {
-      setShowError({ ...showError, errorNewPasswordMatch: true });
-      return;
+    if (password !== '' && newPassword !== '') {
+      if (!PASSWORD_REGEX.test(password)) {
+        setShowError({ ...showError, errorPassword: true });
+        return;
+      }
+      if (!PASSWORD_REGEX.test(newPassword)) {
+        setShowError({ ...showError, errorNewPasswordRegex: true });
+        return;
+      }
+      if (newPassword === password) {
+        setShowError({ ...showError, errorNewPasswordMatch: true });
+        return;
+      }
     }
     onSaveChanges(email, password, newPassword);
   };
