@@ -16,7 +16,7 @@ import {
   visibilityOffIcon,
 } from '../../assets';
 
-const ResetPasswordCard = ({ onSend }) => {
+const ResetPasswordCard = ({ onSend, requestInProgress }) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -64,9 +64,7 @@ const ResetPasswordCard = ({ onSend }) => {
           src={forgotPasswordDrawing}
           alt="Illustration of a lock with a key inside"
         />
-        <Typography variant="h4">
-          Reset password
-        </Typography>
+        <Typography variant="h4">Reset password</Typography>
         <Typography style={{ marginBottom: 16 }}>
           Enter a new password for your account
         </Typography>
@@ -167,6 +165,7 @@ const ResetPasswordCard = ({ onSend }) => {
                   variant="contained"
                   fullWidth
                   color="primary"
+                  disabled={requestInProgress}
                 >
                   Send
                 </Button>

@@ -10,7 +10,7 @@ import {
 import { forgotPasswordDrawing } from '../../assets';
 import { EMAIL_REGEX } from '../../constants';
 
-const ForgotPasswordCard = ({ onSend, requestSuccess }) => {
+const ForgotPasswordCard = ({ onSend, requestInProgress }) => {
   const [showEmailError, setShowEmailError] = useState(false);
   const [email, setEmail] = useState('');
 
@@ -66,7 +66,7 @@ const ForgotPasswordCard = ({ onSend, requestSuccess }) => {
             >
               <Grid xs={6} item>
                 <Button
-                  disabled={requestSuccess}
+                  disabled={requestInProgress}
                   type="submit"
                   variant="contained"
                   fullWidth

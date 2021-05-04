@@ -12,6 +12,7 @@ class ResetPasswordPage extends React.Component {
       showSuccess: false,
       showVerificationError: false,
       token: null,
+      requestInProgress: false,
     };
   }
 
@@ -22,6 +23,7 @@ class ResetPasswordPage extends React.Component {
   }
 
   onSend = (password) => {
+    this.setState({ requestInProgress: true });
     const { history } = this.props;
     const { token } = this.state;
     resetPassword(token, password)
@@ -29,11 +31,20 @@ class ResetPasswordPage extends React.Component {
         this.setState({ showSuccess: true });
         setTimeout(() => history.push('/login'), 1000);
       })
-      .catch(() => this.setState({ showVerificationError: true }));
+      .catch(() =>
+        this.setState({
+          showVerificationError: true,
+          requestInProgress: false,
+        }),
+      );
   };
 
   render() {
-    const { showSuccess, showVerificationError } = this.state;
+    const {
+      showSuccess,
+      showVerificationError,
+      requestInProgress,
+    } = this.state;
 
     const hideVerificationError = () => {
       this.setState({ showVerificationError: false });
@@ -69,7 +80,10 @@ class ResetPasswordPage extends React.Component {
           justify="center"
         >
           <Grid item xs={10} sm={6} md={4} lg={3}>
-            <ResetPasswordCard onSend={this.onSend} />
+            <ResetPasswordCard
+              onSend={this.onSend}
+              requestInProgress={requestInProgress}
+            />
           </Grid>
         </Grid>
       </>
