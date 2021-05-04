@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, Fade, Backdrop } from '@material-ui/core';
+import './styles.css';
 
 export default function UploadModal({ show, onClose }) {
 
@@ -9,6 +10,7 @@ export default function UploadModal({ show, onClose }) {
 
   return (
     <Modal
+      className='modal'
       open={show}
       onClose={handleClose}
       closeAfterTransition

@@ -110,7 +110,7 @@ class ProfilePage extends React.Component {
             severity="success"
           />
         )}
-        <Grid container>
+        <Grid container className="root">
           <Grid item>
             <TopBar
               showArrow
@@ -121,7 +121,7 @@ class ProfilePage extends React.Component {
               lastName={lastName}
             />
           </Grid>
-          <Grid container className="root" alignItems="center" justify="center">
+          <Grid container alignItems="center" justify="center">
             <Grid item xs={11} sm={6} md={4} lg={3}>
               <ChangeProfileForm
                 firstName={firstName}
