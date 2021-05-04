@@ -20,6 +20,8 @@ import verifiedAccountDrawing from './VerifiedAccountPage/ill-confirmation.svg';
 
 import forgotPasswordDrawing from './ForgotPasswordPage/forgot-password.svg';
 
+import emptyLibraryDrawing from './LibraryPage/empty-library.svg';
+
 export {
   ArrowBackIcon,
   DeleteForeverIcon,
@@ -41,3 +43,5 @@ export { videoTimeDrawing };
 export { verifiedAccountDrawing };
 
 export { forgotPasswordDrawing };
+
+export { emptyLibraryDrawing };
