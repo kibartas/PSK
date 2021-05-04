@@ -10,5 +10,6 @@ const Api = axios.create({
   },
 });
 // eslint-disable-next-line
-export const updateCredentials = (credentials) =>
-  Api.put('/users/update-credentials', credentials);
+export const updateCredentials = (id, credentials) => {
+  return Api.patch(`/users/${id}`, credentials);
+};
