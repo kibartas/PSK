@@ -1,6 +1,7 @@
 import React from 'react';
+import { GRAY_1 } from '../../constants';
 
-const DownloadIcon = ({ fill, width = '24px', height = '24px' }) => (
+const DownloadIcon = ({ fill = {GRAY_1}, width = '24px', height = '24px' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
