@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router';
 import { Grid } from '@material-ui/core';
-import { resetPassword, verify } from '../../api/PublicAPI';
+import { resetPassword } from '../../api/PublicAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import ResetPasswordCard from '../../components/ResetPasswordCard/ResetPasswordCard';
 
