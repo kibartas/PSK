@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import {
   Button,
   CardContent,
-  Checkbox,
   IconButton,
   InputAdornment,
   Grid,
-  FormControlLabel,
   Link,
   Paper,
   TextField,
@@ -18,7 +16,6 @@ import { EMAIL_REGEX, PASSWORD_REGEX } from '../../constants';
 export default function LoginForm({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showError, setShowError] = useState({
     errorEmail: false,
@@ -46,11 +43,6 @@ export default function LoginForm({ onLogin }) {
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
     setShowError({ ...showError, errorPassword: false });
-  };
-
-  const handleRememberMeCheck = (event) => {
-    // [TM]: TODO WDB-16
-    setRememberMe(event.target.checked);
   };
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
@@ -136,19 +128,6 @@ export default function LoginForm({ onLogin }) {
                   Forgot your password?
                 </Link>
               </Typography>
-            </Grid>
-            <Grid item xs={12} align="left">
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={rememberMe}
-                    onChange={handleRememberMeCheck}
-                    name="remember-me-checkbox"
-                    color="primary"
-                  />
-                }
-                label="Remember me"
-              />
             </Grid>
             <Grid item xs={6}>
               <Button
