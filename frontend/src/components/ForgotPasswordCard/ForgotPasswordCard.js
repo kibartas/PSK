@@ -10,7 +10,7 @@ import {
 import { forgotPasswordDrawing } from '../../assets';
 import { EMAIL_REGEX } from '../../constants';
 
-const ForgotPasswordCard = ({ onSend }) => {
+const ForgotPasswordCard = ({ onSend, requestSuccess }) => {
   const [showEmailError, setShowEmailError] = useState(false);
   const [email, setEmail] = useState('');
 
@@ -35,9 +35,7 @@ const ForgotPasswordCard = ({ onSend }) => {
           src={forgotPasswordDrawing}
           alt="Illustration of a lock with a key inside"
         />
-        <Typography variant="h4">
-          Forgot password
-        </Typography>
+        <Typography variant="h4">Forgot password</Typography>
         <Typography style={{ marginBottom: 16 }}>
           Enter an email address and we will send you a reset password link
         </Typography>
@@ -48,9 +46,7 @@ const ForgotPasswordCard = ({ onSend }) => {
                 required
                 value={email}
                 error={showEmailError}
-                helperText={
-                  showEmailError ? 'Please enter a valid email' : ''
-                }
+                helperText={showEmailError ? 'Please enter a valid email' : ''}
                 type="email"
                 id="email-field"
                 label="Email Address"
@@ -70,6 +66,7 @@ const ForgotPasswordCard = ({ onSend }) => {
             >
               <Grid xs={6} item>
                 <Button
+                  disabled={requestSuccess}
                   type="submit"
                   variant="contained"
                   fullWidth
