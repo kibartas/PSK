@@ -19,7 +19,8 @@ const ForgotPasswordCard = ({ onSend }) => {
     setShowEmailError(false);
   };
 
-  const handleSendClick = async () => {
+  const handleSendClick = (event) => {
+    event.preventDefault();
     if (!EMAIL_REGEX.test(email)) {
       setShowEmailError(true);
       return;
@@ -46,47 +47,51 @@ const ForgotPasswordCard = ({ onSend }) => {
               </Typography>
             </Grid>
           </Grid>
-          <Grid container spacing={2} justify="center">
-            <Grid item xs={10}>
-              <TextField
-                required
-                value={email}
-                error={showEmailError}
-                helperText={showEmailError ? 'Please enter a valid email' : ''}
-                type="email"
-                id="email-field"
-                label="Email Address"
-                placeholder="email@domain.com"
-                variant="outlined"
-                fullWidth
-                onChange={handleEmailChange}
-              />
-            </Grid>
-            <Grid
-              direction="row"
-              wrap="nowrap"
-              item
-              container
-              spacing={2}
-              justify="center"
-            >
-              <Grid xs={5} item>
-                <Button
-                  variant="contained"
+          <form noValidate onSubmit={handleSendClick}>
+            <Grid container spacing={2} justify="center">
+              <Grid item xs={10}>
+                <TextField
+                  required
+                  value={email}
+                  error={showEmailError}
+                  helperText={
+                    showEmailError ? 'Please enter a valid email' : ''
+                  }
+                  type="email"
+                  id="email-field"
+                  label="Email Address"
+                  placeholder="email@domain.com"
+                  variant="outlined"
                   fullWidth
-                  color="primary"
-                  onClick={handleSendClick}
-                >
-                  Send
-                </Button>
+                  onChange={handleEmailChange}
+                />
               </Grid>
-              <Grid xs={5} item>
-                <Button variant="outlined" fullWidth href="/login">
-                  Back to login
-                </Button>
+              <Grid
+                direction="row"
+                wrap="nowrap"
+                item
+                container
+                spacing={2}
+                justify="center"
+              >
+                <Grid xs={5} item>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    fullWidth
+                    color="primary"
+                  >
+                    Send
+                  </Button>
+                </Grid>
+                <Grid xs={5} item>
+                  <Button variant="outlined" fullWidth href="/login">
+                    Back to login
+                  </Button>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
+          </form>
         </Grid>
       </CardContent>
     </Paper>
