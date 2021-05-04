@@ -187,11 +187,11 @@ namespace backend.Controllers
             }
 
             var user = _db.Users.FirstOrDefault(x => x.Id == userId);
-            if (user is null)
+            if (user is null || !user.Confirmed)
             {
                 return NotFound();
             }
-
+            
             if (string.IsNullOrWhiteSpace(newPassword) || !RegexValidation.IsPasswordValid(newPassword))
             {
                 return BadRequest();
