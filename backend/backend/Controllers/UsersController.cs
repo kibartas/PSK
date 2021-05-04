@@ -226,9 +226,6 @@ namespace backend.Controllers
 
             if (!string.IsNullOrWhiteSpace(request.Email)) user.Email = request.Email;
             
-            if (string.IsNullOrWhiteSpace(request.OldPassword) ^ string.IsNullOrWhiteSpace(request.NewPassword))
-                return BadRequest("Only one password field provided");
-
             if ((string.IsNullOrWhiteSpace(request.OldPassword) && !string.IsNullOrWhiteSpace(request.NewPassword)) 
                 || !string.IsNullOrWhiteSpace(request.OldPassword) && string.IsNullOrWhiteSpace(request.NewPassword))
             {
