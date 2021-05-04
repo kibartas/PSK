@@ -235,7 +235,7 @@ namespace backend.Controllers
             if (!string.IsNullOrWhiteSpace(request.OldPassword) && !string.IsNullOrWhiteSpace(request.NewPassword))
             {
                 if (request.OldPassword == request.NewPassword) 
-                    return BadRequest("Old password is the same as the new");
+                    return BadRequest("New password is the same as the old");
                 
                 if(Hasher.CheckPlaintextAgainstHash(request.OldPassword, user.Password, user.Salt))
                 {
