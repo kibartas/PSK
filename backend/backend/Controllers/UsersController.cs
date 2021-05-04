@@ -206,6 +206,12 @@ namespace backend.Controllers
         [HttpPatch, Route("{id}")]
         public ActionResult UpdateUser([FromBody] ChangeCredentialsRequest request, [FromRoute] Guid id)
         {
+            if (string.IsNullOrWhiteSpace(request.Email) && string.IsNullOrWhiteSpace(request.OldPassword)
+                                                         && string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                return BadRequest("Request is empty");
+            }
+            
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null) return NotFound("JWT doesn't correspond to any user");
             if (!Guid.TryParse(userIdClaim.Value, out var userId)) return NotFound("JWT token is malformed");
@@ -216,13 +222,6 @@ namespace backend.Controllers
 
             if (request.Email != user.Email && _db.Users.FirstOrDefault(u => u.Email == request.Email) != null)
                 return Conflict("User with this email already exists");
-
-            if (string.IsNullOrWhiteSpace(request.Email) && string.IsNullOrWhiteSpace(request.OldPassword)
-                                                         && string.IsNullOrWhiteSpace(request.NewPassword))
-            {
-                return BadRequest("Request is empty");
-            }
-
 
             if (!string.IsNullOrWhiteSpace(request.Email)) user.Email = request.Email;
             
