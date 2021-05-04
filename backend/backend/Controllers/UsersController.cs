@@ -215,7 +215,7 @@ namespace backend.Controllers
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null) return NotFound("JWT doesn't correspond to any user");
             if (!Guid.TryParse(userIdClaim.Value, out var userId)) return NotFound("JWT token is malformed");
-            if (id != userId) return BadRequest("Something wrong has happened");
+            if (id != userId) return BadRequest("User ID and JWT mismatch");
             var user = _db.Users.FirstOrDefault(x => x.Id == userId);
             
             if (user is null) return NotFound("JWT doesn't correspond to any user");
