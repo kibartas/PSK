@@ -5,14 +5,14 @@ import { emptyLibraryDrawing } from '../../assets';
 export default function EmptyLibrarySubPage() {
   return (
     <Grid
-      style={{ height: '100%' }}
+      style={{ height: '100%', padding: '32px' }}
       container
       direction='column'
       align='center'
       justify='center'
     >
       <Grid item>
-        <img src={emptyLibraryDrawing} alt='Two friendly people standing' />
+        <img height='100%' width='100%' src={emptyLibraryDrawing} alt='Two friendly people standing' />
       </Grid>
       <Grid item container direction='column'>
         <Typography align='center' variant='h3'>
