@@ -5,7 +5,7 @@ export default function AddedVideosList({ addedVideos }) {
 
   const renderAddedVideosListItems = () => 
     addedVideos.map((video) => (
-      <ListItem>{video.file.name}</ListItem>
+      <ListItem key={video.file.name}>{video.file.name}</ListItem>
   ));
 
   return (

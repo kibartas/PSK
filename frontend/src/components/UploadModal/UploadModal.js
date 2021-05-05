@@ -9,11 +9,16 @@ export default function UploadModal({ show, onClose }) {
 
   const handleClose = () => {
     onClose();
+    setAddedVideos([]);
   };
 
   const handleAddVideo = (videos) => {
     setAddedVideos([...addedVideos, ...videos]);
   }
+
+  const getVideoAddedMessage = (videoName) => (
+    `Video ${videoName} was successfully added`
+  );
 
   return (
     <Modal
@@ -33,16 +38,17 @@ export default function UploadModal({ show, onClose }) {
               <Grid item xs={12}>
                 <DropzoneAreaBase
                   dropzoneText="Drag and drop video here or click"
-                  showFileNames
-                  useChipsForPreview
                   acceptedFiles={['video/*']}
                   onAdd={handleAddVideo}
                   maxFileSize={Infinity}
+                  getFileAddedMessage={getVideoAddedMessage}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <AddedVideosList addedVideos={addedVideos} />
-              </Grid>
+              {addedVideos.length > 0 &&
+                <Grid item xs={12}>
+                  <AddedVideosList addedVideos={addedVideos} />
+                </Grid>
+              }
               <Grid item xs={6}>
                 <Button
                   variant="contained"
