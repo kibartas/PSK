@@ -1,5 +1,6 @@
 import { Grid } from '@material-ui/core';
 import React from 'react';
+import { withRouter } from 'react-router';
 import { register } from '../../api/PublicAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import RegistrationForm from '../../components/RegistrationForm/RegistrationForm';
@@ -80,4 +81,4 @@ class RegisterPage extends React.Component {
   }
 }
 
-export default RegisterPage;
+export default withRouter(RegisterPage);

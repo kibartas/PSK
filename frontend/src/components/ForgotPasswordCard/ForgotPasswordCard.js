@@ -10,7 +10,7 @@ import {
 import { forgotPasswordDrawing } from '../../assets';
 import { EMAIL_REGEX } from '../../constants';
 
-const ForgotPasswordCard = ({ onSend }) => {
+const ForgotPasswordCard = ({ onSend, requestInProgress }) => {
   const [showEmailError, setShowEmailError] = useState(false);
   const [email, setEmail] = useState('');
 
@@ -19,7 +19,8 @@ const ForgotPasswordCard = ({ onSend }) => {
     setShowEmailError(false);
   };
 
-  const handleSendClick = async () => {
+  const handleSendClick = (event) => {
+    event.preventDefault();
     if (!EMAIL_REGEX.test(email)) {
       setShowEmailError(true);
       return;
@@ -34,20 +35,13 @@ const ForgotPasswordCard = ({ onSend }) => {
           src={forgotPasswordDrawing}
           alt="Illustration of a lock with a key inside"
         />
-        <Typography variant="h4" gutterBottom>
-          Forgot password
+        <Typography variant="h4">Forgot password</Typography>
+        <Typography style={{ marginBottom: 16 }}>
+          Enter an email address and we will send you a reset password link
         </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Grid item xs={12}>
-              <Typography>
-                Enter an email address and we will send you a reset password
-                link
-              </Typography>
-            </Grid>
-          </Grid>
+        <form noValidate onSubmit={handleSendClick}>
           <Grid container spacing={2} justify="center">
-            <Grid item xs={10}>
+            <Grid item xs={12}>
               <TextField
                 required
                 value={email}
@@ -63,31 +57,32 @@ const ForgotPasswordCard = ({ onSend }) => {
               />
             </Grid>
             <Grid
+              container
               direction="row"
               wrap="nowrap"
               item
-              container
               spacing={2}
               justify="center"
             >
-              <Grid xs={5} item>
+              <Grid xs={6} item>
                 <Button
+                  disabled={requestInProgress}
+                  type="submit"
                   variant="contained"
                   fullWidth
                   color="primary"
-                  onClick={handleSendClick}
                 >
                   Send
                 </Button>
               </Grid>
-              <Grid xs={5} item>
+              <Grid xs={6} item>
                 <Button variant="outlined" fullWidth href="/login">
                   Back to login
                 </Button>
               </Grid>
             </Grid>
           </Grid>
-        </Grid>
+        </form>
       </CardContent>
     </Paper>
   );
