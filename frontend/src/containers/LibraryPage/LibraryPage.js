@@ -1,16 +1,17 @@
-import { Grid, Typography } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import React from 'react';
-import { UploadIcon, emptyLibraryDrawing } from '../../assets';
+import { UploadIcon } from '../../assets';
+import EmptyLibrarySubPage from '../../components/EmptyLibrarySubPage/EmptyLibrarySubPage';
 import TopBar from '../../components/TopBar/TopBar';
 import './styles.css';
 
 class LibraryPage extends React.Component {
   render() {
     return (
-      <Grid container direction="column" style={{ height: '100vh' }}>
+      <Grid className='root' container direction='column'>
         <Grid item>
           <TopBar
-            title="Video Library"
+            title='Video Library'
             onActionIconClick={() => {
               /* [TM:] TODO WDB-29 */
             }}
@@ -25,34 +26,8 @@ class LibraryPage extends React.Component {
             ]}
           />
         </Grid>
-        <Grid
-          style={{ height: '100vh' }}
-          direction="column"
-          item
-          container
-          justify="center"
-          alignItems="center"
-          spacing={3}
-        >
-          <Grid item>
-            <img
-              id="empty-library"
-              src={emptyLibraryDrawing}
-              alt="Two friendly people standing"
-            />
-          </Grid>
-          <Grid item container direction="column" alignItems="center">
-            <Grid item>
-              <Typography align="center" id="empty-primary-text" variant="h3">
-                It feels empty here...
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Typography align="center" id="empty-secondary-text" variant="h5">
-                Upload a video by clicking the upload icon on the top
-              </Typography>
-            </Grid>
-          </Grid>
+        <Grid item style={{ flexGrow: 1 }}>
+          <EmptyLibrarySubPage />
         </Grid>
       </Grid>
     );
