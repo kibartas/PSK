@@ -1,7 +1,7 @@
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { UploadIcon } from '../../assets';
-import EmptyLibrarySubPage from '../../components/EmptyLibrarySubPage/EmptyLibrarySubPage';
+import EmptyLibraryContent from '../../components/EmptyLibraryContent/EmptyLibraryContent';
 import TopBar from '../../components/TopBar/TopBar';
 import './styles.css';
 
@@ -27,7 +27,7 @@ class LibraryPage extends React.Component {
           />
         </Grid>
         <Grid item style={{ flexGrow: 1 }}>
-          <EmptyLibrarySubPage />
+          <EmptyLibraryContent />
         </Grid>
       </Grid>
     );

@@ -2,7 +2,7 @@ import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { emptyLibraryDrawing } from '../../assets';
 
-export default function EmptyLibrarySubPage() {
+export default function EmptyLibraryContent() {
   return (
     <Grid
       style={{ height: '100%', padding: '32px' }}
