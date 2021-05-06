@@ -52,9 +52,7 @@ export default function UploadModal({ show, onUpload, onClose }) {
     setVideoNames([...videoNames, ...videos.map(video => /[^.]*/.exec(video.file.name)[0])]);
   }
 
-  const getVideoAddedMessage = (videoName) => (
-    `Video ${videoName} was successfully added`
-  );
+  const getVideoAddedMessage = (videoName) => `Video ${videoName} was successfully added. `;
 
   const handleChangeVideoName = (videoIndex) => (
     (event) => {
