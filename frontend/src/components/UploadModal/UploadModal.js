@@ -1,8 +1,23 @@
 import React, { useState } from 'react';
-import { Modal, Fade, Backdrop, Grid, Paper, CardContent, Button, List, ListItem, TextField } from '@material-ui/core';
+import {
+  Modal,
+  Fade,
+  Backdrop,
+  Grid,
+  Paper,
+  CardContent,
+  Button,
+  List,
+  ListItem,
+  TextField,
+  InputAdornment,
+  IconButton
+} from '@material-ui/core';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
 import CustomSnackbar from '../CustomSnackbar/CustomSnackbar';
 import './styles.css';
+import { RemoveIcon } from '../../assets';
+import { formatBytesToString } from '../../util';
 
 export default function UploadModal({ show, onUpload, onClose }) {
   const [addedVideos, setAddedVideos] = useState([]);
@@ -50,10 +65,21 @@ export default function UploadModal({ show, onUpload, onClose }) {
     }
   );
 
+  const handleRemoveVideo = (videoIndex) => (
+    () => {
+      const videoNamesCopy = videoNames.slice();
+      videoNamesCopy.splice(videoIndex, 1);
+      const addedVideosCopy = addedVideos.slice();
+      addedVideosCopy.splice(videoIndex, 1);
+      setVideoNames([...videoNamesCopy]);
+      setAddedVideos([...addedVideosCopy]);
+    }
+  )
+
   const renderAddedVideosList = () => {
     const listItems = addedVideos.map((video, index) => {
       const videoName = videoNames[index];
-      return (<ListItem key={video.file.name + index.toString()} dense>
+      return (<ListItem key={video.file.name + index.toString()}>
         <TextField
           error={videoName === ''}
           helperText={
@@ -62,10 +88,21 @@ export default function UploadModal({ show, onUpload, onClose }) {
           fullWidth
           value={videoName}
           onChange={handleChangeVideoName(index)}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                {formatBytesToString(video.file.size)}
+                <IconButton onClick={handleRemoveVideo(index)}>
+                  <RemoveIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
-        {/* Add size and remove icon and reduce list item width */}
+        {/* TODO Reduce list item width */}
       </ListItem>);
     });
+
     return (
       <List>
         {listItems}
@@ -73,22 +110,31 @@ export default function UploadModal({ show, onUpload, onClose }) {
     );
   }
 
-  return (
-    <>
-      {showSnackbar.noVideosAdded &&
+  const renderSnackbarsIfNeeded = () => {
+    if (showSnackbar.noVideosAdded) {
+      return (
         <CustomSnackbar
           message="Please attach videos which you want to upload"
           onClose={() => setShowSnackbar({ ...showSnackbar, noVideosAdded: false })}
           severity="info"
         />
-      }
-      {showSnackbar.videoNameMissing &&
+      );
+    }
+    if (showSnackbar.videoNameMissing) {
+      return (
         <CustomSnackbar
           message="Please enter a name for all attached videos"
           onClose={() => setShowSnackbar({ ...showSnackbar, videoNameMissing: false })}
           severity="info"
         />
-      }
+      );
+    }
+    return null;
+  };
+
+  return (
+    <>
+      {renderSnackbarsIfNeeded()}
       <Modal
         className='modal'
         open={show}
