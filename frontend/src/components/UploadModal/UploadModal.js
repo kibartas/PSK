@@ -46,7 +46,7 @@ export default function UploadModal({ show, onUpload, onClose }) {
     handleClose();
   }
 
-  const handleAddVideo = (videos) => {
+  const handleAddVideos = (videos) => {
     setShowSnackbar({ ...showSnackbar, noVideosAdded: false });
     setAddedVideos([...addedVideos, ...videos]);
     setVideoNames([...videoNames, ...videos.map(video => /[^.]*/.exec(video.file.name)[0])]);
@@ -85,7 +85,7 @@ export default function UploadModal({ show, onUpload, onClose }) {
             helperText={
               videoName === '' ? 'Please enter a name for this video' : ''
             }
-            value={videoName}
+            value={videoName ?? ''}
             onChange={handleChangeVideoName(index)}
             InputProps={{
               endAdornment: (
@@ -109,7 +109,7 @@ export default function UploadModal({ show, onUpload, onClose }) {
     );
   }
 
-  const renderSnackbarsIfNeeded = () => {
+  const renderSnackbars = () => {
     if (showSnackbar.noVideosAdded) {
       return (
         <CustomSnackbar
@@ -133,7 +133,7 @@ export default function UploadModal({ show, onUpload, onClose }) {
 
   return (
     <>
-      {renderSnackbarsIfNeeded()}
+      {renderSnackbars()}
       <Modal
         className='modal'
         open={show}
@@ -153,7 +153,7 @@ export default function UploadModal({ show, onUpload, onClose }) {
                     clearOnUnmount
                     dropzoneText="&nbsp;&nbsp;Drag and drop videos here or click&nbsp;&nbsp;"
                     acceptedFiles={['video/*']}
-                    onAdd={handleAddVideo}
+                    onAdd={handleAddVideos}
                     maxFileSize={Infinity}
                     getFileAddedMessage={getVideoAddedMessage}
                   />
