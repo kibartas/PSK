@@ -19,7 +19,7 @@ class LibraryPage extends React.Component {
 
   // eslint-disable-next-line no-unused-vars
   handleUpload = (addedVideos, videoNames) => {
-    // [TM]: TODO WDB-104 
+    // [TM]: TODO WDB-104
   }
 
   handleUploadModalClose = () => {
