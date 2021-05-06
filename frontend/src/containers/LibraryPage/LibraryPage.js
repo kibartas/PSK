@@ -19,10 +19,10 @@ class LibraryPage extends React.Component {
 
   // eslint-disable-next-line no-unused-vars
   handleUpload = (addedVideos, videoNames) => {
-    // [TM]: TODO WDB-104
+    // [TM]: TODO WDB-104 
   }
 
-  handeUploadModalClose = () => {
+  handleUploadModalClose = () => {
     this.toggleUploadModal();
   }
 
@@ -34,7 +34,7 @@ class LibraryPage extends React.Component {
         <UploadModal
           show={showUploadModal}
           onUpload={this.handleUpload}
-          onClose={this.handeUploadModalClose}
+          onClose={this.handleUploadModalClose}
         />
         <Grid item>
           <TopBar

@@ -79,28 +79,29 @@ export default function UploadModal({ show, onUpload, onClose }) {
   const renderAddedVideosList = () => {
     const listItems = addedVideos.map((video, index) => {
       const videoName = videoNames[index];
-      return (<ListItem key={video.file.name + index.toString()}>
-        <TextField
-          error={videoName === ''}
-          helperText={
-            videoName === '' ? 'Please enter a name for this video' : ''
-          }
-          fullWidth
-          value={videoName}
-          onChange={handleChangeVideoName(index)}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                {formatBytesToString(video.file.size)}
-                <IconButton onClick={handleRemoveVideo(index)}>
-                  <RemoveIcon />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-        {/* TODO Reduce list item width */}
-      </ListItem>);
+      return (
+        <ListItem key={video.file.name + index.toString()}>
+          <TextField
+            fullWidth
+            error={videoName === ''}
+            helperText={
+              videoName === '' ? 'Please enter a name for this video' : ''
+            }
+            value={videoName}
+            onChange={handleChangeVideoName(index)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  {formatBytesToString(video.file.size)}
+                  <IconButton onClick={handleRemoveVideo(index)}>
+                    <RemoveIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </ListItem>
+      );
     });
 
     return (
@@ -148,11 +149,11 @@ export default function UploadModal({ show, onUpload, onClose }) {
         <Fade in={show}>
           <Paper>
             <CardContent>
-              <Grid container spacing={2}>
+              <Grid container direction='column' spacing={2}>
                 <Grid item xs={12}>
                   <DropzoneAreaBase
                     clearOnUnmount
-                    dropzoneText="Drag and drop video here or click"
+                    dropzoneText="&nbsp;&nbsp;Drag and drop videos here or click&nbsp;&nbsp;"
                     acceptedFiles={['video/*']}
                     onAdd={handleAddVideo}
                     maxFileSize={Infinity}
