@@ -1,15 +1,17 @@
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { UploadIcon } from '../../assets';
+import EmptyLibraryContent from '../../components/EmptyLibraryContent/EmptyLibraryContent';
 import TopBar from '../../components/TopBar/TopBar';
+import './styles.css';
 
 class LibraryPage extends React.Component {
   render() {
     return (
-      <Grid container>
+      <Grid className='root' container direction='column'>
         <Grid item>
           <TopBar
-            title="Video Library"
+            title='Video Library'
             onActionIconClick={() => {
               /* [TM:] TODO WDB-29 */
             }}
@@ -23,6 +25,9 @@ class LibraryPage extends React.Component {
               },
             ]}
           />
+        </Grid>
+        <Grid item style={{ flexGrow: 1 }}>
+          <EmptyLibraryContent />
         </Grid>
       </Grid>
     );
