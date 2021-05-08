@@ -3,12 +3,41 @@ import React from 'react';
 import { UploadIcon } from '../../assets';
 import EmptyLibraryContent from '../../components/EmptyLibraryContent/EmptyLibraryContent';
 import TopBar from '../../components/TopBar/TopBar';
+import UploadModal from '../../components/UploadModal/UploadModal';
 import './styles.css';
 
 class LibraryPage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showUploadModal: false
+    };
+  }
+
+  toggleUploadModal = () => {
+    const { showUploadModal } = this.state;
+    this.setState({ showUploadModal: !showUploadModal });
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  handleUpload = (addedVideos, videoNames) => {
+    // [TM]: TODO WDB-104
+  }
+
+  handleUploadModalClose = () => {
+    this.toggleUploadModal();
+  }
+
   render() {
+    const { showUploadModal } = this.state;
+
     return (
       <Grid className='root' container direction='column'>
+        <UploadModal
+          show={showUploadModal}
+          onUpload={this.handleUpload}
+          onClose={this.handleUploadModalClose}
+        />
         <Grid item>
           <TopBar
             title='Video Library'
@@ -20,9 +49,7 @@ class LibraryPage extends React.Component {
             lastName={window.sessionStorage.getItem('lastName')}
             iconsToShow={[UploadIcon]}
             onIconsClick={[
-              () => {
-                /* [TM]: TODO WDB-5 */
-              },
+              this.toggleUploadModal,
             ]}
           />
         </Grid>
