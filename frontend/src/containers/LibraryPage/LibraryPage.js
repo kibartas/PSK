@@ -1,8 +1,10 @@
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { UploadIcon } from '../../assets';
+import EmptyLibraryContent from '../../components/EmptyLibraryContent/EmptyLibraryContent';
 import TopBar from '../../components/TopBar/TopBar';
 import UploadModal from '../../components/UploadModal/UploadModal';
+import './styles.css';
 
 class LibraryPage extends React.Component {
   constructor(props) {
@@ -30,7 +32,7 @@ class LibraryPage extends React.Component {
     const { showUploadModal } = this.state;
 
     return (
-      <Grid container>
+      <Grid className='root' container direction='column'>
         <UploadModal
           show={showUploadModal}
           onUpload={this.handleUpload}
@@ -38,7 +40,7 @@ class LibraryPage extends React.Component {
         />
         <Grid item>
           <TopBar
-            title="Video Library"
+            title='Video Library'
             onActionIconClick={() => {
               /* [TM:] TODO WDB-29 */
             }}
@@ -50,6 +52,9 @@ class LibraryPage extends React.Component {
               this.toggleUploadModal,
             ]}
           />
+        </Grid>
+        <Grid item style={{ flexGrow: 1 }}>
+          <EmptyLibraryContent />
         </Grid>
       </Grid>
     );

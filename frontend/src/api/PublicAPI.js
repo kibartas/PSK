@@ -24,3 +24,9 @@ export const sendForgotPasswordEmail = (email) =>
 
 export const getCurrentUser = (token) =>
   Api.get('/users/current', { headers: { Authorization: `Bearer ${token}` } });
+
+export const resetPassword = (token, newPassword) =>
+  Api.patch('/users/reset-password', null, {
+    params: { newPassword },
+    headers: { Authorization: `Bearer ${token}` },
+  });

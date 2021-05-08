@@ -49,62 +49,69 @@ export default function TopBar({
   };
 
   return (
-    <AppBar
-      style={{ background: backgroundColor }}
-      position="fixed"
-      elevation={1}
-    >
-      <Toolbar>
-        <Grid container alignItems="center" spacing={1}>
-          <Grid item>
-            <IconButton edge="start" onClick={onActionIconClick}>
-              {showArrow ? (
-                <ArrowBackIcon fill={iconFillColor} />
-              ) : (
-                <MenuIcon fill={iconFillColor} />
-              )}
-            </IconButton>
-          </Grid>
-          {!showArrow && (
+    <>
+      <AppBar
+        style={{ background: backgroundColor }}
+        position="fixed"
+        elevation={1}
+      >
+        <Toolbar>
+          <Grid container alignItems="center" spacing={1}>
             <Grid item>
-              <IconButton edge="start" href="/library">
-                <img
-                  src={productIcon}
-                  alt="Product icon"
-                  width={36}
-                  height={36}
-                />
+              <IconButton edge="start" onClick={onActionIconClick}>
+                {showArrow ? (
+                  <ArrowBackIcon fill={iconFillColor} />
+                ) : (
+                  <MenuIcon fill={iconFillColor} />
+                )}
               </IconButton>
             </Grid>
-          )}
-          <Grid item xs>
-            <Hidden xsDown>
-              <Typography style={{ color: fontColor }} variant="h6">
-                {title}
-              </Typography>
-            </Hidden>
-          </Grid>
-          <Grid item>{renderIcons()}</Grid>
-          {showAvatarAndLogout && (
-            <Grid item>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item>
-                  <IconButton edge="end" href="/profile">
-                    <Avatar style={{ backgroundColor: SUNFLOWER }}>
-                      {firstName[0] + lastName[0]}
-                    </Avatar>
-                  </IconButton>
-                </Grid>
-                <Grid item>
-                  <Button variant="outlined" color="primary" onClick={onLogout}>
-                    Logout
-                  </Button>
+            {!showArrow && (
+              <Grid item>
+                <IconButton edge="start" href="/library">
+                  <img
+                    src={productIcon}
+                    alt="Product icon"
+                    width={36}
+                    height={36}
+                  />
+                </IconButton>
+              </Grid>
+            )}
+            <Grid item xs>
+              <Hidden xsDown>
+                <Typography style={{ color: fontColor }} variant="h6">
+                  {title}
+                </Typography>
+              </Hidden>
+            </Grid>
+            <Grid item>{renderIcons()}</Grid>
+            {showAvatarAndLogout && (
+              <Grid item>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item>
+                    <IconButton edge="end" href="/profile">
+                      <Avatar style={{ backgroundColor: SUNFLOWER }}>
+                        {firstName[0] + lastName[0]}
+                      </Avatar>
+                    </IconButton>
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={onLogout}
+                    >
+                      Logout
+                    </Button>
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-          )}
-        </Grid>
-      </Toolbar>
-    </AppBar>
+            )}
+          </Grid>
+        </Toolbar>
+      </AppBar>
+      <Toolbar />
+    </>
   );
 }

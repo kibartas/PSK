@@ -53,7 +53,7 @@ class ProfilePage extends React.Component {
         oldPassword,
         newPassword,
       };
-      updateCredentials(credentials)
+      updateCredentials(window.sessionStorage.getItem('id'), credentials)
         .then(() => {
           window.sessionStorage.setItem('email', mail);
           this.setState({ showSuccess: true });
@@ -68,7 +68,7 @@ class ProfilePage extends React.Component {
             this.setState({ showConflictError: true });
             return;
           }
-          if (status === 401) {
+          if (status === 400) {
             this.setState({ showWrongPasswordError: true });
             return;
           }

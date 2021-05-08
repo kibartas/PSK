@@ -10,25 +10,31 @@ class ForgotPasswordPage extends React.Component {
     this.state = {
       showServerError: false,
       showSuccessMessage: false,
+      requestInProgress: false,
     };
   }
 
   handleSendClick = (email) => {
+    this.setState({ requestInProgress: true });
     sendForgotPasswordEmail(email)
       .then((response) => {
         if (response.status !== 200) {
-          this.setState({ showServerError: true });
+          this.setState({ showServerError: true, requestInProgress: false });
         } else {
           this.setState({ showSuccessMessage: true });
         }
       })
       .catch(() => {
-        this.setState({ showServerError: true });
+        this.setState({ showServerError: true, requestInProgress: false });
       });
   };
 
   render() {
-    const { showServerError, showSuccessMessage } = this.state;
+    const {
+      showServerError,
+      showSuccessMessage,
+      requestInProgress,
+    } = this.state;
 
     return (
       <>
@@ -56,7 +62,10 @@ class ForgotPasswordPage extends React.Component {
           justify="center"
         >
           <Grid item xs={10} sm={6} md={4} lg={3}>
-            <ForgotPasswordCard onSend={this.handleSendClick} />
+            <ForgotPasswordCard
+              onSend={this.handleSendClick}
+              requestInProgress={requestInProgress}
+            />
           </Grid>
         </Grid>
       </>

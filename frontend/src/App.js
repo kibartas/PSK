@@ -38,7 +38,9 @@ function App() {
           <Route path="/verify/:userId">
             <VerifyAccountPage />
           </Route>
-          <Route exact path="/register" component={RegisterPage} />
+          <Route exact path="/register">
+            <RegisterPage />
+          </Route>
           <Route path="*">
             <Redirect to="/">
               <LoginPage />
