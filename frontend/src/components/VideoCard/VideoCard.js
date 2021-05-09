@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import {
-  CardContent,
-  Paper,
   Card,
   CardHeader,
   IconButton,
@@ -16,7 +14,11 @@ import './styles.css';
 const VideoCard = ({ title, thumbnail, onSelect, id }) => {
   const [isSelected, setIsSelected] = useState(false);
   return (
-    <Card className="card" variant="outlined">
+    <Card
+      className="card"
+      variant="outlined"
+      style={{ border: `${isSelected ? '0.5px solid blue' : ''}` }}
+    >
       <CardHeader
         classes={{
           content: 'content',
