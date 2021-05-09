@@ -10,40 +10,46 @@ import {
   Grid,
 } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import { missingImageIcon, visibilityOffIcon } from '../../assets';
+import { missingImageIcon } from '../../assets';
+import './styles.css';
 
-const VideoCard = ({ title }) => {
+const VideoCard = ({ title, thumbnail, onSelect, id }) => {
   const [isSelected, setIsSelected] = useState(false);
   return (
-    <Card variant="outlined" style={{ width: '300px', height: '300px' }}>
+    <Card className="card" variant="outlined">
       <CardHeader
+        classes={{
+          content: 'content',
+        }}
         disableTypography
         title={
-          <Typography gutterBottom variant="h6">
-            {title}
-          </Typography>
+          <Grid item>
+            <Typography noWrap gutterBottom variant="h6">
+              {title}
+            </Typography>
+          </Grid>
         }
         action={
-          <IconButton onClick={() => setIsSelected(!isSelected)}>
-            <CheckCircleIcon color={isSelected ? 'primary' : ''} />
-          </IconButton>
+          <Grid item>
+            <IconButton
+              onClick={() => {
+                onSelect(id, isSelected);
+                setIsSelected(!isSelected);
+              }}
+            >
+              <CheckCircleIcon color={isSelected ? 'primary' : 'inherit'} />
+            </IconButton>
+          </Grid>
         }
       />
-      <CardContent
+      <CardMedia
+        component="img"
         style={{
-          height: '75%',
           backgroundColor: 'rgba(0,0,0,0.12)',
-          alignItems: 'center',
-          display: 'flex',
-          justifyContent: 'center',
+          flexGrow: 1,
         }}
-      >
-        <img
-          style={{ height: '15vw', weight: '15vw' }}
-          src={missingImageIcon}
-          alt="Bla"
-        />
-      </CardContent>
+        src={thumbnail || missingImageIcon}
+      />
     </Card>
   );
 };
