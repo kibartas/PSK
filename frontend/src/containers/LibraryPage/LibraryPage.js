@@ -130,7 +130,7 @@ class LibraryPage extends React.Component {
           onUpload={this.handleUpload}
           onClose={this.handleUploadModalClose}
         />
-        <Grid item style={{ flexGrow: 1 }}>
+        <Grid item className="flexGrow">
           <TopBar
             title="Video Library"
             onActionIconClick={() => {
@@ -160,7 +160,7 @@ class LibraryPage extends React.Component {
             ))}
           </Grid>
         ) : (
-          <Grid container style={{ flexGrow: 1 }}>
+          <Grid container className="flexGrow">
             <EmptyLibraryContent />
           </Grid>
         )}

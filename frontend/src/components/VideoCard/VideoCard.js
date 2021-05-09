@@ -46,10 +46,7 @@ const VideoCard = ({ title, thumbnail, onSelect, id }) => {
       />
       <CardMedia
         component="img"
-        style={{
-          backgroundColor: 'rgba(0,0,0,0.12)',
-          flexGrow: 1,
-        }}
+        className="cardImage"
         src={thumbnail || missingImageIcon}
       />
     </Card>

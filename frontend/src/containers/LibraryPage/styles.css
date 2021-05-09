@@ -5,3 +5,7 @@
 .cardContainer {
     margin: auto !important;
 }
+
+.flexGrow {
+    flex-grow: 1;
+}
