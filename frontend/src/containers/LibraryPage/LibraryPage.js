@@ -146,7 +146,7 @@ class LibraryPage extends React.Component {
           ) : (
             <TopBar
               title={`${selectedCards.length} ${
-                selectedCards.length === 1 ? 'card' : 'cards'
+                selectedCards.length === 1 ? 'video' : 'videos'
               } selected`}
               showArrow
               onActionIconClick={() => this.setState({ selectedCards: [] })}
