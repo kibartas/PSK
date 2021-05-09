@@ -4,6 +4,7 @@ import DeleteIcon from './generic/DeleteIcon';
 import DownloadIcon from './generic/DownloadIcon';
 import InfoIcon from './generic/InfoIcon';
 import MenuIcon from './generic/MenuIcon';
+import RemoveIcon from './generic/RemoveIcon';
 import RestoreIcon from './generic/RestoreIcon';
 import SelectAllIcon from './generic/SelectAllIcon';
 import UploadIcon from './generic/UploadIcon';
@@ -32,6 +33,7 @@ export {
   DownloadIcon,
   InfoIcon,
   MenuIcon,
+  RemoveIcon,
   RestoreIcon,
   SelectAllIcon,
   UploadIcon,

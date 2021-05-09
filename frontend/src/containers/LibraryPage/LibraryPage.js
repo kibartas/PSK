@@ -3,6 +3,7 @@ import React from 'react';
 import { UploadIcon, emptyLibraryDrawing, McRideScreaming } from '../../assets';
 import EmptyLibraryContent from '../../components/EmptyLibraryContent/EmptyLibraryContent';
 import TopBar from '../../components/TopBar/TopBar';
+import UploadModal from '../../components/UploadModal/UploadModal';
 import './styles.css';
 import VideoCardsByDate from '../../components/VideoCardsByDate/VideoCardsByDate';
 
@@ -71,6 +72,7 @@ class LibraryPage extends React.Component {
       videoCards: [],
       sortedVideoCardDates: [],
       selectedCards: [],
+      showUploadModal: false,
     };
   }
 
@@ -83,8 +85,27 @@ class LibraryPage extends React.Component {
     });
   }
 
+  toggleUploadModal = () => {
+    const { showUploadModal } = this.state;
+    this.setState({ showUploadModal: !showUploadModal });
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  handleUpload = (addedVideos, videoNames) => {
+    // [TM]: TODO WDB-104
+  };
+
+  handleUploadModalClose = () => {
+    this.toggleUploadModal();
+  };
+
   render() {
-    const { videoCards, sortedVideoCardDates, selectedCards } = this.state;
+    const {
+      showUploadModal,
+      videoCards,
+      sortedVideoCardDates,
+      selectedCards,
+    } = this.state;
 
     const handleSelect = (id, isSelected) => {
       if (isSelected) {
@@ -104,6 +125,11 @@ class LibraryPage extends React.Component {
         container
         direction="column"
       >
+        <UploadModal
+          show={showUploadModal}
+          onUpload={this.handleUpload}
+          onClose={this.handleUploadModalClose}
+        />
         <Grid item style={{ flexGrow: 1 }}>
           <TopBar
             title="Video Library"
@@ -114,11 +140,7 @@ class LibraryPage extends React.Component {
             firstName={window.sessionStorage.getItem('firstName')}
             lastName={window.sessionStorage.getItem('lastName')}
             iconsToShow={[UploadIcon]}
-            onIconsClick={[
-              () => {
-                /* [TM]: TODO WDB-5 */
-              },
-            ]}
+            onIconsClick={[this.toggleUploadModal]}
           />
         </Grid>
         {videoCards.length !== 0 ? (
