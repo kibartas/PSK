@@ -107,8 +107,8 @@ class LibraryPage extends React.Component {
       selectedCards,
     } = this.state;
 
-    const handleSelect = (id, isSelected) => {
-      if (isSelected) {
+    const handleSelect = (id) => {
+      if (selectedCards.find((cardId) => cardId === id)) {
         const newSelectedCards = selectedCards.filter(
           (cardId) => cardId !== id,
         );
@@ -131,17 +131,27 @@ class LibraryPage extends React.Component {
           onClose={this.handleUploadModalClose}
         />
         <Grid item className="flexGrow">
-          <TopBar
-            title="Video Library"
-            onActionIconClick={() => {
-              /* [TM:] TODO WDB-29 */
-            }}
-            showAvatarAndLogout
-            firstName={window.sessionStorage.getItem('firstName')}
-            lastName={window.sessionStorage.getItem('lastName')}
-            iconsToShow={[UploadIcon]}
-            onIconsClick={[this.toggleUploadModal]}
-          />
+          {selectedCards.length === 0 ? (
+            <TopBar
+              title="Video Library"
+              onActionIconClick={() => {
+                /* [TM:] TODO WDB-29 */
+              }}
+              showAvatarAndLogout
+              firstName={window.sessionStorage.getItem('firstName')}
+              lastName={window.sessionStorage.getItem('lastName')}
+              iconsToShow={[UploadIcon]}
+              onIconsClick={[this.toggleUploadModal]}
+            />
+          ) : (
+            <TopBar
+              title={`${selectedCards.length} ${
+                selectedCards.length === 1 ? 'card' : 'cards'
+              } selected`}
+              showArrow
+              onActionIconClick={() => this.setState({ selectedCards: [] })}
+            />
+          )}
         </Grid>
         {videoCards.length !== 0 ? (
           <Grid
@@ -156,6 +166,7 @@ class LibraryPage extends React.Component {
                 key={date}
                 onSelect={handleSelect}
                 videoCards={videoCards[date]}
+                selectedCards={selectedCards}
               />
             ))}
           </Grid>

@@ -2,7 +2,7 @@ import { Divider, Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import VideoCard from '../VideoCard/VideoCard';
 
-const VideoCardsByDate = ({ videoCards, onSelect }) => (
+const VideoCardsByDate = ({ videoCards, onSelect, selectedCards }) => (
   <Grid container item direction="column">
     <Grid item>
       <Typography variant="h6">{videoCards[0].date}</Typography>
@@ -16,6 +16,11 @@ const VideoCardsByDate = ({ videoCards, onSelect }) => (
             title={title}
             onSelect={onSelect}
             thumbnail={thumbnail}
+            isSelected={
+              selectedCards
+                ? selectedCards.find((cardId) => cardId === id)
+                : false
+            }
           />
         </Grid>
       ))}
