@@ -7,6 +7,7 @@ import MenuIcon from './generic/MenuIcon';
 import RestoreIcon from './generic/RestoreIcon';
 import SelectAllIcon from './generic/SelectAllIcon';
 import UploadIcon from './generic/UploadIcon';
+import McRideScreaming from './generic/mcRideScreaming.jpg';
 
 import productIcon from './generic/product-icon.svg';
 import visibilityIcon from './generic/visibility.svg';
@@ -21,6 +22,8 @@ import verifiedAccountDrawing from './VerifiedAccountPage/ill-confirmation.svg';
 import forgotPasswordDrawing from './ForgotPasswordPage/forgot-password.svg';
 
 import emptyLibraryDrawing from './LibraryPage/empty-library.svg';
+
+import missingImageIcon from './LibraryPage/missing-image.svg';
 
 export {
   ArrowBackIcon,
@@ -45,3 +48,7 @@ export { verifiedAccountDrawing };
 export { forgotPasswordDrawing };
 
 export { emptyLibraryDrawing };
+
+export { missingImageIcon };
+
+export { McRideScreaming };
