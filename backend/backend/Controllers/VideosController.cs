@@ -96,6 +96,7 @@ namespace backend.Controllers
             if (string.IsNullOrWhiteSpace(title)) return BadRequest();
 
             Video video = _db.Videos.Find(id);
+            if (video == null) return BadRequest();
             video.Title = title;
             _db.SaveChanges();
 
@@ -108,6 +109,49 @@ namespace backend.Controllers
             };
 
             return Ok(response);
+        }
+
+        [HttpDelete, Route("{id}")]
+        public async Task<IActionResult> DeleteVideo([FromRoute] Guid id)
+        {
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = _db.Users.FirstOrDefault(x => x.Id == userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            if (id == Guid.Empty) return BadRequest();
+
+            Video video = _db.Videos.Find(id);
+            
+            string userPath = Path.Combine(_uploadPath, user.Id.ToString());
+            string filePath = Path.Combine(userPath, video.Id.ToString());
+
+            if (!System.IO.File.Exists(filePath)) return BadRequest();
+            
+            try
+            {
+                System.IO.File.Delete(filePath);
+                _db.Videos.Remove(video);
+                await _db.SaveChangesAsync();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+            return Ok();
         }
     }
 }
