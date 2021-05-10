@@ -19,11 +19,15 @@ namespace backend.Controllers
     {
         private readonly BackendContext _db;
         private readonly string _uploadPath;
+        private readonly string _tempPath;
+        private readonly int _chunkSize;
 
         public VideosController(BackendContext context)
         {
             _db = context;
-            _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+            _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "/Uploads/");
+            _tempPath = Path.Combine(_uploadPath, "/Temp/");
+            _chunkSize = 3145728; //3MB
         }
 
         [HttpGet,Route("all")]
@@ -32,8 +36,32 @@ namespace backend.Controllers
             return _db.Videos.ToList();
         }
 
-        [HttpPost, Route("UploadVideo")]
-        public async Task<IActionResult> UploadVideo(IFormFile videoFile)
+        [HttpPost, Route("UploadChunks")]
+        public async Task<IActionResult> UploadChunks(string id, string fileName)
+        {
+            try
+            {
+                var chunkNumber = id;
+                string newPath = Path.Combine(_tempPath, fileName + chunkNumber);
+                using (FileStream fs = System.IO.File.Create(newPath))
+                {
+                    byte[] bytes = new byte[_chunkSize];
+                    int bytesRead = 0;
+                    while ((bytesRead = await Request.Body.ReadAsync(bytes, 0, bytes.Length)) > 0)
+                    {
+                        fs.Write(bytes, 0, bytesRead);
+                    }
+                }
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost, Route("UploadComplete")]
+        public ActionResult<VideoDto> UploadComplete(string fileName)
         {
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null)
@@ -52,52 +80,49 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            if (string.IsNullOrWhiteSpace(videoFile.FileName)) return BadRequest();
-
-            string title = Path.GetFileNameWithoutExtension(videoFile.FileName);
-            long size = videoFile.Length;
-
-            string userPath = Path.Combine(_uploadPath, user.Id.ToString());
-            if (!Directory.Exists(_uploadPath))
-                Directory.CreateDirectory(_uploadPath);
-            if (!Directory.Exists(userPath))
-                Directory.CreateDirectory(userPath);
-
             try
             {
-                Video video = new Video()
-                {
-                    Title = title,
-                    UserId = user.Id,
-                    Size = size,
-                    UploadDate = new DateTime()
-                };
+                string userPath = Path.Combine(_uploadPath, user.Id.ToString());
+                string tempFilePath = Path.Combine(userPath, fileName);
+                string[] filePaths = Directory.GetFiles(_tempPath)
+                    .Where(p => p.Contains(fileName))
+                    .OrderBy(p => Int32.Parse(p.Replace(fileName, "$")
+                    .Split('$')[1]))
+                    .ToArray();
 
-                string videoFileName = video.Id.ToString() + Path.GetExtension(videoFile.FileName);
-                string filePath = Path.Combine(userPath, videoFileName);
-                video.Path = filePath;
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                foreach (string chunk in filePaths)
                 {
-                    await videoFile.CopyToAsync(stream);
+                    MergeChunks(tempFilePath, chunk);
                 }
 
-                await _db.Videos.AddAsync(video);
-                await _db.SaveChangesAsync();
-                var response = new VideoDto()
+                long size = new FileInfo(tempFilePath).Length;
+                Video video = new Video()
+                {
+                    UserId = user.Id,
+                    Title = fileName,
+                    Size = size,
+                    UploadDate = new DateTime(),
+                };
+
+                _db.Videos.Add(video);
+                string finalFilePath = Path.Combine(userPath, video.Id.ToString());
+                System.IO.File.Move(tempFilePath, finalFilePath);
+
+                VideoDto response = new VideoDto()
                 {
                     Id = video.Id,
-                    Size = size,
-                    Title = title,
+                    Title = video.Title,
+                    Size = video.Size,
                     UploadDate = video.UploadDate
                 };
+
                 return Ok(response);
             }
             catch
             {
-                return StatusCode(500);
+                return BadRequest();
             }
-}
+        }
 
         [HttpPatch, Route("ChangeTitle")]
         public ActionResult<VideoDto> ChangeTitle(Guid id, string title)
@@ -163,6 +188,30 @@ namespace backend.Controllers
             }
 
             return Ok();
+        }
+
+        private static void MergeChunks(string chunk1, string chunk2)
+        {
+            FileStream fs1 = null;
+            FileStream fs2 = null;
+            try
+            {
+                fs1 = System.IO.File.Open(chunk1, FileMode.Append);
+                fs2 = System.IO.File.Open(chunk2, FileMode.Open);
+                byte[] fs2Content = new byte[fs2.Length];
+                fs2.Read(fs2Content, 0, (int)fs2.Length);
+                fs1.Write(fs2Content, 0, (int)fs2.Length);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message + " : " + ex.StackTrace);
+            }
+            finally
+            {
+                if (fs1 != null) fs1.Close();
+                if (fs2 != null) fs2.Close();
+                System.IO.File.Delete(chunk2);
+            }
         }
     }
 }
