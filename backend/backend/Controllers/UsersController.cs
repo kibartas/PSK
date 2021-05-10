@@ -10,6 +10,7 @@ using System.Security.Claims;
 using backend.DTOs;
 using backend.Services.EmailService;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System.IO;
 
 namespace backend.Controllers
 {
@@ -21,6 +22,7 @@ namespace backend.Controllers
         private readonly BackendContext _db;
         private readonly IJwtAuthentication _jwtAuthentication;
         private readonly IEmailService _emailService;
+        private readonly string _uploadPath;
 
         public UsersController(
             BackendContext context,
@@ -30,6 +32,7 @@ namespace backend.Controllers
             _db = context;
             _jwtAuthentication = jwtAuthentication;
             _emailService = emailService;
+            _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "/Uploads");
         }
 
         [HttpGet, Route("current")]
@@ -124,6 +127,16 @@ namespace backend.Controllers
             if (id == Guid.Empty) return BadRequest();
             User user = _db.Users.Find(id);
             if (user == null) return NotFound();
+
+            try
+            {
+                string userPath = Path.Combine(_uploadPath, user.Id.ToString());
+                Directory.CreateDirectory(userPath);
+            }
+            catch
+            {
+                return BadRequest();
+            }
 
             user.Confirmed = true;
             _db.SaveChanges();
