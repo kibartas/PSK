@@ -23,7 +23,7 @@ namespace backend.Controllers
         public VideosController(BackendContext context)
         {
             _db = context;
-            _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "/Uploads/");
+            _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
         }
 
         [HttpGet,Route("all")]
@@ -54,9 +54,14 @@ namespace backend.Controllers
 
             if (string.IsNullOrWhiteSpace(videoFile.FileName)) return BadRequest();
 
-            string title = videoFile.FileName;
-            string userPath = Path.Combine(_uploadPath, user.Id.ToString());
+            string title = Path.GetFileNameWithoutExtension(videoFile.FileName);
             long size = videoFile.Length;
+
+            string userPath = Path.Combine(_uploadPath, user.Id.ToString());
+            if (!Directory.Exists(_uploadPath))
+                Directory.CreateDirectory(_uploadPath);
+            if (!Directory.Exists(userPath))
+                Directory.CreateDirectory(userPath);
 
             try
             {
@@ -68,11 +73,16 @@ namespace backend.Controllers
                     UploadDate = new DateTime()
                 };
 
-                string filePath = Path.Combine(userPath, video.Id.ToString());
-                using(var stream = new FileStream(filePath, FileMode.Create))
+                string videoFileName = video.Id.ToString() + Path.GetExtension(videoFile.FileName);
+                string filePath = Path.Combine(userPath, videoFileName);
+                video.Path = filePath;
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await videoFile.CopyToAsync(stream);
                 }
+
+                await _db.Videos.AddAsync(video);
                 await _db.SaveChangesAsync();
                 var response = new VideoDto()
                 {
@@ -85,9 +95,9 @@ namespace backend.Controllers
             }
             catch
             {
-                return BadRequest();
+                return StatusCode(500);
             }
-        }
+}
 
         [HttpPatch, Route("ChangeTitle")]
         public ActionResult<VideoDto> ChangeTitle(Guid id, string title)
