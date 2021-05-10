@@ -32,6 +32,8 @@ yarn-error.log*
 bin/
 obj/
 
+Uploads/
+
 # Common node modules locations
 /node_modules
 /wwwroot/node_modules
