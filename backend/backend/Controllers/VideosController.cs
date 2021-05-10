@@ -96,7 +96,7 @@ namespace backend.Controllers
             if (string.IsNullOrWhiteSpace(title)) return BadRequest();
 
             Video video = _db.Videos.Find(id);
-            if (video == null) return BadRequest();
+            if (video == null) return NotFound();
             video.Title = title;
             _db.SaveChanges();
 
@@ -134,6 +134,7 @@ namespace backend.Controllers
             if (id == Guid.Empty) return BadRequest();
 
             Video video = _db.Videos.Find(id);
+            if (video == null) return NotFound();
             
             string userPath = Path.Combine(_uploadPath, user.Id.ToString());
             string filePath = Path.Combine(userPath, video.Id.ToString());
