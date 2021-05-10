@@ -32,7 +32,7 @@ namespace backend.Controllers
             _db = context;
             _jwtAuthentication = jwtAuthentication;
             _emailService = emailService;
-            _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "/Uploads");
+            _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "/Uploads/");
         }
 
         [HttpGet, Route("current")]
