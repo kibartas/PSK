@@ -88,5 +88,26 @@ namespace backend.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpPatch, Route("ChangeTitle")]
+        public ActionResult<VideoDto> ChangeTitle(Guid id, string title)
+        {
+            if (id == Guid.Empty) return BadRequest();
+            if (string.IsNullOrWhiteSpace(title)) return BadRequest();
+
+            Video video = _db.Videos.Find(id);
+            video.Title = title;
+            _db.SaveChanges();
+
+            var response = new VideoDto()
+            {
+                Id = video.Id,
+                Title = video.Title,
+                Size = video.Size,
+                UploadDate = video.UploadDate
+            };
+
+            return Ok(response);
+        }
     }
 }
