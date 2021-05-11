@@ -12,7 +12,7 @@
   border-style: dashed;
   background-color: #fafafa;
   color: #8c8c8c;
-  transition: border .25s, background .25s ease-in-out;
+  transition: border 0.25s, background 0.25s ease-in-out;
   height: 25vh;
 }
 
@@ -24,4 +24,8 @@
 .modal__dropzone--reject {
   border-color: #ff1744;
   background-color: #ff174450;
+}
+
+.linearProgressBar {
+  width: 100%;
 }

@@ -8,12 +8,7 @@ import {
 import CancelIcon from '@material-ui/icons/Cancel';
 import { CHUNK_SIZE } from '../../constants';
 import { finishUpload, uploadChunk, deleteChunks } from '../../api/VideoAPI';
-
-const useStyles = makeStyles({
-  root: {
-    width: '100%',
-  },
-});
+import './styles.css';
 
 export default function VideoUploadingListItem({
   videoToBeUploaded,
@@ -31,8 +26,6 @@ export default function VideoUploadingListItem({
   const [progress, setProgress] = useState(0);
 
   const [cancelToken, setCancelToken] = useState({});
-
-  const classes = useStyles();
 
   const finishVideoUpload = () => {
     finishUpload(videoToBeUploaded.name)
@@ -80,9 +73,11 @@ export default function VideoUploadingListItem({
 
   return (
     <ListItem key={videoToBeUploaded.name}>
-      <div className={classes.root}>
-        <LinearProgress variant="determinate" value={progress} />
-      </div>
+      <LinearProgress
+        className="linear"
+        variant="determinate"
+        value={progress}
+      />
       <IconButton onClick={handleOnUploadCancel}>
         <CancelIcon />
       </IconButton>
