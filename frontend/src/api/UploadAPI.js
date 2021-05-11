@@ -10,12 +10,11 @@ const Api = axios.create({
   },
 });
 
-// example file upload
-// export const UploadFiles = async (files) => {
-//     try {
-//         const response = await Api.post("/Users/upload-files/", files);
-//         return response.data;
-//     } catch(error) {
-//         console.log(error);
-//     }
-// };
+// eslint-disable-next-line
+export const uploadVideo = async (formData) => (
+    Api.post("/Videos/UploadVideo/", formData)
+);
+
+// onUploadProgress: ProgressEvent => {
+//   setProgressHook(ProgressEvent.loaded / ProgressEvent.total * 100);
+// }

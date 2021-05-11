@@ -7,115 +7,81 @@ import {
   Paper,
   CardContent,
   Button,
-  List,
-  ListItem,
-  TextField,
-  InputAdornment,
-  IconButton
 } from '@material-ui/core';
-import { DropzoneAreaBase } from 'material-ui-dropzone';
 import CustomSnackbar from '../CustomSnackbar/CustomSnackbar';
 import './styles.css';
-import { RemoveIcon } from '../../assets';
-import { formatBytesToString } from '../../util';
+import StyledDropzone from './StyledDropzone';
+import VideosList from './VideosList';
+import { uploadVideo } from '../../api/UploadAPI';
 
-export default function UploadModal({ show, onUpload, onClose }) {
-  const [addedVideos, setAddedVideos] = useState([]);
-  const [videoNames, setVideoNames] = useState([]);
+export default function UploadModal({ show, onClose }) {
+  const [inProgressUploadRequests, setInProgressUploadRequests] = useState([]);
+  const [uploadProgresses, setUploadProgresses] = useState([]);
+  const [uploadedVideos, setUploadedVideos] = useState([]); // Video entities from BE
+
   const [showSnackbar, setShowSnackbar] = useState({
-    noVideosAdded: false,
+    incorrectFileType: false,
     videoNameMissing: false,
+    uploadError: false,
   });
 
-  const handleClose = () => {
-    setAddedVideos([]);
-    setVideoNames([]);
+  const handleAdd = (acceptedVideos) => {
+    const video = acceptedVideos[0];
+    const formData = new FormData();
+    formData.append('videoFile', video, video.name);
+  
+    uploadVideo(formData).then(() => console.log('success'));
+  };
+
+  const handleRejection = () => {
+    setShowSnackbar({ ...showSnackbar, incorrectFileType: true });
+  }
+
+  const handleCancelUpload = (request) => (
+    () => {
+      // [TM]: TODO cancel Upload request here and remove it from state
+    }
+  );
+
+  const handleDeleteVideo = (videoId) => (
+    () => {
+      // [TM]: TODO make API request to delete uploaded video and remove it from uploadedVideos state
+    }
+  )
+
+  const handleCancel = () => {
+    inProgressUploadRequests.forEach(request => handleCancelUpload(request)());
+    uploadedVideos.forEach(video => handleDeleteVideo(video.id)());
+    setInProgressUploadRequests([]);
+    setUploadProgresses([]);
+    setUploadedVideos([]);
     onClose();
   };
 
-  const handleUpload = () => {
-    if (addedVideos.length === 0) {
-      setShowSnackbar({ ...showSnackbar, noVideosAdded: true });
-      return;
-    }
-    if (videoNames.some(name => name === '')) {
-      setShowSnackbar({ ...showSnackbar, videoNameMissing: true });
-      return;
-    }
-    onUpload(addedVideos, videoNames);
-    handleClose();
-  }
-
-  const handleAddVideos = (videos) => {
-    setShowSnackbar({ ...showSnackbar, noVideosAdded: false });
-    setAddedVideos([...addedVideos, ...videos]);
-    setVideoNames([...videoNames, ...videos.map(video => /[^.]*/.exec(video.file.name)[0])]);
-  }
-
-  const getVideoAddedMessage = (videoName) => `Video ${videoName} was successfully added. `;
-
-  const handleChangeVideoName = (videoIndex) => (
+  const handleChangeVideoTitle = (videoId) => (
     (event) => {
-      const videoNamesCopy = videoNames.slice();
-      videoNamesCopy.splice(videoIndex, 1, event.target.value);
-      setVideoNames([...videoNamesCopy]);
+      const newTitle = event.target.value;
+      // [TM]: TODO using lodash debounce make API request to change video title and update it in the state if necessary
       setShowSnackbar({ ...showSnackbar, videoNameMissing: false });
     }
   );
 
-  const handleRemoveVideo = (videoIndex) => (
-    () => {
-      const videoNamesCopy = videoNames.slice();
-      videoNamesCopy.splice(videoIndex, 1);
-      const addedVideosCopy = addedVideos.slice();
-      addedVideosCopy.splice(videoIndex, 1);
-      setVideoNames([...videoNamesCopy]);
-      setAddedVideos([...addedVideosCopy]);
+  const handleSubmit = () => {
+    if (uploadedVideos.some(video => video.title === '')) {
+      setShowSnackbar({ ...showSnackbar, videoNameMissing: true });
+      return;
     }
-  )
-
-  const renderAddedVideosList = () => {
-    const listItems = addedVideos.map((video, index) => {
-      const videoName = videoNames[index];
-      return (
-        <ListItem key={video.file.name + index.toString()}>
-          <TextField
-            fullWidth
-            error={videoName === ''}
-            helperText={
-              videoName === '' ? 'Please enter a name for this video' : ''
-            }
-            value={videoName ?? ''}
-            onChange={handleChangeVideoName(index)}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  {formatBytesToString(video.file.size)}
-                  <IconButton onClick={handleRemoveVideo(index)}>
-                    <RemoveIcon />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </ListItem>
-      );
-    });
-
-    return (
-      <List>
-        {listItems}
-      </List>
-    );
+    handleClose();
+    window.location.reload();
   }
 
   const renderSnackbars = () => {
-    if (showSnackbar.noVideosAdded) {
+    if (showSnackbar.incorrectFileType) {
       return (
         <CustomSnackbar
-          message="Please attach videos which you want to upload"
-          onClose={() => setShowSnackbar({ ...showSnackbar, noVideosAdded: false })}
-          severity="info"
+          message="Only video type files can be uploaded"
+          onClose={() => setShowSnackbar({ ...showSnackbar, incorrectFileType: false })}
+          severity="error"
         />
       );
     }
@@ -128,6 +94,16 @@ export default function UploadModal({ show, onUpload, onClose }) {
         />
       );
     }
+    if (showSnackbar.uploadError) {
+      return (
+        <CustomSnackbar
+          message="Something wrong happened :/ Videos were not uploaded"
+          onClose={() => setShowSnackbar({ ...showSnackbar, uploadError: false })}
+          severity="error"
+        />
+      );
+    }
+
     return null;
   };
 
@@ -137,7 +113,7 @@ export default function UploadModal({ show, onUpload, onClose }) {
       <Modal
         className='modal'
         open={show}
-        onClose={handleClose}
+        onClose={handleCancel}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
@@ -149,18 +125,18 @@ export default function UploadModal({ show, onUpload, onClose }) {
             <CardContent>
               <Grid container direction='column' spacing={2}>
                 <Grid item xs={12}>
-                  <DropzoneAreaBase
-                    clearOnUnmount
-                    dropzoneText="&nbsp;&nbsp;Drag and drop videos here or click&nbsp;&nbsp;"
-                    acceptedFiles={['video/*']}
-                    onAdd={handleAddVideos}
-                    maxFileSize={Infinity}
-                    getFileAddedMessage={getVideoAddedMessage}
-                  />
+                  <StyledDropzone onAdd={handleAdd} onRejection={handleRejection} />
                 </Grid>
-                {addedVideos.length > 0 &&
+                {(inProgressUploadRequests.length > 0 || uploadedVideos.length > 0) &&
                   <Grid item xs={12}>
-                    {renderAddedVideosList()}
+                    <VideosList
+                      inProgressUploadRequests={inProgressUploadRequests}
+                      uploadProgresses={uploadProgresses}
+                      onUploadCancel={handleCancelUpload}
+                      uploadedVideos={uploadedVideos}
+                      onVideoTitleChange={handleChangeVideoTitle}
+                      onVideoDelete={handleDeleteVideo}
+                    />
                   </Grid>
                 }
                 <Grid 
@@ -169,21 +145,21 @@ export default function UploadModal({ show, onUpload, onClose }) {
                   spacing={1}
                   justify='flex-end'
                 >
-                  <Grid item>
+                   <Grid item>
                     <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleUpload}
+                      variant="outlined"
+                      onClick={handleCancel}
                     >
-                      Upload
+                      Cancel
                     </Button>
                   </Grid>
                   <Grid item>
                     <Button
-                      variant="outlined"
-                      onClick={handleClose}
+                      variant="contained"
+                      color="primary"
+                      onClick={handleSubmit}
                     >
-                      Cancel
+                      Submit
                     </Button>
                   </Grid>
                 </Grid>
