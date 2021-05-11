@@ -10,30 +10,31 @@ const Api = axios.create({
   },
 });
 
-export const uploadChunk = async (videoFileName, chunkNumber, chunk) => (
+export const uploadChunk = async (chunkNumber, videoFileName, chunk) => (
   Api.post(
-    `/Videos/UploadChunks`,
+    "/Videos/UploadChunks",
     chunk,
     {
       params: {
         chunkNumber,
         fileName: videoFileName
       },
+      headers: { 'Content-Type': 'application/json' }
       // cancelToken: new axios.CancelToken(cancelExecutor), // TODO
     }
   )
 );
 
 export const finishUpload = async (videoFileName) => (
-  Api.post(`/Videos/UploadComplete`, { params: { fileName: videoFileName }})
+  Api.post("/Videos/UploadComplete", { params: { fileName: videoFileName }})
 );
 
 export const deleteChunks = async (videoFileName) => {
-  Api.delete(`upload/DeleteChunks`, { params: { fileName: videoFileName }})
+  Api.delete("/Videos/DeleteChunks", { params: { fileName: videoFileName }})
 };
 
 export const changeTitle = async (videoId, newTitle) => (
-  Api.patch(`/Videos/ChangeTitle`, null, { params: { id: videoId, newTitle }})
+  Api.patch("/Videos/ChangeTitle", null, { params: { id: videoId, newTitle }})
 );
 
 export const deleteVideo = async (videoId) => (

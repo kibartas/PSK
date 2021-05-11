@@ -25,8 +25,7 @@ export default function VideoUploadingListItem({ videoToBeUploaded, onUploadCanc
   }
 
   const uploadNextChunk = (chunk) => {
-    uploadChunk(videoToBeUploaded.name, chunkCounter, chunk).then(() => {
-      console.log("hey")
+    uploadChunk(chunkCounter, videoToBeUploaded.name, chunk).then(() => {
       if (chunkCounter === chunkCount) {
         finishVideoUpload();
       } else {
@@ -36,7 +35,6 @@ export default function VideoUploadingListItem({ videoToBeUploaded, onUploadCanc
         setProgress(percentage);
       }
     }).catch(() => {
-      console.log("oops")
       deleteChunks(videoToBeUploaded.name);
       onUploadCancel(true);
     });
