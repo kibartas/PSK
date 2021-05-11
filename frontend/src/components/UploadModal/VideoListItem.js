@@ -8,7 +8,6 @@ export default function VideoListItem({ video, onVideoDelete, onVideoTitleChange
   const [ title, setTitle ] = useState(video.title);
 
   const handleTitleChange = (newTitle) => {
-    console.log(newTitle);
     onVideoTitleChange(newTitle);
   };
 

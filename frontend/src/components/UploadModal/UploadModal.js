@@ -34,27 +34,25 @@ export default function UploadModal({ show, onClose }) {
     setShowSnackbar({ ...showSnackbar, incorrectFileType: true });
   }
 
-  const handleCancelUpload = (index) => (
+  const handleCancelUpload = (videoFileName) => (
     (showUploadError) => {
-      const videosToBeUploadedCopy = videosToBeUploaded.slice();
-      videosToBeUploadedCopy.splice(index, 1);
-      setVideosToBeUploaded([...videosToBeUploadedCopy]);
+      const index = videosToBeUploaded.findIndex(videoFile => videoFile.name === videoFileName);
+      setVideosToBeUploaded([...videosToBeUploaded.slice(0, index), ...videosToBeUploaded.slice(index + 1)]);
       if (showUploadError) {
         setShowSnackbar({ ...showSnackbar, uploadError: true });
       }
     }
   );
 
-  const handleUploadFinish = (index) => (
+  const handleUploadFinish = (videoFileName) => (
     (video) => {
-      const videosToBeUploadedCopy = videosToBeUploaded.slice();
-      videosToBeUploadedCopy.splice(index, 1);
-      setVideosToBeUploaded([...videosToBeUploadedCopy]);
+      const index = videosToBeUploaded.findIndex(videoFile => videoFile.name === videoFileName);
+      setVideosToBeUploaded([...videosToBeUploaded.slice(0, index), ...videosToBeUploaded.slice(index + 1)]);
       setUploadedVideos([...uploadedVideos, video]);
     }
   );
 
-  const handleChangeVideoTitle = (videoId, index) => (
+  const handleChangeVideoTitle = (videoId) => (
     (newTitle) => {
       if (newTitle === '') {
         setSomeTitlesAreEmpty(true);
@@ -66,19 +64,17 @@ export default function UploadModal({ show, onClose }) {
 
       changeTitle(videoId, newTitle).then(response => {
         const video = response.data;
-        const uploadedVideosCopy = uploadedVideos.slice();
-        uploadedVideosCopy.splice(index, 1, video);
-        setUploadedVideos([...uploadedVideosCopy]);
+        const index = uploadedVideos.findIndex(uploadedVideo => uploadedVideo.id === videoId);
+        setUploadedVideos([...uploadedVideos.slice(0, index), video, ...uploadedVideos.slice(index + 1)]);
       }).catch(() => setShowSnackbar({ ...showSnackbar, serverError: false }));
     }
   );
 
-  const handleDeleteVideo = (videoId, index) => (
+  const handleDeleteVideo = (videoId) => (
     () => {
       deleteVideo(videoId).then(() => {
-        const uploadedVideosCopy = uploadedVideos.slice();
-        uploadedVideosCopy.splice(index, 1);
-        setUploadedVideos([...uploadedVideosCopy]);
+        const index = uploadedVideos.findIndex(uploadedVideo => uploadedVideo.id === videoId);
+        setUploadedVideos([...uploadedVideos.slice(0, index), ...uploadedVideos.slice(index + 1)]);
       }).catch(() => setShowSnackbar({ ...showSnackbar, serverError: false }));
     }
   )
@@ -90,7 +86,7 @@ export default function UploadModal({ show, onClose }) {
   }
 
   const handleCancel = () => {
-    uploadedVideos.forEach((video, index) => handleDeleteVideo(video.id, index)());
+    uploadedVideos.forEach((video) => handleDeleteVideo(video.id)());
     handleClose();
   };
 
