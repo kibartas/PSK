@@ -15,9 +15,9 @@ export default function VideoUploadingListItem({ videoToBeUploaded, onUploadCanc
   const [cancelToken, setCancelToken] = useState({});
 
   const finishVideoUpload = () => {
-    finishUpload(videoToBeUploaded.name).then((video) => {
+    finishUpload(videoToBeUploaded.name).then((response) => {
       setProgress(100);
-      onUploadFinish(video);
+      onUploadFinish(response.data);
     }).catch(() => {
       deleteChunks(videoToBeUploaded.name);
       onUploadCancel(true);

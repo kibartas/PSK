@@ -22,12 +22,12 @@ export default function VideosList({
     ));
 
   const videoListItems =
-    uploadedVideos.map((video) => (
+    uploadedVideos.map((video, index) => (
       <VideoListItem
         key={video.id}
         video={video}
-        onVideoTitleChange={onVideoTitleChange(index)}
-        onVideoDelete={onVideoDelete(index)}
+        onVideoTitleChange={onVideoTitleChange(video.id, index)}
+        onVideoDelete={onVideoDelete(video.id, index)}
       />
   ));
 

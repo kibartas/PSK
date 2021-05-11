@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import { debounce } from 'lodash';
 import { ListItem, TextField, InputAdornment, IconButton } from '@material-ui/core';
 import { RemoveIcon } from '../../assets';
+import { formatBytesToString } from '../../util';
 
 export default function VideoListItem({ video, onVideoDelete, onVideoTitleChange }) {
   const [ title, setTitle ] = useState(video.title);
 
-  handleTitleChange = (newTitle) => {
-    onVideoTitleChange(video.id, newTitle);
+  const handleTitleChange = (newTitle) => {
+    console.log(newTitle);
+    onVideoTitleChange(newTitle);
   };
 
-  debouncedHandleTitleChange = debounce(handleTitleChange, 600);
+  const debouncedHandleTitleChange = debounce(handleTitleChange, 600);
 
-  delayedHandleTitleChange = (event) => {
+  const delayedHandleTitleChange = (event) => {
     const newTitle = event.target.value;
     setTitle(newTitle);
 
@@ -33,7 +35,7 @@ export default function VideoListItem({ video, onVideoDelete, onVideoTitleChange
           endAdornment: (
             <InputAdornment position="end">
               {formatBytesToString(video.size)}
-              <IconButton onClick={onVideoDelete(video.id)}>
+              <IconButton onClick={onVideoDelete}>
                 <RemoveIcon />
               </IconButton>
             </InputAdornment>

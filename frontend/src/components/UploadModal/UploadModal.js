@@ -54,8 +54,8 @@ export default function UploadModal({ show, onClose }) {
     }
   );
 
-  const handleChangeVideoTitle = (index) => (
-    (videoId, newTitle) => {
+  const handleChangeVideoTitle = (videoId, index) => (
+    (newTitle) => {
       if (newTitle === '') {
         setSomeTitlesAreEmpty(true);
         return;
@@ -64,7 +64,8 @@ export default function UploadModal({ show, onClose }) {
       setShowSnackbar({ ...showSnackbar, videoTitleMissing: false });
       setSomeTitlesAreEmpty(false);
 
-      changeTitle(videoId, newTitle).then(video => {
+      changeTitle(videoId, newTitle).then(response => {
+        const video = response.data;
         const uploadedVideosCopy = uploadedVideos.slice();
         uploadedVideosCopy.splice(index, 1, video);
         setUploadedVideos([...uploadedVideosCopy]);
@@ -72,7 +73,7 @@ export default function UploadModal({ show, onClose }) {
     }
   );
 
-  const handleDeleteVideo = (index, videoId) => (
+  const handleDeleteVideo = (videoId, index) => (
     () => {
       deleteVideo(videoId).then(() => {
         const uploadedVideosCopy = uploadedVideos.slice();
@@ -89,7 +90,7 @@ export default function UploadModal({ show, onClose }) {
   }
 
   const handleCancel = () => {
-    uploadedVideos.forEach(video => handleDeleteVideo(video.id)());
+    uploadedVideos.forEach((video, index) => handleDeleteVideo(video.id, index)());
     handleClose();
   };
 

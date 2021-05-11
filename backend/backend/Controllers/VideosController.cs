@@ -155,8 +155,8 @@ namespace backend.Controllers
         [HttpPatch, Route("ChangeTitle")]
         public ActionResult<VideoDto> ChangeTitle(Guid id, string newTitle) // TODO possibly FromRoute is needed
         {
-            if (id == Guid.Empty) return BadRequest();
-            if (string.IsNullOrWhiteSpace(newTitle)) return BadRequest();
+            if (id == Guid.Empty) return BadRequest("No Id provided");
+            if (string.IsNullOrWhiteSpace(newTitle)) return BadRequest("Empty new title");
 
             Video video = _db.Videos.Find(id);
             if (video == null) return NotFound();
@@ -198,21 +198,18 @@ namespace backend.Controllers
 
             Video video = _db.Videos.Find(id);
             if (video == null) return NotFound();
-            
-            string userPath = Path.Combine(_uploadPath, user.Id.ToString());
-            string filePath = Path.Combine(userPath, video.Id.ToString());
 
-            if (!System.IO.File.Exists(filePath)) return BadRequest();
+            if (!System.IO.File.Exists(video.Path)) return BadRequest("This video file does not exist");
             
             try
             {
-                System.IO.File.Delete(filePath);
+                System.IO.File.Delete(video.Path);
                 _db.Videos.Remove(video);
                 await _db.SaveChangesAsync();
             }
             catch
             {
-                return BadRequest();
+                return StatusCode(500);
             }
 
             return Ok();
