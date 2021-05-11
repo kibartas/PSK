@@ -26,7 +26,7 @@ namespace backend.Controllers
             _db = context;
             _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
             _tempPath = Path.Combine(_uploadPath, "Temp");
-            _chunkSize = 30408704; //29MB
+            _chunkSize = 28000000; // 28MB
         }
 
         [HttpGet,Route("all")]

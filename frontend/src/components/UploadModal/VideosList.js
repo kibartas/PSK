@@ -14,7 +14,7 @@ export default function VideosList({
   const videoUploadingListItems =
     videosToBeUploaded.map((video, index) => (
       <VideoUploadingListItem
-        key={video.name + index.toString()}
+        key={video.name}
         videoToBeUploaded={video}
         onUploadCancel={onUploadCancel(index)}
         onUploadFinish={onUploadFinish(index)}
