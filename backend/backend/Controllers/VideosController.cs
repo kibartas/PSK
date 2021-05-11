@@ -5,7 +5,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using System.IO;
 using backend.DTOs;
-using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System;
@@ -25,9 +24,9 @@ namespace backend.Controllers
         public VideosController(BackendContext context)
         {
             _db = context;
-            _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "/Uploads/");
-            _tempPath = Path.Combine(_uploadPath, "/Temp/");
-            _chunkSize = 3145728; //3MB
+            _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+            _tempPath = Path.Combine(_uploadPath, "Temp");
+            _chunkSize = 30408704; //29MB
         }
 
         [HttpGet,Route("all")]
@@ -37,12 +36,13 @@ namespace backend.Controllers
         }
 
         [HttpPost, Route("UploadChunks")]
-        public async Task<IActionResult> UploadChunks(string id, string fileName)
+        public async Task<IActionResult> UploadChunk(string chunkNumber, string fileName)
         {
             try
             {
-                var chunkNumber = id;
-                string newPath = Path.Combine(_tempPath, fileName + chunkNumber);
+                string newPath = Path.Combine(_tempPath, Path.GetFileNameWithoutExtension(fileName) + "-" + chunkNumber + Path.GetExtension(fileName));
+                if (!Directory.Exists(_tempPath)) Directory.CreateDirectory(_tempPath);
+
                 using (FileStream fs = System.IO.File.Create(newPath))
                 {
                     byte[] bytes = new byte[_chunkSize];
@@ -56,6 +56,14 @@ namespace backend.Controllers
             }
             catch
             {
+                try
+                {
+                    DeleteAllChunks(fileName);
+                }
+                catch
+                {
+                    return StatusCode(500);
+                }
                 return BadRequest();
             }
         }
@@ -85,10 +93,7 @@ namespace backend.Controllers
                 string userPath = Path.Combine(_uploadPath, user.Id.ToString());
                 string tempFilePath = Path.Combine(userPath, fileName);
                 string[] filePaths = Directory.GetFiles(_tempPath)
-                    .Where(p => p.Contains(fileName))
-                    .OrderBy(p => Int32.Parse(p.Replace(fileName, "$")
-                    .Split('$')[1]))
-                    .ToArray();
+                    .Where(p => p.Contains(Path.GetFileNameWithoutExtension(fileName))).ToArray();
 
                 foreach (string chunk in filePaths)
                 {
@@ -96,19 +101,21 @@ namespace backend.Controllers
                 }
 
                 long size = new FileInfo(tempFilePath).Length;
-                Video video = new Video()
+                Video video = new()
                 {
                     UserId = user.Id,
-                    Title = fileName,
+                    Title = Path.GetFileNameWithoutExtension(fileName),
                     Size = size,
                     UploadDate = new DateTime(),
                 };
 
-                _db.Videos.Add(video);
-                string finalFilePath = Path.Combine(userPath, video.Id.ToString());
+                string finalFilePath = Path.Combine(userPath, video.Id + Path.GetExtension(fileName));
                 System.IO.File.Move(tempFilePath, finalFilePath);
+                video.Path = finalFilePath;
+                _db.Videos.Add(video);
+                _db.SaveChanges();
 
-                VideoDto response = new VideoDto()
+                VideoDto response = new()
                 {
                     Id = video.Id,
                     Title = video.Title,
@@ -120,19 +127,40 @@ namespace backend.Controllers
             }
             catch
             {
-                return BadRequest();
+                try
+                {
+                    DeleteAllChunks(fileName);
+                }
+                catch
+                {
+                    return StatusCode(500);
+                }
+                return StatusCode(500);
+            }
+        }
+
+        [HttpDelete, Route("DeleteChunks")]
+        public ActionResult DeleteChunks(string fileName)
+        {
+            try
+            {
+                DeleteAllChunks(fileName);
+                return Ok();
+            } catch
+            {
+                return StatusCode(500);
             }
         }
 
         [HttpPatch, Route("ChangeTitle")]
-        public ActionResult<VideoDto> ChangeTitle(Guid id, string title)
+        public ActionResult<VideoDto> ChangeTitle(Guid id, string newTitle) // TODO possibly FromRoute is needed
         {
             if (id == Guid.Empty) return BadRequest();
-            if (string.IsNullOrWhiteSpace(title)) return BadRequest();
+            if (string.IsNullOrWhiteSpace(newTitle)) return BadRequest();
 
             Video video = _db.Videos.Find(id);
             if (video == null) return NotFound();
-            video.Title = title;
+            video.Title = newTitle;
             _db.SaveChanges();
 
             var response = new VideoDto()
@@ -188,6 +216,17 @@ namespace backend.Controllers
             }
 
             return Ok();
+        }
+
+        private void DeleteAllChunks(string fileName)
+        {
+            string[] filePaths = Directory.GetFiles(_tempPath)
+                    .Where(p => p.Contains(Path.GetFileNameWithoutExtension(fileName))).ToArray();
+
+            foreach (string path in filePaths)
+            {
+                System.IO.File.Delete(path);
+            }
         }
 
         private static void MergeChunks(string chunk1, string chunk2)

@@ -12,63 +12,90 @@ import CustomSnackbar from '../CustomSnackbar/CustomSnackbar';
 import './styles.css';
 import StyledDropzone from './StyledDropzone';
 import VideosList from './VideosList';
-import { uploadVideo } from '../../api/UploadAPI';
+import { changeTitle, deleteVideo } from '../../api/VideoAPI';
 
 export default function UploadModal({ show, onClose }) {
-  const [inProgressUploadRequests, setInProgressUploadRequests] = useState([]);
-  const [uploadProgresses, setUploadProgresses] = useState([]);
+  const [videosToBeUploaded, setVideosToBeUploaded] = useState([]);
   const [uploadedVideos, setUploadedVideos] = useState([]); // Video entities from BE
+  const [someTitlesAreEmpty, setSomeTitlesAreEmpty] = useState(false);
 
   const [showSnackbar, setShowSnackbar] = useState({
     incorrectFileType: false,
-    videoNameMissing: false,
+    videoTitleMissing: false,
     uploadError: false,
+    serverError: false,
   });
 
   const handleAdd = (acceptedVideos) => {
-    const video = acceptedVideos[0];
-    const formData = new FormData();
-    formData.append('videoFile', video, video.name);
-  
-    uploadVideo(formData).then(() => console.log('success'));
+    setVideosToBeUploaded([...videosToBeUploaded, ...acceptedVideos]);
   };
 
   const handleRejection = () => {
     setShowSnackbar({ ...showSnackbar, incorrectFileType: true });
   }
 
-  const handleCancelUpload = (request) => (
-    () => {
-      // [TM]: TODO cancel Upload request here and remove it from state
+  const handleCancelUpload = (index) => (
+    (showUploadError) => {
+      const videosToBeUploadedCopy = videosToBeUploaded.slice();
+      videosToBeUploadedCopy.splice(index, 1);
+      setVideosToBeUploaded([...videosToBeUploadedCopy]);
+      if (showUploadError) {
+        setShowSnackbar({ ...showSnackbar, uploadError: true });
+      }
     }
   );
 
-  const handleDeleteVideo = (videoId) => (
+  const handleUploadFinish = (index) => (
+    (video) => {
+      const videosToBeUploadedCopy = videosToBeUploaded.slice();
+      videosToBeUploadedCopy.splice(index, 1);
+      setVideosToBeUploaded([...videosToBeUploadedCopy]);
+      setUploadedVideos([...uploadedVideos, video]);
+    }
+  );
+
+  const handleChangeVideoTitle = (index) => (
+    (videoId, newTitle) => {
+      if (newTitle === '') {
+        setSomeTitlesAreEmpty(true);
+        return;
+      }
+      
+      setShowSnackbar({ ...showSnackbar, videoTitleMissing: false });
+      setSomeTitlesAreEmpty(false);
+
+      changeTitle(videoId, newTitle).then(video => {
+        const uploadedVideosCopy = uploadedVideos.slice();
+        uploadedVideosCopy.splice(index, 1, video);
+        setUploadedVideos([...uploadedVideosCopy]);
+      }).catch(() => setShowSnackbar({ ...showSnackbar, serverError: false }));
+    }
+  );
+
+  const handleDeleteVideo = (index, videoId) => (
     () => {
-      // [TM]: TODO make API request to delete uploaded video and remove it from uploadedVideos state
+      deleteVideo(videoId).then(() => {
+        const uploadedVideosCopy = uploadedVideos.slice();
+        uploadedVideosCopy.splice(index, 1);
+        setUploadedVideos([...uploadedVideosCopy]);
+      }).catch(() => setShowSnackbar({ ...showSnackbar, serverError: false }));
     }
   )
 
-  const handleCancel = () => {
-    inProgressUploadRequests.forEach(request => handleCancelUpload(request)());
-    uploadedVideos.forEach(video => handleDeleteVideo(video.id)());
-    setInProgressUploadRequests([]);
-    setUploadProgresses([]);
+  const handleClose = () => {
+    setVideosToBeUploaded([]);
     setUploadedVideos([]);
     onClose();
+  }
+
+  const handleCancel = () => {
+    uploadedVideos.forEach(video => handleDeleteVideo(video.id)());
+    handleClose();
   };
 
-  const handleChangeVideoTitle = (videoId) => (
-    (event) => {
-      const newTitle = event.target.value;
-      // [TM]: TODO using lodash debounce make API request to change video title and update it in the state if necessary
-      setShowSnackbar({ ...showSnackbar, videoNameMissing: false });
-    }
-  );
-
   const handleSubmit = () => {
-    if (uploadedVideos.some(video => video.title === '')) {
-      setShowSnackbar({ ...showSnackbar, videoNameMissing: true });
+    if (someTitlesAreEmpty) {
+      setShowSnackbar({ ...showSnackbar, videoTitleMissing: true });
       return;
     }
     handleClose();
@@ -85,11 +112,11 @@ export default function UploadModal({ show, onClose }) {
         />
       );
     }
-    if (showSnackbar.videoNameMissing) {
+    if (showSnackbar.videoTitleMissing) {
       return (
         <CustomSnackbar
-          message="Please enter a name for all attached videos"
-          onClose={() => setShowSnackbar({ ...showSnackbar, videoNameMissing: false })}
+          message="Please enter a title for each attached video"
+          onClose={() => setShowSnackbar({ ...showSnackbar, videoTitleMissing: false })}
           severity="info"
         />
       );
@@ -97,8 +124,17 @@ export default function UploadModal({ show, onClose }) {
     if (showSnackbar.uploadError) {
       return (
         <CustomSnackbar
-          message="Something wrong happened :/ Videos were not uploaded"
+          message="Something wrong happened :/ Video was not uploaded"
           onClose={() => setShowSnackbar({ ...showSnackbar, uploadError: false })}
+          severity="error"
+        />
+      );
+    }
+    if (showSnackbar.serverError) {
+      return (
+        <CustomSnackbar
+          message="Oops... Something wrong happened :/"
+          onClose={() => setShowSnackbar({ ...showSnackbar, serverError: false })}
           severity="error"
         />
       );
@@ -127,12 +163,12 @@ export default function UploadModal({ show, onClose }) {
                 <Grid item xs={12}>
                   <StyledDropzone onAdd={handleAdd} onRejection={handleRejection} />
                 </Grid>
-                {(inProgressUploadRequests.length > 0 || uploadedVideos.length > 0) &&
+                {(videosToBeUploaded.length > 0 || uploadedVideos.length > 0) &&
                   <Grid item xs={12}>
                     <VideosList
-                      inProgressUploadRequests={inProgressUploadRequests}
-                      uploadProgresses={uploadProgresses}
+                      videosToBeUploaded={videosToBeUploaded}
                       onUploadCancel={handleCancelUpload}
+                      onUploadFinish={handleUploadFinish}
                       uploadedVideos={uploadedVideos}
                       onVideoTitleChange={handleChangeVideoTitle}
                       onVideoDelete={handleDeleteVideo}

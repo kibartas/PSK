@@ -1,56 +1,40 @@
 import React from 'react';
-import { List, ListItem, TextField, InputAdornment, IconButton, LinearProgress } from '@material-ui/core';
-import CancelIcon from '@material-ui/icons/Cancel';
-import { RemoveIcon } from '../../assets';
-import { formatBytesToString } from '../../util';
+import { List } from '@material-ui/core';
+import VideoUploadingListItem from './VideoUploadingListItem';
+import VideoListItem from './VideoListItem';
 
 export default function VideosList({ 
-  uploadRequests,
-  uploadProgresses, // [TM]: TODO put uploadRequests and  uploadProgresses into dict?
+  videosToBeUploaded,
   onUploadCancel,
+  onUploadFinish,
   uploadedVideos,
   onVideoTitleChange,
-  onVideoDelete 
+  onVideoDelete
 }) {
-  const inUploadVideosListItems =
-    uploadRequests.map((request, index) => (
-      <ListItem key={index.toString()}>
-        <LinearProgress variant='determinate' progress={uploadProgresses[index]} />
-        <IconButton onClick={onUploadCancel(request)}>
-          <CancelIcon />
-        </IconButton>
-      </ListItem>
+  const videoUploadingListItems =
+    videosToBeUploaded.map((video, index) => (
+      <VideoUploadingListItem
+        key={video.name + index.toString()}
+        videoToBeUploaded={video}
+        onUploadCancel={onUploadCancel(index)}
+        onUploadFinish={onUploadFinish(index)}
+      />
     ));
 
-  const uploadedVideosListItems =
-    uploadedVideos.map((video, index) => (
-      <ListItem key={video.title + index.toString()}>
-        <TextField
-          fullWidth
-          error={video.title === ''}
-          helperText={
-            video.title === '' ? 'Please enter a name for this video' : ''
-          }
-          value={video.title ?? ''}
-          onChange={onVideoTitleChange(video.id)}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                {formatBytesToString(video.size)}
-                <IconButton onClick={onVideoDelete(video.id)}>
-                  <RemoveIcon />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-      </ListItem>
+  const videoListItems =
+    uploadedVideos.map((video) => (
+      <VideoListItem
+        key={video.id}
+        video={video}
+        onVideoTitleChange={onVideoTitleChange(index)}
+        onVideoDelete={onVideoDelete(index)}
+      />
   ));
 
   return (
     <List>
-      {inUploadVideosListItems}
-      {uploadedVideosListItems}
+      {videoUploadingListItems}
+      {videoListItems}
     </List>
   );
 }
