@@ -109,6 +109,8 @@ namespace backend.Controllers
                     UploadDate = new DateTime(),
                 };
 
+                video.Id = Guid.NewGuid();
+
                 string finalFilePath = Path.Combine(userPath, video.Id + Path.GetExtension(fileName));
                 System.IO.File.Move(tempFilePath, finalFilePath);
                 video.Path = finalFilePath;
