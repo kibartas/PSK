@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using System;
 using Xabe.FFmpeg;
+using System.Net.Http;
+using System.Net;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace backend.Controllers
 {
@@ -223,6 +226,41 @@ namespace backend.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpGet, Route("Download")]
+        public async Task<ActionResult> DownloadSingle(Guid videoId)
+        {
+            if(videoId == Guid.Empty)
+            {
+                return BadRequest("video guid is not valid");
+            }
+
+            Video video = _db.Videos.Find(videoId);
+
+            if(video == null) return NotFound();
+            if (!System.IO.File.Exists(video.Path)) return NotFound();
+
+            var memory = new MemoryStream();
+            await using (var stream = new FileStream(video.Path, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+            return File(memory, GetContentType(video.Path), video.Title);
+        }
+
+        private string GetContentType(string path)
+        {
+            var provider = new FileExtensionContentTypeProvider();
+            string contentType;
+
+            if (!provider.TryGetContentType(path, out contentType))
+            {
+                contentType = "application/octet-stream";
+            }
+
+            return contentType;
         }
 
         private void DeleteAllChunks(string fileName)
