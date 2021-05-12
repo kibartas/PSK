@@ -32,58 +32,75 @@ export default function UploadModal({ show, onClose }) {
 
   const handleRejection = () => {
     setShowSnackbar({ ...showSnackbar, incorrectFileType: true });
-  }
+  };
 
-  const handleCancelUpload = (videoFileName) => (
-    (showUploadError) => {
-      const index = videosToBeUploaded.findIndex(videoFile => videoFile.name === videoFileName);
-      setVideosToBeUploaded([...videosToBeUploaded.slice(0, index), ...videosToBeUploaded.slice(index + 1)]);
-      if (showUploadError) {
-        setShowSnackbar({ ...showSnackbar, uploadError: true });
-      }
+  const handleCancelUpload = (videoFileName) => (showUploadError) => {
+    const index = videosToBeUploaded.findIndex(
+      (videoFile) => videoFile.name === videoFileName,
+    );
+    setVideosToBeUploaded([
+      ...videosToBeUploaded.slice(0, index),
+      ...videosToBeUploaded.slice(index + 1),
+    ]);
+    if (showUploadError) {
+      setShowSnackbar({ ...showSnackbar, uploadError: true });
     }
-  );
+  };
 
-  const handleUploadFinish = (videoFileName) => (
-    (video) => {
-      const index = videosToBeUploaded.findIndex(videoFile => videoFile.name === videoFileName);
-      setVideosToBeUploaded([...videosToBeUploaded.slice(0, index), ...videosToBeUploaded.slice(index + 1)]);
-      setUploadedVideos([...uploadedVideos, video]);
+  const handleUploadFinish = (videoFileName) => (video) => {
+    const index = videosToBeUploaded.findIndex(
+      (videoFile) => videoFile.name === videoFileName,
+    );
+    setVideosToBeUploaded([
+      ...videosToBeUploaded.slice(0, index),
+      ...videosToBeUploaded.slice(index + 1),
+    ]);
+    setUploadedVideos([...uploadedVideos, video]);
+  };
+
+  const handleChangeVideoTitle = (videoId) => (newTitle) => {
+    if (newTitle === '') {
+      setSomeTitlesAreEmpty(true);
+      return;
     }
-  );
 
-  const handleChangeVideoTitle = (videoId) => (
-    (newTitle) => {
-      if (newTitle === '') {
-        setSomeTitlesAreEmpty(true);
-        return;
-      }
-      
-      setShowSnackbar({ ...showSnackbar, videoTitleMissing: false });
-      setSomeTitlesAreEmpty(false);
+    setShowSnackbar({ ...showSnackbar, videoTitleMissing: false });
+    setSomeTitlesAreEmpty(false);
 
-      changeTitle(videoId, newTitle).then(response => {
+    changeTitle(videoId, newTitle)
+      .then((response) => {
         const video = response.data;
-        const index = uploadedVideos.findIndex(uploadedVideo => uploadedVideo.id === videoId);
-        setUploadedVideos([...uploadedVideos.slice(0, index), video, ...uploadedVideos.slice(index + 1)]);
-      }).catch(() => setShowSnackbar({ ...showSnackbar, serverError: false }));
-    }
-  );
+        const index = uploadedVideos.findIndex(
+          (uploadedVideo) => uploadedVideo.id === videoId,
+        );
+        setUploadedVideos([
+          ...uploadedVideos.slice(0, index),
+          video,
+          ...uploadedVideos.slice(index + 1),
+        ]);
+      })
+      .catch(() => setShowSnackbar({ ...showSnackbar, serverError: false }));
+  };
 
-  const handleDeleteVideo = (videoId) => (
-    () => {
-      deleteVideo(videoId).then(() => {
-        const index = uploadedVideos.findIndex(uploadedVideo => uploadedVideo.id === videoId);
-        setUploadedVideos([...uploadedVideos.slice(0, index), ...uploadedVideos.slice(index + 1)]);
-      }).catch(() => setShowSnackbar({ ...showSnackbar, serverError: false }));
-    }
-  )
+  const handleDeleteVideo = (videoId) => () => {
+    deleteVideo(videoId)
+      .then(() => {
+        const index = uploadedVideos.findIndex(
+          (uploadedVideo) => uploadedVideo.id === videoId,
+        );
+        setUploadedVideos([
+          ...uploadedVideos.slice(0, index),
+          ...uploadedVideos.slice(index + 1),
+        ]);
+      })
+      .catch(() => setShowSnackbar({ ...showSnackbar, serverError: false }));
+  };
 
   const handleClose = () => {
     setVideosToBeUploaded([]);
     setUploadedVideos([]);
     onClose();
-  }
+  };
 
   const handleCancel = () => {
     uploadedVideos.forEach((video) => handleDeleteVideo(video.id)());
@@ -97,14 +114,16 @@ export default function UploadModal({ show, onClose }) {
     }
     handleClose();
     window.location.reload();
-  }
+  };
 
   const renderSnackbars = () => {
     if (showSnackbar.incorrectFileType) {
       return (
         <CustomSnackbar
           message="Only video type files can be uploaded"
-          onClose={() => setShowSnackbar({ ...showSnackbar, incorrectFileType: false })}
+          onClose={() =>
+            setShowSnackbar({ ...showSnackbar, incorrectFileType: false })
+          }
           severity="error"
         />
       );
@@ -113,7 +132,9 @@ export default function UploadModal({ show, onClose }) {
       return (
         <CustomSnackbar
           message="Please enter a title for each attached video"
-          onClose={() => setShowSnackbar({ ...showSnackbar, videoTitleMissing: false })}
+          onClose={() =>
+            setShowSnackbar({ ...showSnackbar, videoTitleMissing: false })
+          }
           severity="info"
         />
       );
@@ -122,7 +143,9 @@ export default function UploadModal({ show, onClose }) {
       return (
         <CustomSnackbar
           message="Something wrong happened :/ Video was not uploaded"
-          onClose={() => setShowSnackbar({ ...showSnackbar, uploadError: false })}
+          onClose={() =>
+            setShowSnackbar({ ...showSnackbar, uploadError: false })
+          }
           severity="error"
         />
       );
@@ -131,7 +154,9 @@ export default function UploadModal({ show, onClose }) {
       return (
         <CustomSnackbar
           message="Oops... Something wrong happened :/"
-          onClose={() => setShowSnackbar({ ...showSnackbar, serverError: false })}
+          onClose={() =>
+            setShowSnackbar({ ...showSnackbar, serverError: false })
+          }
           severity="error"
         />
       );
@@ -144,7 +169,7 @@ export default function UploadModal({ show, onClose }) {
     <>
       {renderSnackbars()}
       <Modal
-        className='modal'
+        className="modal"
         open={show}
         onClose={handleCancel}
         closeAfterTransition
@@ -152,15 +177,20 @@ export default function UploadModal({ show, onClose }) {
         BackdropProps={{
           timeout: 500,
         }}
+        disableBackdropClick
       >
         <Fade in={show}>
           <Paper>
             <CardContent>
-              <Grid container direction='column' spacing={2}>
+              <Grid container direction="column" spacing={2}>
                 <Grid item xs={12}>
-                  <StyledDropzone onAdd={handleAdd} onRejection={handleRejection} />
+                  <StyledDropzone
+                    onAdd={handleAdd}
+                    onRejection={handleRejection}
+                  />
                 </Grid>
-                {(videosToBeUploaded.length > 0 || uploadedVideos.length > 0) &&
+                {(videosToBeUploaded.length > 0 ||
+                  uploadedVideos.length > 0) && (
                   <Grid item xs={12}>
                     <VideosList
                       videosToBeUploaded={videosToBeUploaded}
@@ -171,18 +201,10 @@ export default function UploadModal({ show, onClose }) {
                       onVideoDelete={handleDeleteVideo}
                     />
                   </Grid>
-                }
-                <Grid 
-                  item
-                  container
-                  spacing={1}
-                  justify='flex-end'
-                >
-                   <Grid item>
-                    <Button
-                      variant="outlined"
-                      onClick={handleCancel}
-                    >
+                )}
+                <Grid item container spacing={1} justify="flex-end">
+                  <Grid item>
+                    <Button variant="outlined" onClick={handleCancel}>
                       Cancel
                     </Button>
                   </Grid>
