@@ -247,7 +247,7 @@ namespace backend.Controllers
                 await stream.CopyToAsync(memory);
             }
             memory.Position = 0;
-            return File(memory, GetContentType(video.Path), video.Title);
+            return File(memory, GetContentType(video.Path), video.Title + Path.GetExtension(video.Path));
         }
 
         private string GetContentType(string path)
