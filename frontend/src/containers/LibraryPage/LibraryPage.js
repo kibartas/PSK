@@ -88,9 +88,18 @@ const transformCards = (cards) => {
 };
 
 const sortCardDates = (cards, ascending = true) =>
-  Object.keys(cards).sort((a, b) =>
-    ascending ? new Date(a) < new Date(b) : new Date(a) > new Date(b),
-  );
+  Object.keys(cards).sort((a, b) => {
+    const dateA = new Date(a);
+    const dateB = new Date(b);
+    if (ascending) {
+      if (dateA.getTime() < dateB.getTime()) return 1;
+      if (dateA.getTime() === dateB.getTime()) return 0;
+      return -1;
+    }
+    if (dateA.getTime() < dateB.getTime()) return -1;
+    if (dateA.getTime() === dateB.getTime()) return 0;
+    return 1;
+  });
 
 class LibraryPage extends React.Component {
   constructor(props) {
