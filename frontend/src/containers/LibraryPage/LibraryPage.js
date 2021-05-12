@@ -12,42 +12,42 @@ const mockedCards = [
   {
     id: '12',
     title: 'Screaming guy',
-    date: '2020-11-23',
+    uploadDate: '2020-11-23',
     thumbnail: McRideScreaming,
   },
   {
     id: '11',
     title: 'Some other title #2',
-    date: '2020-11-23',
+    uploadDate: '2020-11-23',
     thumbnail: emptyLibraryDrawing,
   },
   {
     id: '0',
     title: 'Another title',
-    date: '2020-09-30',
+    uploadDate: '2020-09-30',
   },
   {
     id: '2',
     title: 'Screaming guy',
-    date: '2020-11-23',
+    uploadDate: '2020-11-23',
     thumbnail: McRideScreaming,
   },
   {
     id: '3',
     title: 'Screaming guy',
-    date: '2020-11-23',
+    uploadDate: '2020-11-23',
     thumbnail: McRideScreaming,
   },
   {
     id: '4',
     title: 'Screaming guy',
-    date: '2020-11-23',
+    uploadDate: '2020-11-23',
     thumbnail: McRideScreaming,
   },
   {
     id: '5',
     title: 'Screaming guy',
-    date: '2020-11-23',
+    uploadDate: '2020-11-23',
     thumbnail: McRideScreaming,
   },
   {
@@ -78,10 +78,10 @@ const mockedCards = [
 
 const transformCards = (cards) => {
   const transformedCards = cards.reduce((acc, val) => {
-    if (!acc[val.date]) {
-      acc[val.date] = [];
+    if (!acc[val.uploadDate]) {
+      acc[val.uploadDate] = [];
     }
-    acc[val.date].push(val);
+    acc[val.uploadDate].push(val);
     return acc;
   }, {});
   return { transformedCards };
@@ -192,23 +192,23 @@ class LibraryPage extends React.Component {
         </Grid>
         {videoCards.length !== 0 ? (
           <Grid
-            className="cardContainer"
+            className="card_container"
             container
             item
             direction="column"
             spacing={5}
           >
-            {sortedVideoCardDates.map((date) => (
+            {sortedVideoCardDates.map((uploadDate) => (
               <VideoCardsByDate
-                key={date}
+                key={uploadDate}
                 onSelect={handleSelect}
-                videoCards={videoCards[date]}
+                videoCards={videoCards[uploadDate]}
                 selectedCards={selectedCards}
               />
             ))}
           </Grid>
         ) : (
-          <Grid container className="flexGrow">
+          <Grid container className="flex_grow">
             <EmptyLibraryContent />
           </Grid>
         )}

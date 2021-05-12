@@ -19,15 +19,13 @@ const VideoCard = ({ title, thumbnail, onSelect, id, isSelected }) => (
   >
     <CardHeader
       classes={{
-        content: 'content',
+        content: 'card_content',
       }}
       disableTypography
       title={
-        <Grid item>
-          <Typography noWrap gutterBottom variant="h6">
-            {title}
-          </Typography>
-        </Grid>
+        <Typography noWrap gutterBottom variant="h6">
+          {title}
+        </Typography>
       }
       action={
         <Grid item>
@@ -39,7 +37,7 @@ const VideoCard = ({ title, thumbnail, onSelect, id, isSelected }) => (
     />
     <CardMedia
       component="img"
-      className="cardImage"
+      className="card_image"
       src={thumbnail || missingImageIcon}
     />
   </Card>

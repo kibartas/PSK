@@ -2,10 +2,11 @@
     overflow: hidden;
 }
 
-.cardContainer {
+.card_container {
     margin: auto !important;
 }
 
-.flexGrow {
+
+.flex_grow {
     flex-grow: 1;
 }
