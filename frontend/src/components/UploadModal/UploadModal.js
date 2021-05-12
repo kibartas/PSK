@@ -17,7 +17,6 @@ import { FILENAME_WITHOUT_EXTENSION_REGEX } from '../../constants';
 
 export default function UploadModal({ show, onClose }) {
   const [videosToBeUploaded, setVideosToBeUploaded] = useState([]);
-  const [videosInUpload] = useState([]);
   const [uploadedVideos, setUploadedVideos] = useState([]); // Video entities from BE
   const [someTitlesAreEmpty, setSomeTitlesAreEmpty] = useState(false);
 
