@@ -1,15 +1,16 @@
-.content {
+.card_content {
     overflow: hidden;
 }
 
+
 .card {
-    height: 300px;
-    width: 300px;
+    height: 30vh;
+    width: 30vh;
     display: flex;
     flex-direction: column;
 }
 
-.cardImage {
+.card_image {
     background-color: rgba(0,0,0,0.12);
     flex-grow: 1;
 }
