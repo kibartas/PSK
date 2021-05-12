@@ -53,25 +53,25 @@ const mockedCards = [
   {
     id: '22',
     title: 'Screaming guy',
-    date: '2020-11-25',
+    uploadDate: '2020-11-25',
     thumbnail: McRideScreaming,
   },
   {
     id: '23',
     title: 'Screaming guy',
-    date: '2020-11-25',
+    uploadDate: '2020-11-25',
     thumbnail: McRideScreaming,
   },
   {
     id: '24',
     title: 'Screaming guy',
-    date: '2020-11-25',
+    uploadDate: '2020-11-25',
     thumbnail: McRideScreaming,
   },
   {
     id: '26',
     title: 'Screaming guy',
-    date: '2020-11-26',
+    uploadDate: '2020-11-26',
     thumbnail: McRideScreaming,
   },
 ];
