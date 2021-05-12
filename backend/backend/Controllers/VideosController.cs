@@ -12,6 +12,7 @@ using Xabe.FFmpeg;
 using System.Net.Http;
 using System.Net;
 using Microsoft.AspNetCore.StaticFiles;
+using System.IO.Compression;
 
 namespace backend.Controllers
 {
@@ -231,7 +232,18 @@ namespace backend.Controllers
         [HttpGet, Route("Download")]
         public async Task<ActionResult> DownloadSingle(Guid videoId)
         {
-            if(videoId == Guid.Empty)
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            if (videoId == Guid.Empty)
             {
                 return BadRequest("video guid is not valid");
             }
@@ -240,6 +252,7 @@ namespace backend.Controllers
 
             if(video == null) return NotFound();
             if (!System.IO.File.Exists(video.Path)) return NotFound();
+            if (video.UserId != userId) return Unauthorized();
 
             var memory = new MemoryStream();
             await using (var stream = new FileStream(video.Path, FileMode.Open))
@@ -248,6 +261,46 @@ namespace backend.Controllers
             }
             memory.Position = 0;
             return File(memory, GetContentType(video.Path), video.Title + Path.GetExtension(video.Path));
+        }
+
+        [HttpPost, Route("DownloadMultiple"), AllowAnonymous]
+        public async Task<IActionResult> DownloadMultiple([FromBody] List<Guid> videoIds)
+        {
+            if (videoIds.Count == 0) return BadRequest("No ids provided");
+
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            string zipName = Guid.NewGuid() + ".zip";
+            string zipCreatePath = Path.Combine(_uploadPath, zipName);
+            using(ZipArchive archive = ZipFile.Open(zipCreatePath, ZipArchiveMode.Create))
+            {
+                foreach (var videoId in videoIds)
+                {
+                    if (videoId == Guid.Empty) return Unauthorized();
+                    Video video = _db.Videos.Find(videoId);
+                    if (video.UserId != userId) return Unauthorized();
+                    archive.CreateEntryFromFile(video.Path, video.Title + Path.GetExtension(video.Path));
+                }
+            }
+
+            var memory = new MemoryStream();
+            await using (var stream = new FileStream(zipCreatePath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+            var response = File(memory, "application/zip", zipName);
+            System.IO.File.Delete(zipCreatePath);
+            return response;
         }
 
         private string GetContentType(string path)
