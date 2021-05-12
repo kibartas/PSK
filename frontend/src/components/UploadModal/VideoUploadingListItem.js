@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  ListItem,
-  LinearProgress,
-  IconButton,
-  makeStyles,
-} from '@material-ui/core';
+import { ListItem, LinearProgress, IconButton } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { CHUNK_SIZE } from '../../constants';
 import { finishUpload, uploadChunk, deleteChunks } from '../../api/VideoAPI';
@@ -74,7 +69,7 @@ export default function VideoUploadingListItem({
   return (
     <ListItem key={videoToBeUploaded.name}>
       <LinearProgress
-        className="linear"
+        className="linearProgressBar"
         variant="determinate"
         value={progress}
       />

@@ -206,12 +206,14 @@ namespace backend.Controllers
 
             Video video = _db.Videos.Find(id);
             if (video == null) return NotFound();
-
+            string snapshotPath = Path.Combine(Path.Combine(_uploadPath, user.Id.ToString()), "Snapshots\\" + video.Id + ".png");
             if (!System.IO.File.Exists(video.Path)) return BadRequest("This video file does not exist");
+            if (!System.IO.File.Exists(snapshotPath)) return BadRequest("Video file's snapshot does not exist");
             
             try
             {
                 System.IO.File.Delete(video.Path);
+                System.IO.File.Delete(snapshotPath);
                 _db.Videos.Remove(video);
                 await _db.SaveChangesAsync();
             }
