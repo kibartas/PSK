@@ -13,9 +13,11 @@ import './styles.css';
 import StyledDropzone from './StyledDropzone';
 import VideosList from './VideosList';
 import { changeTitle, deleteVideo } from '../../api/VideoAPI';
+import { FILENAME_WITHOUT_EXTENSION_REGEX } from '../../constants';
 
 export default function UploadModal({ show, onClose }) {
   const [videosToBeUploaded, setVideosToBeUploaded] = useState([]);
+  const [videosInUpload] = useState([]);
   const [uploadedVideos, setUploadedVideos] = useState([]); // Video entities from BE
   const [someTitlesAreEmpty, setSomeTitlesAreEmpty] = useState(false);
 
@@ -24,10 +26,18 @@ export default function UploadModal({ show, onClose }) {
     videoTitleMissing: false,
     uploadError: false,
     serverError: false,
+    videosAlreadyAttached: false,
   });
 
   const handleAdd = (acceptedVideos) => {
-    setVideosToBeUploaded([...videosToBeUploaded, ...acceptedVideos]);
+    const filteredAcceptedVideos = acceptedVideos.filter(acceptedVideo => 
+      !videosToBeUploaded.some(video => video.name === acceptedVideo.name) &&
+        !uploadedVideos.some(video => video.title === acceptedVideo.name.match(FILENAME_WITHOUT_EXTENSION_REGEX)[1])
+    )
+    if (filteredAcceptedVideos.length !== acceptedVideos.length) {
+      setShowSnackbar({ ...showSnackbar, videosAlreadyAttached: true });
+    }
+    setVideosToBeUploaded([...videosToBeUploaded, ...filteredAcceptedVideos]);
   };
 
   const handleRejection = () => {
@@ -158,6 +168,17 @@ export default function UploadModal({ show, onClose }) {
             setShowSnackbar({ ...showSnackbar, serverError: false })
           }
           severity="error"
+        />
+      );
+    }
+    if (showSnackbar.videosAlreadyAttached) {
+      return (
+        <CustomSnackbar
+          message="Some videos were rejected, because they are already attached"
+          onClose={() =>
+            setShowSnackbar({ ...showSnackbar, videosAlreadyAttached: false })
+          }
+          severity="warning"
         />
       );
     }
