@@ -8,6 +8,7 @@ using backend.DTOs;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System;
+using Xabe.FFmpeg;
 
 namespace backend.Controllers
 {
@@ -69,7 +70,7 @@ namespace backend.Controllers
         }
 
         [HttpPost, Route("UploadComplete")]
-        public ActionResult<VideoDto> UploadComplete(string fileName)
+        public async Task<IActionResult> UploadComplete(string fileName)
         {
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null)
@@ -114,6 +115,11 @@ namespace backend.Controllers
                 string finalFilePath = Path.Combine(userPath, video.Id + Path.GetExtension(fileName));
                 System.IO.File.Move(tempFilePath, finalFilePath);
                 video.Path = finalFilePath;
+                string snapshotFolderPath = Path.Combine(userPath, "Snapshots");
+                string snapshotPath = Path.Combine(snapshotFolderPath, video.Id + ".png");
+                IConversion conversion = await FFmpeg.Conversions.FromSnippet.Snapshot(finalFilePath, snapshotPath, TimeSpan.FromSeconds(1));
+                var result = await conversion.Start();
+
                 _db.Videos.Add(video);
                 _db.SaveChanges();
 
@@ -127,7 +133,7 @@ namespace backend.Controllers
 
                 return Ok(response);
             }
-            catch
+            catch(Exception e)
             {
                 try
                 {

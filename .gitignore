@@ -522,4 +522,9 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
+# Ffmpeg
+__MACOSX/
+ffmpeg.exe
+ffprobe.exe
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij,visualstudio,visualstudiocode,react,dotnetcore

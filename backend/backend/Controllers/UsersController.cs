@@ -132,6 +132,7 @@ namespace backend.Controllers
             {
                 string userPath = Path.Combine(_uploadPath, user.Id.ToString());
                 Directory.CreateDirectory(userPath);
+                Directory.CreateDirectory(Path.Combine(userPath, "/Snapshots"));
             }
             catch
             {
