@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Modal,
   Fade,
@@ -9,6 +9,7 @@ import {
   Button,
   Typography,
 } from '@material-ui/core';
+import { CancelToken, isCancel } from 'axios';
 import './styles.css';
 import { uploadChunk, finishUpload, deleteChunks, changeTitle, deleteVideo } from '../../api/VideoAPI';
 import { getChunkCount } from '../../util';
@@ -29,7 +30,7 @@ export default function UploadModal({ show, onClose }) {
   const [chunkEnd, setChunkEnd] = useState(CHUNK_SIZE);
   const [progress, setProgress] = useState(0);
 
-  const [cancelToken, setCancelToken] = useState(undefined);
+  const cancelTokenSource = useRef(CancelToken.source());
 
   const [showSnackbar, setShowSnackbar] = useState({
     noVideoAttached: false,
@@ -46,20 +47,13 @@ export default function UploadModal({ show, onClose }) {
   };
 
   const handleClose = () => {
-    setVideoToUpload(undefined);
-    setUploadedVideo(undefined);
-    setTotalChunkCount(0);
-    setChunkIndex(1);
-    setChunkStart(0);
-    setChunkEnd(CHUNK_SIZE);
-    setProgress(0);
-    setCancelToken(undefined);
+    window.location.reload();
     onClose();
   }
 
   const handleCancel = () => {
     if (videoToUpload !== undefined) {
-      // cancelToken(); //TODO
+      cancelTokenSource.current.cancel();
       deleteChunks(videoToUpload.name);
     } else if (uploadedVideo !== undefined) {
       deleteVideo(uploadedVideo.id);
@@ -76,7 +70,6 @@ export default function UploadModal({ show, onClose }) {
       setShowSnackbar({ ...showSnackbar, videoTitleMissing: true });
     } else {
       handleClose();
-      window.location.reload();
     }
   };
 
@@ -87,19 +80,21 @@ export default function UploadModal({ show, onClose }) {
   };
 
   const finishVideoUpload = () => {
-    finishUpload(videoToUpload.name)
+    finishUpload(videoToUpload.name, cancelTokenSource.current)
       .then((response) => {
-        setVideoToUpload(undefined);
         setProgress(100);
+        setVideoToUpload(undefined);
         setUploadedVideo(response.data);
       })
-      .catch(() => {
-        handleUploadError();
+      .catch((error) => {
+        if (!isCancel(error)) {
+          handleUploadError();
+        }
       });
   };
 
   const uploadNextChunk = (chunk) => {
-    uploadChunk(chunkIndex, videoToUpload.name, chunk)
+    uploadChunk(chunkIndex, videoToUpload.name, chunk, cancelTokenSource.current)
       .then(() => {
         if (chunkIndex >= totalChunkCount) {
           finishVideoUpload();
@@ -111,13 +106,15 @@ export default function UploadModal({ show, onClose }) {
           setProgress(percentage);
         }
       })
-      .catch(() => {
-        handleUploadError();
+      .catch((error) => {
+        if (!isCancel(error)) {
+          handleUploadError();
+        }
       });
   };
 
   useEffect(() => {
-    if (chunkIndex <= totalChunkCount && videoToUpload !== undefined) {
+    if (chunkIndex <= totalChunkCount && videoToUpload !== undefined && progress !== 100) {
       const chunk = videoToUpload.slice(chunkStart, chunkEnd);
       uploadNextChunk(chunk);
     }
@@ -174,7 +171,7 @@ export default function UploadModal({ show, onClose }) {
     if (showSnackbar.noVideoAttached) {
       return (
         <CustomSnackbar
-          message="Please attach a video, before submitting"
+          message="Please attach a video before submitting"
           onClose={() =>
             setShowSnackbar({ ...showSnackbar, noVideoAttached: false })
           }

@@ -9,7 +9,7 @@ const Api = axios.create({
   },
 });
 
-export const uploadChunk = async (chunkNumber, videoFileName, chunk) => (
+export const uploadChunk = async (chunkNumber, videoFileName, chunk, cancelTokenSource) => (
   Api.post(
     "/Videos/UploadChunks",
     chunk,
@@ -18,14 +18,21 @@ export const uploadChunk = async (chunkNumber, videoFileName, chunk) => (
         chunkNumber,
         fileName: videoFileName
       },
-      headers: { 'Content-Type': 'application/json' }
-      // cancelToken: new axios.CancelToken(cancelExecutor), // TODO
+      headers: { 'Content-Type': 'application/json' },
+      cancelToken: cancelTokenSource.token
     }
   )
 );
 
-export const finishUpload = async (videoFileName) => (
-  Api.post("/Videos/UploadComplete", null, { params: { fileName: videoFileName }})
+export const finishUpload = async (videoFileName, cancelTokenSource) => (
+  Api.post(
+    "/Videos/UploadComplete",
+    null,
+    { 
+      params: { fileName: videoFileName }, 
+      cancelToken: cancelTokenSource.token 
+    }
+  )
 );
 
 export const deleteChunks = async (videoFileName) => {
