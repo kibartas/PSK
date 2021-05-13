@@ -1,5 +1,6 @@
 import { Grid } from '@material-ui/core';
 import React from 'react';
+import SortIcon from '@material-ui/icons/Sort';
 import { UploadIcon, emptyLibraryDrawing, McRideScreaming } from '../../assets';
 import EmptyLibraryContent from '../../components/EmptyLibraryContent/EmptyLibraryContent';
 import TopBar from '../../components/TopBar/TopBar';
@@ -49,6 +50,30 @@ const mockedCards = [
     uploadDate: '2020-11-23',
     thumbnail: McRideScreaming,
   },
+  {
+    id: '22',
+    title: 'Screaming guy',
+    uploadDate: '2020-11-25',
+    thumbnail: McRideScreaming,
+  },
+  {
+    id: '23',
+    title: 'Screaming guy',
+    uploadDate: '2020-11-25',
+    thumbnail: McRideScreaming,
+  },
+  {
+    id: '24',
+    title: 'Screaming guy',
+    uploadDate: '2020-11-25',
+    thumbnail: McRideScreaming,
+  },
+  {
+    id: '26',
+    title: 'Screaming guy',
+    uploadDate: '2020-11-26',
+    thumbnail: McRideScreaming,
+  },
 ];
 
 const transformCards = (cards) => {
@@ -59,11 +84,22 @@ const transformCards = (cards) => {
     acc[val.uploadDate].push(val);
     return acc;
   }, {});
-  const sortedDates = Object.keys(transformedCards).sort(
-    (a, b) => new Date(a) < new Date(b),
-  );
-  return { transformedCards, sortedDates };
+  return { transformedCards };
 };
+
+const sortCardDates = (cards, ascending = true) =>
+  Object.keys(cards).sort((a, b) => {
+    const dateA = new Date(a);
+    const dateB = new Date(b);
+    if (ascending) {
+      if (dateA.getTime() < dateB.getTime()) return 1;
+      if (dateA.getTime() === dateB.getTime()) return 0;
+      return -1;
+    }
+    if (dateA.getTime() < dateB.getTime()) return -1;
+    if (dateA.getTime() === dateB.getTime()) return 0;
+    return 1;
+  });
 
 class LibraryPage extends React.Component {
   constructor(props) {
@@ -73,17 +109,27 @@ class LibraryPage extends React.Component {
       sortedVideoCardDates: [],
       selectedCards: [],
       showUploadModal: false,
+      sortAscending: false,
     };
   }
 
   componentDidMount() {
     /* [JR]: TODO WDB-104 */
-    const { transformedCards, sortedDates } = transformCards(mockedCards); // should be info from backend
+    const { transformedCards } = transformCards(mockedCards); // should be info from backend
+    const sortedDates = sortCardDates(transformedCards);
     this.setState({
       videoCards: transformedCards,
       sortedVideoCardDates: sortedDates,
     });
   }
+
+  toggleSort = () => {
+    const { sortAscending, videoCards } = this.state;
+    this.setState({
+      sortAscending: !sortAscending,
+      sortedVideoCardDates: sortCardDates(videoCards, sortAscending),
+    });
+  };
 
   toggleUploadModal = () => {
     const { showUploadModal } = this.state;
@@ -140,8 +186,8 @@ class LibraryPage extends React.Component {
               showAvatarAndLogout
               firstName={window.sessionStorage.getItem('firstName')}
               lastName={window.sessionStorage.getItem('lastName')}
-              iconsToShow={[UploadIcon]}
-              onIconsClick={[this.toggleUploadModal]}
+              iconsToShow={[SortIcon, UploadIcon]}
+              onIconsClick={[this.toggleSort, this.toggleUploadModal]}
             />
           ) : (
             <TopBar
