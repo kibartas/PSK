@@ -4,6 +4,10 @@
   justify-content: center;
 }
 
+.modal__paper {
+  width: 60vh;
+}
+
 .modal__dropzone {
   padding: 20px;
   border-width: 2;
@@ -24,8 +28,4 @@
 .modal__dropzone--reject {
   border-color: #ff1744;
   background-color: #ff174450;
-}
-
-.linearProgressBar {
-  width: 100%;
 }

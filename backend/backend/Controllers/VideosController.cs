@@ -121,7 +121,7 @@ namespace backend.Controllers
                 var result = await conversion.Start();
 
                 _db.Videos.Add(video);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
 
                 VideoDto response = new()
                 {
@@ -133,7 +133,7 @@ namespace backend.Controllers
 
                 return Ok(response);
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 try
                 {
@@ -161,7 +161,7 @@ namespace backend.Controllers
         }
 
         [HttpPatch, Route("ChangeTitle")]
-        public ActionResult<VideoDto> ChangeTitle(Guid id, string newTitle) // TODO possibly FromRoute is needed
+        public ActionResult<VideoDto> ChangeTitle(Guid id, string newTitle)
         {
             if (id == Guid.Empty) return BadRequest("No Id provided");
             if (string.IsNullOrWhiteSpace(newTitle)) return BadRequest("Empty new title");
