@@ -29,3 +29,7 @@
   border-color: #ff1744;
   background-color: #ff174450;
 }
+
+.modal__progressBar {
+  width: 100%;
+}

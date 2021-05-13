@@ -14,23 +14,26 @@ import './styles.css';
 import { uploadChunk, finishUpload, deleteChunks, changeTitle, deleteVideo } from '../../api/VideoAPI';
 import { getChunkCount } from '../../util';
 import InUploadVideoItem from './InUploadVideoItem';
-import UploadedVideoItem from './UploadedVideoItem';
 import StyledDropzone from './StyledDropzone';
 import CustomSnackbar from '../CustomSnackbar/CustomSnackbar';
 import { CHUNK_SIZE } from '../../constants';
+import UploadedVideosList from './UploadedVideosList';
 
 export default function UploadModal({ show, onClose }) {
-  const [videoToUpload, setVideoToUpload] = useState(undefined);
-  const [uploadedVideo, setUploadedVideo] = useState(undefined); // Video entity from BE
-  const [isTitleMissing, setIsTitleMissing] = useState(false);
+  const [videosToUpload, setVideosToUpload] = useState([]);
+  const [uploadedVideos, setUploadedVideos] = useState([]); // Video entity from BE
 
-  const [totalChunkCount, setTotalChunkCount] = useState(undefined);
-  const [chunkIndex, setChunkIndex] = useState(1);
-  const [chunkStart, setChunkStart] = useState(0);
-  const [chunkEnd, setChunkEnd] = useState(CHUNK_SIZE);
+  const [isMultipleUpload, setIsMultipleUpload] = useState(false);
+  const [areTitlesMissing, setAreTitlesMissing] = useState(false);
+
+  const videoInUpload = useRef(undefined);
+  const totalChunkCount = useRef(undefined);
+  const chunkIndex = useRef(1);
+  const chunkStart = useRef(0);
+  const chunkEnd = useRef(CHUNK_SIZE);
   const [progress, setProgress] = useState(0);
 
-  const cancelTokenSource = useRef(CancelToken.source());
+  const cancelTokenSource = useRef(undefined);
 
   const [showSnackbar, setShowSnackbar] = useState({
     noVideoAttached: false,
@@ -41,9 +44,10 @@ export default function UploadModal({ show, onClose }) {
   });
 
   const handleAdd = (acceptedVideoFiles) => {
-    const videoFile = acceptedVideoFiles[0];
-    setTotalChunkCount(getChunkCount(videoFile));
-    setVideoToUpload(videoFile);
+    if (acceptedVideoFiles.length > 1) {
+      setIsMultipleUpload(true);
+    }
+    setVideosToUpload([...acceptedVideoFiles]);
   };
 
   const handleClose = () => {
@@ -52,87 +56,118 @@ export default function UploadModal({ show, onClose }) {
   }
 
   const handleCancel = () => {
-    if (videoToUpload !== undefined) {
-      cancelTokenSource.current.cancel();
-      deleteChunks(videoToUpload.name);
-    } else if (uploadedVideo !== undefined) {
-      deleteVideo(uploadedVideo.id);
+    if (videoInUpload.current !== undefined) {
+      if (cancelTokenSource.current !== undefined) {
+        cancelTokenSource.current.cancel();
+      }
+      deleteChunks(videoInUpload.current.name);
+      setVideosToUpload([]);
+    } else if (uploadedVideos.length > 0) {
+      uploadedVideos.forEach(video => deleteVideo(video.id));
     }
     handleClose();
   }
 
   const handleSubmit = () => {
-    if (videoToUpload === undefined && uploadedVideo === undefined) {
+    if (videosToUpload.length === 0 && uploadedVideos.length === 0 && videoInUpload.current === undefined) {
       setShowSnackbar({ ...showSnackbar, noVideoAttached: true });
-    } else if (uploadedVideo === undefined) {
+    } else if (videoInUpload.current !== undefined || videosToUpload.length > 0) {
       setShowSnackbar({ ...showSnackbar, uploadInProgress: true });
-    } else if (isTitleMissing) {
+    } else if (areTitlesMissing) {
       setShowSnackbar({ ...showSnackbar, videoTitleMissing: true });
     } else {
       handleClose();
     }
   };
 
-  const handleUploadError = () => {
-    setShowSnackbar({ ...showSnackbar, uploadError: true })
-    deleteChunks(videoToUpload.name);
-    handleClose();
+  const resetUploadState = () => {
+    videoInUpload.current = undefined;
+    totalChunkCount.current = undefined;
+    chunkIndex.current = 1;
+    chunkStart.current = 0;
+    chunkEnd.current = CHUNK_SIZE;
+    setProgress(0);
+    setVideosToUpload([...videosToUpload.slice(1)]);
+  }
+
+  const handleUploadError = (requestCancelled) => {
+    if (!requestCancelled) {
+      setShowSnackbar({ ...showSnackbar, uploadError: true })
+    }
+    deleteChunks(videoInUpload.current.name);
+    resetUploadState();
   };
 
   const finishVideoUpload = () => {
-    finishUpload(videoToUpload.name, cancelTokenSource.current)
+    cancelTokenSource.current = CancelToken.source();
+    finishUpload(videoInUpload.current.name, cancelTokenSource.current)
       .then((response) => {
         setProgress(100);
-        setVideoToUpload(undefined);
-        setUploadedVideo(response.data);
-      })
-      .catch((error) => {
-        if (!isCancel(error)) {
-          handleUploadError();
-        }
-      });
+        resetUploadState();
+        setUploadedVideos([...uploadedVideos, response.data]);
+      }).catch(error => handleUploadError(isCancel(error)));
   };
 
   const uploadNextChunk = (chunk) => {
-    uploadChunk(chunkIndex, videoToUpload.name, chunk, cancelTokenSource.current)
+    cancelTokenSource.current = CancelToken.source();
+    uploadChunk(chunkIndex.current, videoInUpload.current.name, chunk, cancelTokenSource.current)
       .then(() => {
-        if (chunkIndex >= totalChunkCount) {
+        if (chunkIndex.current >= totalChunkCount.current) {
           finishVideoUpload();
         } else {
-          setChunkStart(chunkEnd);
-          setChunkEnd(chunkEnd + CHUNK_SIZE);
-          setChunkIndex(chunkIndex + 1);
-          const percentage = (chunkIndex / totalChunkCount) * 100;
+          chunkStart.current = chunkEnd.current;
+          chunkEnd.current += CHUNK_SIZE;
+          const percentage = (chunkIndex.current / totalChunkCount.current) * 100;
+          chunkIndex.current += 1
           setProgress(percentage);
         }
-      })
-      .catch((error) => {
-        if (!isCancel(error)) {
-          handleUploadError();
-        }
-      });
+      }).catch(error => handleUploadError(isCancel(error)));
   };
 
   useEffect(() => {
-    if (chunkIndex <= totalChunkCount && videoToUpload !== undefined && progress !== 100) {
-      const chunk = videoToUpload.slice(chunkStart, chunkEnd);
+    if (videosToUpload.length > 0) {
+      // eslint-disable-next-line prefer-destructuring
+      videoInUpload.current = videosToUpload[0]; // TODO might be bug here
+      totalChunkCount.current = getChunkCount(videoInUpload.current);
+      setProgress(1);
+    }
+  }, [videosToUpload]);
+
+  useEffect(() => {
+    if (chunkIndex.current <= totalChunkCount.current && 
+        videoInUpload.current !== undefined && progress !== 100) {
+      const chunk = videoInUpload.current.slice(chunkStart.current, chunkEnd.current);
       uploadNextChunk(chunk);
     }
-  }, [videoToUpload, progress]);
+  }, [progress]);
 
-  const handleVideoTitleChange = (newTitle) => {
+  const handleUploadCancel = () => {
+    if (cancelTokenSource.current !== undefined) {
+      cancelTokenSource.current.cancel();
+    }
+  };
+
+  const handleVideoTitleChange = (videoId) => (newTitle) => {
     if (newTitle === '') {
-      setIsTitleMissing(true);
+      setAreTitlesMissing(true);
       return;
     }
-    setShowSnackbar({ ...showSnackbar, videoTitleMissing: false });
-    setIsTitleMissing(false);
-    changeTitle(uploadedVideo.id, newTitle)
+    setAreTitlesMissing(false);
+    changeTitle(videoId, newTitle)
       .then((response) => {
-        setUploadedVideo(response.data);
+        const index = uploadedVideos.findIndex((video) => video.id === videoId);
+        const uploadedVideosCopy = uploadedVideos.slice();
+        uploadedVideosCopy.splice(index, 1, response.data);
+        setUploadedVideos([...uploadedVideosCopy]);
       })
       .catch(() => setShowSnackbar({ ...showSnackbar, serverError: false }));
   };
+
+  const handleVideoDeletion = (videoId) => () => (
+    deleteVideo(videoId).then(() => (
+      setUploadedVideos([...uploadedVideos.filter(video => video.id !== videoId)])
+    )).catch(() => setShowSnackbar({ ...showSnackbar, serverError: true }))
+  )
 
   const renderSnackbars = () => {
     if (showSnackbar.uploadError) {
@@ -194,6 +229,29 @@ export default function UploadModal({ show, onClose }) {
     return null;
   };
 
+  const shouldRenderDropzone = () => (
+    videosToUpload.length === 0 && videoInUpload.current === undefined && uploadedVideos.length === 0
+  );
+
+  const renderModalTitle = () => {
+    let title = null;
+    if (videosToUpload.length > 0) {
+      title = isMultipleUpload ? "Your videos are being uploaded..." : "Your video is being uploaded...";
+    } else if (uploadedVideos.length > 0 && videosToUpload.length === 0) {
+      title = isMultipleUpload ? "Your videos have been successfully uploaded": "Your video has been successfully uploaded" 
+    }
+    if (title !== null) {
+      return (
+        <Grid item xs={12}>
+          <Typography variant="subtitle1">
+            {title}
+          </Typography>
+        </Grid>
+      );
+    } 
+    return null;
+  };
+
   return (
     <>
       {renderSnackbars()}
@@ -212,41 +270,30 @@ export default function UploadModal({ show, onClose }) {
           <Paper className='modal__paper'>
             <CardContent>
               <Grid container direction="column" spacing={2}>
-                {(videoToUpload === undefined && uploadedVideo === undefined) && 
+                {shouldRenderDropzone() && 
                   <Grid item xs={12}>
                     <StyledDropzone
                       onAdd={handleAdd}
                     />
                   </Grid>
                 }
-                {videoToUpload !== undefined && 
-                  <>
-                    <Grid item xs={12}>
-                      <Typography variant="subtitle1">
-                        Your video is being uploaded...
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <InUploadVideoItem
-                        progress={progress}
-                      />
-                    </Grid>
-                  </>
+                {renderModalTitle()}
+                {videosToUpload.length > 0 && 
+                  <Grid item xs={12}>
+                    <InUploadVideoItem
+                      progress={progress}
+                      onUploadCancel={handleUploadCancel}
+                    />
+                  </Grid>
                 }
-                {uploadedVideo !== undefined &&
-                  <>
-                    <Grid item xs={12}>
-                      <Typography variant="subtitle1">
-                        Your video has been successfully uploaded
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <UploadedVideoItem
-                        video={uploadedVideo}
-                        onVideoTitleChange={handleVideoTitleChange}
-                      />
-                    </Grid>
-                  </>
+                {uploadedVideos.length > 0 &&
+                  <Grid item xs={12}>
+                    <UploadedVideosList
+                      videos={uploadedVideos}
+                      onVideoTitleChange={handleVideoTitleChange}
+                      onVideoDeletion={handleVideoDeletion}
+                    />
+                  </Grid>
                 }
                 <Grid item container spacing={1} justify="flex-end">
                   <Grid item>
