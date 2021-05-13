@@ -21,7 +21,7 @@ import UploadedVideosList from './UploadedVideosList';
 
 export default function UploadModal({ show, onClose }) {
   const [videosToUpload, setVideosToUpload] = useState([]);
-  const [uploadedVideos, setUploadedVideos] = useState([]); // Video entity from BE
+  const [uploadedVideos, setUploadedVideos] = useState([]); // Stores video entities from BE
 
   const [isMultipleUpload, setIsMultipleUpload] = useState(false);
   const [areTitlesMissing, setAreTitlesMissing] = useState(false);
@@ -127,7 +127,7 @@ export default function UploadModal({ show, onClose }) {
   useEffect(() => {
     if (videosToUpload.length > 0) {
       // eslint-disable-next-line prefer-destructuring
-      videoInUpload.current = videosToUpload[0]; // TODO might be bug here
+      videoInUpload.current = videosToUpload[0];
       totalChunkCount.current = getChunkCount(videoInUpload.current);
       setProgress(1);
     }
