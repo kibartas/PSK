@@ -11,7 +11,13 @@ import {
 } from '@material-ui/core';
 import { CancelToken, isCancel } from 'axios';
 import './styles.css';
-import { uploadChunk, finishUpload, deleteChunks, changeTitle, deleteVideo } from '../../api/VideoAPI';
+import {
+  uploadChunk,
+  finishUpload,
+  deleteChunks,
+  changeTitle,
+  deleteVideo,
+} from '../../api/VideoAPI';
 import { getChunkCount } from '../../util';
 import InUploadVideoItem from './InUploadVideoItem';
 import UploadedVideoItem from './UploadedVideoItem';
@@ -49,17 +55,16 @@ export default function UploadModal({ show, onClose }) {
   const handleClose = () => {
     window.location.reload();
     onClose();
-  }
+  };
 
   const handleCancel = () => {
     if (videoToUpload !== undefined) {
       cancelTokenSource.current.cancel();
-      deleteChunks(videoToUpload.name);
+      deleteChunks(videoToUpload.name).then(() => handleClose());
     } else if (uploadedVideo !== undefined) {
-      deleteVideo(uploadedVideo.id);
+      deleteVideo(uploadedVideo.id).then(() => handleClose());
     }
-    handleClose();
-  }
+  };
 
   const handleSubmit = () => {
     if (videoToUpload === undefined && uploadedVideo === undefined) {
@@ -74,7 +79,7 @@ export default function UploadModal({ show, onClose }) {
   };
 
   const handleUploadError = () => {
-    setShowSnackbar({ ...showSnackbar, uploadError: true })
+    setShowSnackbar({ ...showSnackbar, uploadError: true });
     deleteChunks(videoToUpload.name);
     handleClose();
   };
@@ -94,7 +99,12 @@ export default function UploadModal({ show, onClose }) {
   };
 
   const uploadNextChunk = (chunk) => {
-    uploadChunk(chunkIndex, videoToUpload.name, chunk, cancelTokenSource.current)
+    uploadChunk(
+      chunkIndex,
+      videoToUpload.name,
+      chunk,
+      cancelTokenSource.current,
+    )
       .then(() => {
         if (chunkIndex >= totalChunkCount) {
           finishVideoUpload();
@@ -114,7 +124,11 @@ export default function UploadModal({ show, onClose }) {
   };
 
   useEffect(() => {
-    if (chunkIndex <= totalChunkCount && videoToUpload !== undefined && progress !== 100) {
+    if (
+      chunkIndex <= totalChunkCount &&
+      videoToUpload !== undefined &&
+      progress !== 100
+    ) {
       const chunk = videoToUpload.slice(chunkStart, chunkEnd);
       uploadNextChunk(chunk);
     }
@@ -209,17 +223,15 @@ export default function UploadModal({ show, onClose }) {
         disableBackdropClick
       >
         <Fade in={show}>
-          <Paper className='modal__paper'>
+          <Paper className="modal__paper">
             <CardContent>
               <Grid container direction="column" spacing={2}>
-                {(videoToUpload === undefined && uploadedVideo === undefined) && 
+                {videoToUpload === undefined && uploadedVideo === undefined && (
                   <Grid item xs={12}>
-                    <StyledDropzone
-                      onAdd={handleAdd}
-                    />
+                    <StyledDropzone onAdd={handleAdd} />
                   </Grid>
-                }
-                {videoToUpload !== undefined && 
+                )}
+                {videoToUpload !== undefined && (
                   <>
                     <Grid item xs={12}>
                       <Typography variant="subtitle1">
@@ -227,13 +239,11 @@ export default function UploadModal({ show, onClose }) {
                       </Typography>
                     </Grid>
                     <Grid item xs={12}>
-                      <InUploadVideoItem
-                        progress={progress}
-                      />
+                      <InUploadVideoItem progress={progress} />
                     </Grid>
                   </>
-                }
-                {uploadedVideo !== undefined &&
+                )}
+                {uploadedVideo !== undefined && (
                   <>
                     <Grid item xs={12}>
                       <Typography variant="subtitle1">
@@ -247,7 +257,7 @@ export default function UploadModal({ show, onClose }) {
                       />
                     </Grid>
                   </>
-                }
+                )}
                 <Grid item container spacing={1} justify="flex-end">
                   <Grid item>
                     <Button variant="outlined" onClick={handleCancel}>
