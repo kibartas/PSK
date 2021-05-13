@@ -1,7 +1,7 @@
 import React from 'react';
 import { GRAY_1 } from '../../constants';
 
-const MenuIcon = ({ fill = {GRAY_1}, width = '24px', height = '24px' }) => (
+const MenuIcon = ({ fill = { GRAY_1 }, width = '24px', height = '24px' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     height={height}

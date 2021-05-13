@@ -11,7 +11,7 @@ import {
   ListItem,
   TextField,
   InputAdornment,
-  IconButton
+  IconButton,
 } from '@material-ui/core';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
 import CustomSnackbar from '../CustomSnackbar/CustomSnackbar';
@@ -38,41 +38,41 @@ export default function UploadModal({ show, onUpload, onClose }) {
       setShowSnackbar({ ...showSnackbar, noVideosAdded: true });
       return;
     }
-    if (videoNames.some(name => name === '')) {
+    if (videoNames.some((name) => name === '')) {
       setShowSnackbar({ ...showSnackbar, videoNameMissing: true });
       return;
     }
     onUpload(addedVideos, videoNames);
     handleClose();
-  }
+  };
 
   const handleAddVideos = (videos) => {
     setShowSnackbar({ ...showSnackbar, noVideosAdded: false });
     setAddedVideos([...addedVideos, ...videos]);
-    setVideoNames([...videoNames, ...videos.map(video => /[^.]*/.exec(video.file.name)[0])]);
-  }
+    setVideoNames([
+      ...videoNames,
+      ...videos.map((video) => /[^.]*/.exec(video.file.name)[0]),
+    ]);
+  };
 
-  const getVideoAddedMessage = (videoName) => `Video ${videoName} was successfully added. `;
+  const getVideoAddedMessage = (videoName) =>
+    `Video ${videoName} was successfully added. `;
 
-  const handleChangeVideoName = (videoIndex) => (
-    (event) => {
-      const videoNamesCopy = videoNames.slice();
-      videoNamesCopy.splice(videoIndex, 1, event.target.value);
-      setVideoNames([...videoNamesCopy]);
-      setShowSnackbar({ ...showSnackbar, videoNameMissing: false });
-    }
-  );
+  const handleChangeVideoName = (videoIndex) => (event) => {
+    const videoNamesCopy = videoNames.slice();
+    videoNamesCopy.splice(videoIndex, 1, event.target.value);
+    setVideoNames([...videoNamesCopy]);
+    setShowSnackbar({ ...showSnackbar, videoNameMissing: false });
+  };
 
-  const handleRemoveVideo = (videoIndex) => (
-    () => {
-      const videoNamesCopy = videoNames.slice();
-      videoNamesCopy.splice(videoIndex, 1);
-      const addedVideosCopy = addedVideos.slice();
-      addedVideosCopy.splice(videoIndex, 1);
-      setVideoNames([...videoNamesCopy]);
-      setAddedVideos([...addedVideosCopy]);
-    }
-  )
+  const handleRemoveVideo = (videoIndex) => () => {
+    const videoNamesCopy = videoNames.slice();
+    videoNamesCopy.splice(videoIndex, 1);
+    const addedVideosCopy = addedVideos.slice();
+    addedVideosCopy.splice(videoIndex, 1);
+    setVideoNames([...videoNamesCopy]);
+    setAddedVideos([...addedVideosCopy]);
+  };
 
   const renderAddedVideosList = () => {
     const listItems = addedVideos.map((video, index) => {
@@ -102,19 +102,17 @@ export default function UploadModal({ show, onUpload, onClose }) {
       );
     });
 
-    return (
-      <List>
-        {listItems}
-      </List>
-    );
-  }
+    return <List>{listItems}</List>;
+  };
 
   const renderSnackbars = () => {
     if (showSnackbar.noVideosAdded) {
       return (
         <CustomSnackbar
           message="Please attach videos which you want to upload"
-          onClose={() => setShowSnackbar({ ...showSnackbar, noVideosAdded: false })}
+          onClose={() =>
+            setShowSnackbar({ ...showSnackbar, noVideosAdded: false })
+          }
           severity="info"
         />
       );
@@ -123,7 +121,9 @@ export default function UploadModal({ show, onUpload, onClose }) {
       return (
         <CustomSnackbar
           message="Please enter a name for all attached videos"
-          onClose={() => setShowSnackbar({ ...showSnackbar, videoNameMissing: false })}
+          onClose={() =>
+            setShowSnackbar({ ...showSnackbar, videoNameMissing: false })
+          }
           severity="info"
         />
       );
@@ -135,7 +135,7 @@ export default function UploadModal({ show, onUpload, onClose }) {
     <>
       {renderSnackbars()}
       <Modal
-        className='modal'
+        className="modal"
         open={show}
         onClose={handleClose}
         closeAfterTransition
@@ -147,7 +147,7 @@ export default function UploadModal({ show, onUpload, onClose }) {
         <Fade in={show}>
           <Paper>
             <CardContent>
-              <Grid container direction='column' spacing={2}>
+              <Grid container direction="column" spacing={2}>
                 <Grid item xs={12}>
                   <DropzoneAreaBase
                     clearOnUnmount
@@ -158,17 +158,12 @@ export default function UploadModal({ show, onUpload, onClose }) {
                     getFileAddedMessage={getVideoAddedMessage}
                   />
                 </Grid>
-                {addedVideos.length > 0 &&
+                {addedVideos.length > 0 && (
                   <Grid item xs={12}>
                     {renderAddedVideosList()}
                   </Grid>
-                }
-                <Grid 
-                  item
-                  container
-                  spacing={1}
-                  justify='flex-end'
-                >
+                )}
+                <Grid item container spacing={1} justify="flex-end">
                   <Grid item>
                     <Button
                       variant="contained"
@@ -179,10 +174,7 @@ export default function UploadModal({ show, onUpload, onClose }) {
                     </Button>
                   </Grid>
                   <Grid item>
-                    <Button
-                      variant="outlined"
-                      onClick={handleClose}
-                    >
+                    <Button variant="outlined" onClick={handleClose}>
                       Cancel
                     </Button>
                   </Grid>
