@@ -256,7 +256,7 @@ export default function UploadModal({ show, onClose }) {
 
   const renderModalTitle = () => {
     let title = null;
-    if (videosToUpload.length > 0) {
+    if (videosToUpload.length > 0 || inUploadVideo) {
       title = isMultipleUpload ? "Your videos are being uploaded..." : "Your video is being uploaded...";
     } else if (uploadedVideos.length > 0 && videosToUpload.length === 0) {
       title = isMultipleUpload ? "Your videos have been successfully uploaded": "Your video has been successfully uploaded" 

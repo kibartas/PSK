@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, IconButton, LinearProgress, ListItem, Typography } from '@material-ui/core';
-import CancelIcon from '@material-ui/icons/Cancel';
+import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
 import './styles.css';
 import { getFileNameWithoutExtension } from '../../util';
 
@@ -41,7 +41,7 @@ export default function InUploadVideoListItem({
         </Grid>
         <Grid item xs={1}>
           <IconButton onClick={onUploadCancel}>
-            <CancelIcon />
+            <CancelOutlinedIcon />
           </IconButton>
         </Grid>
       </Grid>

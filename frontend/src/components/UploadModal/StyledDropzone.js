@@ -11,7 +11,7 @@ export default function StyledDropzone({ onAdd }) {
     isDragReject,
   } = useDropzone({
     onDropAccepted: onAdd,
-    accept: 'video/*'
+    accept: 'video/mp4'
   });
 
   const className = useMemo(() => {
