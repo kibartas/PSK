@@ -107,7 +107,7 @@ namespace backend.Controllers
                     UserId = user.Id,
                     Title = Path.GetFileNameWithoutExtension(fileName),
                     Size = size,
-                    UploadDate = new DateTime(),
+                    UploadDate = DateTime.Now,
                 };
 
                 video.Id = Guid.NewGuid();
