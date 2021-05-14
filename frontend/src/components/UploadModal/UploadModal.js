@@ -61,8 +61,8 @@ export default function UploadModal({ show, onClose }) {
         cancelTokenSource.current.cancel();
       }
       deleteChunks(videoInUpload.current.name);
-      setVideosToUpload([]);
-    } else if (uploadedVideos.length > 0) {
+    } 
+    if (uploadedVideos.length > 0) {
       uploadedVideos.forEach(video => deleteVideo(video.id));
     }
     handleClose();
