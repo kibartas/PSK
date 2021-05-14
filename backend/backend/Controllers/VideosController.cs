@@ -8,6 +8,8 @@ using backend.DTOs;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System;
+using System.Text.RegularExpressions;
+using backend.Utils;
 using Xabe.FFmpeg;
 
 namespace backend.Controllers
@@ -58,7 +60,7 @@ namespace backend.Controllers
 
             try
             {
-                string newPath = Path.Combine(_tempPath, Path.GetFileNameWithoutExtension(fileName) + "-" + user.Id + chunkNumber + Path.GetExtension(fileName));
+                string newPath = Path.Combine(_tempPath, chunkNumber + "_" + Path.GetFileNameWithoutExtension(fileName) + "-" + user.Id + Path.GetExtension(fileName));
                 if (!Directory.Exists(_tempPath)) Directory.CreateDirectory(_tempPath);
 
                 using (FileStream fs = System.IO.File.Create(newPath))
@@ -111,7 +113,10 @@ namespace backend.Controllers
                 string userPath = Path.Combine(_uploadPath, user.Id.ToString());
                 string tempFilePath = Path.Combine(userPath, fileName);
                 string[] filePaths = Directory.GetFiles(_tempPath)
-                    .Where(p => p.Contains(Path.GetFileNameWithoutExtension(fileName)) && p.Contains(user.Id.ToString())).ToArray();
+                    .Where(p => p.Contains(Path.GetFileNameWithoutExtension(fileName)) 
+                                && p.Contains(user.Id.ToString()))
+                    .OrderBy(x => int.Parse(Regex.Match(x, RegexValidation.CHUNK_NUMBER_REGEX).Value))
+                    .ToArray();
 
                 foreach (string chunk in filePaths)
                 {
