@@ -136,7 +136,7 @@ namespace backend.Controllers
             }
             catch
             {
-                return BadRequest();
+                return StatusCode(500);
             }
 
             user.Confirmed = true;

@@ -37,7 +37,7 @@ export default function StyledDropzone({ onAdd }) {
         </Grid>
         <Grid item xs={12} align="center">
           <Typography variant="h6">
-            Drag and drop a video here, or click to select it
+            Drag and drop a video here or click to select it
           </Typography>
         </Grid>
         <Grid item xs={12} align="center">
