@@ -2,9 +2,10 @@ import React from 'react';
 import { Grid, IconButton, LinearProgress, ListItem, Typography } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import './styles.css';
+import { getFileNameWithoutExtension } from '../../util';
 
 export default function InUploadVideoListItem({
-  videoName, // TODO WITHOUT EXTENSION
+  videoName,
   progress,
   onUploadCancel
 }) {
@@ -22,15 +23,15 @@ export default function InUploadVideoListItem({
           container
           direction='row'
           alignItems='center'
-          justify='space-evenly'
+          justify='center'
           spacing={1}
         >
-          <Grid item xs={4}>
-            <Typography noWrap>
-              {videoName}
+          <Grid item xs={12}>
+            <Typography variant='caption' noWrap>
+              {getFileNameWithoutExtension(videoName)}
             </Typography>
           </Grid>
-          <Grid item xs>
+          <Grid item xs={12}>
             <LinearProgress
               className='modal__progressBar'
               variant="determinate"
