@@ -13,11 +13,10 @@ import { CancelToken, isCancel } from 'axios';
 import './styles.css';
 import { uploadChunk, finishUpload, deleteChunks, changeTitle, deleteVideo } from '../../api/VideoAPI';
 import { getChunkCount } from '../../util';
-import InUploadVideoItem from './InUploadVideoItem';
 import StyledDropzone from './StyledDropzone';
 import CustomSnackbar from '../CustomSnackbar/CustomSnackbar';
 import { CHUNK_SIZE } from '../../constants';
-import UploadedVideosList from './UploadedVideosList';
+import VideosList from './VideosList';
 
 export default function UploadModal({ show, onClose }) {
   const [videosToUpload, setVideosToUpload] = useState([]);
@@ -26,7 +25,7 @@ export default function UploadModal({ show, onClose }) {
   const [isMultipleUpload, setIsMultipleUpload] = useState(false);
   const [areTitlesMissing, setAreTitlesMissing] = useState(false);
 
-  const videoInUpload = useRef(undefined);
+  const [inUploadVideo, setInUploadVideo] = useState(undefined);
   const totalChunkCount = useRef(undefined);
   const chunkIndex = useRef(1);
   const chunkStart = useRef(0);
@@ -47,7 +46,9 @@ export default function UploadModal({ show, onClose }) {
     if (acceptedVideoFiles.length > 1) {
       setIsMultipleUpload(true);
     }
+    const nextVideo = acceptedVideoFiles.pop();
     setVideosToUpload([...acceptedVideoFiles]);
+    setInUploadVideo(nextVideo);
   };
 
   const handleClose = () => {
@@ -56,22 +57,22 @@ export default function UploadModal({ show, onClose }) {
   }
 
   const handleCancel = () => {
-    if (videoInUpload.current !== undefined) {
+    if (inUploadVideo !== undefined) {
       if (cancelTokenSource.current !== undefined) {
         cancelTokenSource.current.cancel();
       }
-      deleteChunks(videoInUpload.current.name);
+      deleteChunks(inUploadVideo.name);
     } 
     if (uploadedVideos.length > 0) {
       uploadedVideos.forEach(video => deleteVideo(video.id));
     }
-    handleClose();
+    handleClose(); // TODO sometimes they don't delete it in time
   }
 
   const handleSubmit = () => {
-    if (videosToUpload.length === 0 && uploadedVideos.length === 0 && videoInUpload.current === undefined) {
+    if (videosToUpload.length === 0 && uploadedVideos.length === 0 && inUploadVideo === undefined) {
       setShowSnackbar({ ...showSnackbar, noVideoAttached: true });
-    } else if (videoInUpload.current !== undefined || videosToUpload.length > 0) {
+    } else if (inUploadVideo !== undefined || videosToUpload.length > 0) {
       setShowSnackbar({ ...showSnackbar, uploadInProgress: true });
     } else if (areTitlesMissing) {
       setShowSnackbar({ ...showSnackbar, videoTitleMissing: true });
@@ -81,36 +82,40 @@ export default function UploadModal({ show, onClose }) {
   };
 
   const resetUploadState = () => {
-    videoInUpload.current = undefined;
     totalChunkCount.current = undefined;
     chunkIndex.current = 1;
     chunkStart.current = 0;
     chunkEnd.current = CHUNK_SIZE;
-    setProgress(0);
-    setVideosToUpload([...videosToUpload.slice(1)]);
+    if (videosToUpload.length > 0) {
+      const videosToUploadCopy = videosToUpload.slice();
+      const nextVideo = videosToUploadCopy.pop();
+      setVideosToUpload([...videosToUploadCopy]);
+      setInUploadVideo(nextVideo);
+    } else {
+      setInUploadVideo(undefined);
+    }
   }
 
   const handleUploadInterruption = (requestCancelled) => {
     if (!requestCancelled) {
       setShowSnackbar({ ...showSnackbar, uploadError: true })
     }
-    deleteChunks(videoInUpload.current.name);
-    resetUploadState();
+    deleteChunks(inUploadVideo.name).then(() => resetUploadState());
   };
 
   const finishVideoUpload = () => {
     cancelTokenSource.current = CancelToken.source();
-    finishUpload(videoInUpload.current.name, cancelTokenSource.current)
+    finishUpload(inUploadVideo.name, cancelTokenSource.current)
       .then((response) => {
         setProgress(100);
         resetUploadState();
-        setUploadedVideos([...uploadedVideos, response.data]);
+        setUploadedVideos([response.data, ...uploadedVideos]);
       }).catch(error => handleUploadInterruption(isCancel(error)));
   };
 
   const uploadNextChunk = (chunk) => {
     cancelTokenSource.current = CancelToken.source();
-    uploadChunk(chunkIndex.current, videoInUpload.current.name, chunk, cancelTokenSource.current)
+    uploadChunk(chunkIndex.current, inUploadVideo.name, chunk, cancelTokenSource.current)
       .then(() => {
         if (chunkIndex.current >= totalChunkCount.current) {
           finishVideoUpload();
@@ -125,21 +130,26 @@ export default function UploadModal({ show, onClose }) {
   };
 
   useEffect(() => {
-    if (videosToUpload.length > 0) {
-      // eslint-disable-next-line prefer-destructuring
-      videoInUpload.current = videosToUpload[0];
-      totalChunkCount.current = getChunkCount(videoInUpload.current);
+    if (inUploadVideo !== undefined) {
+      totalChunkCount.current = getChunkCount(inUploadVideo);
       setProgress(1);
     }
-  }, [videosToUpload]);
+  }, [inUploadVideo]);
 
   useEffect(() => {
     if (chunkIndex.current <= totalChunkCount.current && 
-        videoInUpload.current !== undefined && progress !== 100) {
-      const chunk = videoInUpload.current.slice(chunkStart.current, chunkEnd.current);
+        inUploadVideo !== undefined && progress !== 100) {
+      const chunk = inUploadVideo.slice(chunkStart.current, chunkEnd.current);
       uploadNextChunk(chunk);
     }
   }, [progress]);
+
+  const handleRemoveVideoToUpload = (videoName) => () => {
+    const index = videosToUpload.findIndex(video => video.name === videoName);
+    const videosToUploadCopy = videosToUpload.slice();
+    videosToUploadCopy.splice(index, 1);
+    setVideosToUpload([...videosToUploadCopy]);
+  }
 
   const handleUploadCancel = () => {
     if (cancelTokenSource.current !== undefined) {
@@ -230,7 +240,7 @@ export default function UploadModal({ show, onClose }) {
   };
 
   const shouldRenderDropzone = () => (
-    videosToUpload.length === 0 && videoInUpload.current === undefined && uploadedVideos.length === 0
+    videosToUpload.length === 0 && inUploadVideo === undefined && uploadedVideos.length === 0
   );
 
   const renderModalTitle = () => {
@@ -278,22 +288,17 @@ export default function UploadModal({ show, onClose }) {
                   </Grid>
                 }
                 {renderModalTitle()}
-                {videosToUpload.length > 0 && 
-                  <Grid item xs={12}>
-                    <InUploadVideoItem
-                      progress={progress}
-                      onUploadCancel={handleUploadCancel}
-                    />
-                  </Grid>
-                }
-                {uploadedVideos.length > 0 &&
-                  <Grid item xs={12}>
-                    <UploadedVideosList
-                      videos={uploadedVideos}
-                      onVideoTitleChange={handleVideoTitleChange}
-                      onVideoDeletion={handleVideoDeletion}
-                    />
-                  </Grid>
+                {!shouldRenderDropzone() &&
+                  <VideosList
+                    videosToUploadNames={videosToUpload.map(video => video.name)}
+                    onRemoveVideoToUpload={handleRemoveVideoToUpload}
+                    inUploadVideoName={inUploadVideo ? inUploadVideo.name : undefined}
+                    uploadProgress={progress}
+                    onUploadCancel={handleUploadCancel}
+                    uploadedVideos={uploadedVideos}
+                    onVideoTitleChange={handleVideoTitleChange}
+                    onVideoDeletion={handleVideoDeletion}
+                  />
                 }
                 <Grid item container spacing={1} justify="flex-end">
                   <Grid item>
