@@ -57,17 +57,20 @@ export default function UploadModal({ show, onClose }) {
   }
 
   const handleCancel = () => {
-    cancelTokenSource.current.cancel();
+    if (cancelTokenSource.current !== undefined) {
+      cancelTokenSource.current.cancel();
+    }
     const requests = [];
     if (inUploadVideo !== undefined) {
-      console.log(inUploadVideo.name);
       requests.push(deleteChunks(inUploadVideo.name));
     }
     if (uploadedVideos.length > 0) {
       uploadedVideos.forEach(video => requests.push(deleteVideo(video.id)));
     }
     if (requests.length > 0) {
-      Promise.all(requests).then(() => handleClose());
+      Promise.all(requests)
+        .then(() => handleClose())
+        .catch(() => handleClose());
     } else {
       handleClose();
     }
@@ -159,8 +162,9 @@ export default function UploadModal({ show, onClose }) {
     if (cancelTokenSource.current !== undefined) {
       cancelTokenSource.current.cancel();
       cancelTokenSource.current = undefined;
-      console.log(inUploadVideo.name);
-      deleteChunks(inUploadVideo.name).then(() => resetUploadState());
+      deleteChunks(inUploadVideo.name)
+        .then(() => resetUploadState())
+        .catch(() => resetUploadState());
     }
   };
 
@@ -212,7 +216,7 @@ export default function UploadModal({ show, onClose }) {
     if (showSnackbar.videoTitleMissing) {
       return (
         <CustomSnackbar
-          message="Please enter a title for the uploaded video"
+          message="Please enter a title for each uploaded video"
           onClose={() =>
             setShowSnackbar({ ...showSnackbar, videoTitleMissing: false })
           }
@@ -234,7 +238,7 @@ export default function UploadModal({ show, onClose }) {
     if (showSnackbar.uploadInProgress) {
       return (
         <CustomSnackbar
-          message="Please wait until your video will be uploaded"
+          message="Please wait until your video(-s) will be uploaded"
           onClose={() =>
             setShowSnackbar({ ...showSnackbar, uploadInProgress: false })
           }
@@ -275,7 +279,6 @@ export default function UploadModal({ show, onClose }) {
       <Modal
         className="modal"
         open={show}
-        onClose={handleCancel}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
