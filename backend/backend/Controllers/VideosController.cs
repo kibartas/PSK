@@ -8,6 +8,8 @@ using backend.DTOs;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System;
+using System.Text.RegularExpressions;
+using backend.Utils;
 using Xabe.FFmpeg;
 
 namespace backend.Controllers
@@ -39,9 +41,26 @@ namespace backend.Controllers
         [HttpPost, Route("UploadChunks")]
         public async Task<IActionResult> UploadChunk(string chunkNumber, string fileName)
         {
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = _db.Users.FirstOrDefault(x => x.Id == userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
             try
             {
-                string newPath = Path.Combine(_tempPath, Path.GetFileNameWithoutExtension(fileName) + "-" + chunkNumber + Path.GetExtension(fileName));
+                string newPath = Path.Combine(_tempPath, chunkNumber + "_" + Path.GetFileNameWithoutExtension(fileName) + "-" + user.Id + Path.GetExtension(fileName));
                 if (!Directory.Exists(_tempPath)) Directory.CreateDirectory(_tempPath);
 
                 using (FileStream fs = System.IO.File.Create(newPath))
@@ -65,7 +84,7 @@ namespace backend.Controllers
                 {
                     return StatusCode(500);
                 }
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -92,9 +111,12 @@ namespace backend.Controllers
             try
             {
                 string userPath = Path.Combine(_uploadPath, user.Id.ToString());
-                string tempFilePath = Path.Combine(userPath, fileName);
+                string tempFilePath = Path.Combine(_tempPath, fileName);
                 string[] filePaths = Directory.GetFiles(_tempPath)
-                    .Where(p => p.Contains(Path.GetFileNameWithoutExtension(fileName))).ToArray();
+                    .Where(p => p.Contains(Path.GetFileNameWithoutExtension(fileName)) 
+                                && p.Contains(user.Id.ToString()))
+                    .OrderBy(x => int.Parse(Regex.Match(x, RegexValidation.CHUNK_NUMBER_REGEX).Value))
+                    .ToArray();
 
                 foreach (string chunk in filePaths)
                 {
@@ -107,7 +129,7 @@ namespace backend.Controllers
                     UserId = user.Id,
                     Title = Path.GetFileNameWithoutExtension(fileName),
                     Size = size,
-                    UploadDate = new DateTime(),
+                    UploadDate = DateTime.Now,
                 };
 
                 video.Id = Guid.NewGuid();
@@ -160,7 +182,7 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPatch, Route("ChangeTitle")]
+        [HttpPatch]
         public ActionResult<VideoDto> ChangeTitle(Guid id, string newTitle)
         {
             if (id == Guid.Empty) return BadRequest("No Id provided");

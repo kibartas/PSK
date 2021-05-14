@@ -526,5 +526,6 @@ MigrationBackup/
 __MACOSX/
 ffmpeg.exe
 ffprobe.exe
+version.json
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,visualstudio,visualstudiocode,react,dotnetcore
