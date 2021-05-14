@@ -17,22 +17,25 @@ class PlayerPage extends React.Component {
     };
     return (
       <div className="root">
-        <TopBar
-          darkMode
-          firstName={window.sessionStorage.getItem('firstName')}
-          lastName={window.sessionStorage.getItem('lastName')}
-          title="Video title"
-          showArrow
-          onActionIconClick={handleArrowBackClick}
-          iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
-        />
-        <div style={{ width: '90%', height: '90%' }}>
-          <ReactPlayer
-            url="https://vimeo.com/121131664"
-            width="100%"
-            height="100%"
-            controls
+        <div>
+          <TopBar
+            darkMode
+            firstName={window.sessionStorage.getItem('firstName')}
+            lastName={window.sessionStorage.getItem('lastName')}
+            title="Video title"
+            showArrow
+            onActionIconClick={handleArrowBackClick}
+            iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
           />
+        </div>
+        <div>
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+          <video autoPlay controls width="100%" height="100%">
+            <source
+              src="https://localhost:44344/api/Videos/stream?videoId=45b7ceea-3fc8-4149-afc8-2b38cd0cdbd0"
+              type="video/mp4"
+            />
+          </video>
         </div>
       </div>
     );

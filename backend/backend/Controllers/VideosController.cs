@@ -11,6 +11,10 @@ using System;
 using System.Text.RegularExpressions;
 using backend.Utils;
 using Xabe.FFmpeg;
+using System.Net.Http;
+using System.Net;
+using System.Net.Http.Headers;
+//using System.Web.Http;
 
 namespace backend.Controllers
 {
@@ -202,6 +206,14 @@ namespace backend.Controllers
             };
 
             return Ok(response);
+        }
+
+        [HttpGet, Route("stream"), AllowAnonymous]
+        public FileStreamResult Video(Guid videoId)
+        {
+            Video video = _db.Videos.Find(videoId);
+            var response = File(System.IO.File.OpenRead(video.Path), "video/mp4", enableRangeProcessing: true);
+            return response;
         }
 
         [HttpDelete, Route("{id}")]
