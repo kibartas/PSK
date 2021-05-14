@@ -57,16 +57,20 @@ export default function UploadModal({ show, onClose }) {
   }
 
   const handleCancel = () => {
+    cancelTokenSource.current.cancel();
+    const requests = [];
     if (inUploadVideo !== undefined) {
-      if (cancelTokenSource.current !== undefined) {
-        cancelTokenSource.current.cancel();
-      }
-      deleteChunks(inUploadVideo.name).then(() => handleClose());
-    } 
-    if (uploadedVideos.length > 0) {
-      uploadedVideos.forEach(video => deleteVideo(video.id));
+      console.log(inUploadVideo.name);
+      requests.push(deleteChunks(inUploadVideo.name));
     }
-    handleClose(); // TODO sometimes they don't delete it in time
+    if (uploadedVideos.length > 0) {
+      uploadedVideos.forEach(video => requests.push(deleteVideo(video.id)));
+    }
+    if (requests.length > 0) {
+      Promise.all(requests).then(() => handleClose());
+    } else {
+      handleClose();
+    }
   }
 
   const handleSubmit = () => {
@@ -98,9 +102,9 @@ export default function UploadModal({ show, onClose }) {
 
   const handleUploadInterruption = (requestCancelled) => {
     if (!requestCancelled) {
-      setShowSnackbar({ ...showSnackbar, uploadError: true })
+      setShowSnackbar({ ...showSnackbar, uploadError: true });
+      deleteChunks(inUploadVideo.name).then(() => resetUploadState());
     }
-    deleteChunks(inUploadVideo.name).then(() => resetUploadState());
   };
 
   const finishVideoUpload = () => {
@@ -154,6 +158,9 @@ export default function UploadModal({ show, onClose }) {
   const handleUploadCancel = () => {
     if (cancelTokenSource.current !== undefined) {
       cancelTokenSource.current.cancel();
+      cancelTokenSource.current = undefined;
+      console.log(inUploadVideo.name);
+      deleteChunks(inUploadVideo.name).then(() => resetUploadState());
     }
   };
 

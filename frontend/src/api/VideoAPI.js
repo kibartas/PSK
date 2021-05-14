@@ -35,9 +35,14 @@ export const finishUpload = async (videoFileName, cancelTokenSource) => (
   )
 );
 
-export const deleteChunks = async (videoFileName) => {
-  Api.delete("/Videos/DeleteChunks", null, { params: { fileName: videoFileName }})
-};
+export const deleteChunks = async (videoFileName) => (
+  Api.delete(
+    "/Videos/DeleteChunks",
+    {
+      params: { fileName: videoFileName }
+    }
+  )
+);
 
 export const changeTitle = async (videoId, newTitle) => (
   Api.patch("/Videos/ChangeTitle", null, { params: { id: videoId, newTitle }})
