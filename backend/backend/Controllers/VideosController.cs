@@ -111,7 +111,7 @@ namespace backend.Controllers
             try
             {
                 string userPath = Path.Combine(_uploadPath, user.Id.ToString());
-                string tempFilePath = Path.Combine(userPath, fileName);
+                string tempFilePath = Path.Combine(_tempPath, fileName);
                 string[] filePaths = Directory.GetFiles(_tempPath)
                     .Where(p => p.Contains(Path.GetFileNameWithoutExtension(fileName)) 
                                 && p.Contains(user.Id.ToString()))
