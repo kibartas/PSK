@@ -14,7 +14,8 @@ namespace backend.Models
 
         [Required]
         public string Title { get; set; }
-        public string Description { get; set; }
+        public long Size { get; set; }
+        public string Path { get; set; }
 
         [Required]
         public DateTime UploadDate { get; set; }

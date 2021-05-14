@@ -1,11 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
+using Xabe.FFmpeg;
+using Xabe.FFmpeg.Downloader;
 
 namespace backend
 {
@@ -13,6 +10,8 @@ namespace backend
     {
         public static void Main(string[] args)
         {
+            FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official);
+            FFmpeg.SetExecutablesPath(Directory.GetCurrentDirectory());
             CreateHostBuilder(args).Build().Run();
         }
 

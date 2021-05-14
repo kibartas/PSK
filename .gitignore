@@ -32,6 +32,8 @@ yarn-error.log*
 bin/
 obj/
 
+Uploads/
+
 # Common node modules locations
 /node_modules
 /wwwroot/node_modules
@@ -519,5 +521,11 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Ffmpeg
+__MACOSX/
+ffmpeg.exe
+ffprobe.exe
+version.json
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,visualstudio,visualstudiocode,react,dotnetcore
