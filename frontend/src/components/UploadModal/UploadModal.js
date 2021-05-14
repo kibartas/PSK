@@ -90,7 +90,7 @@ export default function UploadModal({ show, onClose }) {
     setVideosToUpload([...videosToUpload.slice(1)]);
   }
 
-  const handleUploadError = (requestCancelled) => {
+  const handleUploadInterruption = (requestCancelled) => {
     if (!requestCancelled) {
       setShowSnackbar({ ...showSnackbar, uploadError: true })
     }
@@ -105,7 +105,7 @@ export default function UploadModal({ show, onClose }) {
         setProgress(100);
         resetUploadState();
         setUploadedVideos([...uploadedVideos, response.data]);
-      }).catch(error => handleUploadError(isCancel(error)));
+      }).catch(error => handleUploadInterruption(isCancel(error)));
   };
 
   const uploadNextChunk = (chunk) => {
@@ -121,7 +121,7 @@ export default function UploadModal({ show, onClose }) {
           chunkIndex.current += 1
           setProgress(percentage);
         }
-      }).catch(error => handleUploadError(isCancel(error)));
+      }).catch(error => handleUploadInterruption(isCancel(error)));
   };
 
   useEffect(() => {
