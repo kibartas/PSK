@@ -1,27 +1,29 @@
-﻿using backend.Utils;
-using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
+using DataAccess.Repositories.Users;
+using Microsoft.IdentityModel.Tokens;
 
-namespace backend.JwtAuthentication
+namespace RestAPI.Services.JwtAuthentication
 {
     public class JwtAuthentication : IJwtAuthentication
     {
-        private readonly BackendContext _db;
+        private readonly IUsersRepository _usersRepository;
         private readonly string _tokenKey;
 
-        public JwtAuthentication(string tokenKey, BackendContext context)
+        public JwtAuthentication(
+            string tokenKey, 
+            IUsersRepository usersRepository)
         {
             _tokenKey = tokenKey;
-            _db = context;
+            _usersRepository = usersRepository;
         }
 
-        public string Authenticate(string email, string password)
+        public async Task<string> Authenticate(string email, string password)
         {
-            var user = _db.Users.ToList().FirstOrDefault(u => Hasher.CheckPlaintextAgainstHash(password, u.Password, u.Salt) && u.Email == email);
+            var user = await _usersRepository.GetUserByEmailAndPassword(email, password);
             if (user is null || !user.Confirmed)
             {
                 return null;
@@ -44,9 +46,10 @@ namespace backend.JwtAuthentication
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-        public string CreateResetPasswordToken(string email)
+
+        public async Task<string> CreateResetPasswordToken(string email)
         {
-            var user = _db.Users.FirstOrDefault(x => x.Email == email);
+            var user = await _usersRepository.GetUserByEmail(email);
             if (user == null)
             {
                 return null;

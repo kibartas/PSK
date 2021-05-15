@@ -1,48 +1,50 @@
 ﻿using System;
-using backend.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using backend.Utils;
-using backend.JwtAuthentication;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using backend.DTOs;
-using backend.Services.EmailService;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using System.IO;
+using System.Threading.Tasks;
+using BusinessLogic.Services.EmailService;
+using BusinessLogic.Services.VideoService;
+using DataAccess.Models;
+using DataAccess.Repositories.Users;
+using DataAccess.Utils;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RestAPI.Models.Requests;
+using RestAPI.Models.Responses;
+using RestAPI.Services.JwtAuthentication;
 
-namespace backend.Controllers
+namespace RestAPI.Controllers
 {
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly BackendContext _db;
+        private readonly IUsersRepository _usersRepository;
         private readonly IJwtAuthentication _jwtAuthentication;
         private readonly IEmailService _emailService;
-        private readonly string _uploadPath;
+        private readonly IVideoService _videoService;
 
         public UsersController(
-            BackendContext context,
+            IUsersRepository usersRepository,
             IJwtAuthentication jwtAuthentication,
-            IEmailService emailService)
+            IEmailService emailService, 
+            IVideoService videoService)
         {
-            _db = context;
+            _usersRepository = usersRepository;
             _jwtAuthentication = jwtAuthentication;
             _emailService = emailService;
-            _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+            _videoService = videoService;
         }
 
         [HttpGet, Route("current")]
-        public ActionResult<UserDto> GetCurrentUser()
+        public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
             var resetPasswordClaim = User.FindFirst(x => x.Type == "ResetPassword");
             if (resetPasswordClaim is not null && resetPasswordClaim.Value == "True")
             {
                 return Unauthorized();
             }
+
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null)
             {
@@ -54,13 +56,13 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            var user = _db.Users.FirstOrDefault(x => x.Id == userId);
+            var user = await _usersRepository.GetUserById(userId);
             if (user is null)
             {
                 return NotFound();
             }
 
-            UserDto userDto = new UserDto()
+            var userDto = new UserDto
             {
                 Id = user.Id,
                 FirstName = user.Firstname,
@@ -72,14 +74,14 @@ namespace backend.Controllers
         }
 
         [HttpPost, Route("authentication"), AllowAnonymous]
-        public ActionResult<string> Authenticate(string email, string password)
+        public async Task<ActionResult<string>> Authenticate(string email, string password)
         {
-            if(String.IsNullOrWhiteSpace(email) || String.IsNullOrWhiteSpace(password))
+            if(string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
                 return BadRequest();
             }
 
-            var token = _jwtAuthentication.Authenticate(email, password);
+            var token = await _jwtAuthentication.Authenticate(email, password);
 
             if (token is null)
             {
@@ -90,13 +92,32 @@ namespace backend.Controllers
         }
 
         [HttpPost, Route("register"), AllowAnonymous]
-        public ActionResult Register([FromBody] RegistrationRequest registrationRequest)
+        public async Task<IActionResult> Register([FromBody] RegistrationRequest registrationRequest)
         {
-            if (String.IsNullOrWhiteSpace(registrationRequest.Email) || !RegexValidation.IsEmailValid(registrationRequest.Email)) return BadRequest();
-            if (String.IsNullOrWhiteSpace(registrationRequest.FirstName) || String.IsNullOrWhiteSpace(registrationRequest.LastName)
-                || !RegexValidation.IsNameValid(registrationRequest.FirstName) || !RegexValidation.IsNameValid(registrationRequest.LastName)) return BadRequest();
-            if (String.IsNullOrWhiteSpace(registrationRequest.Password) || !RegexValidation.IsPasswordValid(registrationRequest.Password)) return BadRequest();
-            if (_db.Users.FirstOrDefault(user => user.Email == registrationRequest.Email) != null) return Conflict();
+            if (string.IsNullOrWhiteSpace(registrationRequest.Email) ||
+                !RegexValidation.IsEmailValid(registrationRequest.Email))
+            {
+                return BadRequest();
+            }
+
+            if (string.IsNullOrWhiteSpace(registrationRequest.FirstName) || 
+                string.IsNullOrWhiteSpace(registrationRequest.LastName) || 
+                !RegexValidation.IsNameValid(registrationRequest.FirstName) || 
+                !RegexValidation.IsNameValid(registrationRequest.LastName))
+            {
+                return BadRequest();
+            }
+
+            if (string.IsNullOrWhiteSpace(registrationRequest.Password) ||
+                !RegexValidation.IsPasswordValid(registrationRequest.Password))
+            {
+                return BadRequest();
+            }
+
+            if (await _usersRepository.GetUserByEmail(registrationRequest.Email) != null)
+            {
+                return Conflict();
+            }
 
             User user = new User(registrationRequest.Password)
             {
@@ -105,13 +126,13 @@ namespace backend.Controllers
                 Email = registrationRequest.Email
             };
 
-            _db.Users.Add(user);
+            await _usersRepository.InsertUser(user);
 
             try
             {
                 string endpoint = "http://localhost:3000/verify/" + user.Id;
                 _emailService.SendVerificationEmail(user.Firstname, user.Email, endpoint);
-                _db.SaveChanges();
+                await _usersRepository.Save();
             }
             catch
             {
@@ -122,17 +143,22 @@ namespace backend.Controllers
         }
 
         [HttpPost, Route("verify"), AllowAnonymous]
-        public ActionResult Verify(Guid id)
+        public async Task<IActionResult> Verify(Guid id)
         {
-            if (id == Guid.Empty) return BadRequest();
-            User user = _db.Users.Find(id);
-            if (user == null) return NotFound();
+            if (id == Guid.Empty)
+            {
+                return BadRequest();
+            }
+
+            var user = await _usersRepository.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
             try
             {
-                string userPath = Path.Combine(_uploadPath, user.Id.ToString());
-                Directory.CreateDirectory(userPath);
-                Directory.CreateDirectory(Path.Combine(userPath, "/Snapshots"));
+                _videoService.CreateUserVideoDirectory(user.Id);
             }
             catch
             {
@@ -140,26 +166,26 @@ namespace backend.Controllers
             }
 
             user.Confirmed = true;
-            _db.SaveChanges();
+            await _usersRepository.Save();
 
             return Ok();
         }
 
         [HttpPost, Route("forgot-password"), AllowAnonymous]
-        public ActionResult ForgotPassword(string email)
+        public async Task<IActionResult> ForgotPassword(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
             {
                 return BadRequest();
             }
 
-            var user = _db.Users.FirstOrDefault(x => x.Email == email);
+            var user = await _usersRepository.GetUserByEmail(email);
             if (user == null)
             {
                 return Ok();
             }
 
-            var token = _jwtAuthentication.CreateResetPasswordToken(user.Email);
+            var token = await _jwtAuthentication.CreateResetPasswordToken(user.Email);
             
             var endpoint = "http://localhost:3000/reset-password/" + token;
             try
@@ -175,7 +201,7 @@ namespace backend.Controllers
         }
 
         [HttpPatch, Route("reset-password")]
-        public ActionResult ResetPassword(string newPassword)
+        public async Task<IActionResult> ResetPassword(string newPassword)
         {
             var resetPasswordClaim = User.FindFirst(x => x.Type == "ResetPassword");
             if (resetPasswordClaim is null)
@@ -200,7 +226,7 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            var user = _db.Users.FirstOrDefault(x => x.Id == userId);
+            var user = await _usersRepository.GetUserById(userId);
             if (user is null || !user.Confirmed)
             {
                 return NotFound();
@@ -210,15 +236,14 @@ namespace backend.Controllers
             {
                 return BadRequest();
             }
-            
-            user.SetNewPassword(newPassword);
 
-            _db.SaveChanges();
+            user.SetNewPassword(newPassword);
+            await _usersRepository.Save();
 
             return Ok();
         } 
         [HttpPatch, Route("{id}")]
-        public ActionResult UpdateUser([FromBody] ChangeCredentialsRequest request, [FromRoute] Guid id)
+        public async Task<IActionResult> UpdateUser([FromBody] ChangeCredentialsRequest request, [FromRoute] Guid id)
         {
             if (string.IsNullOrWhiteSpace(request.Email) && string.IsNullOrWhiteSpace(request.OldPassword)
                                                          && string.IsNullOrWhiteSpace(request.NewPassword))
@@ -227,17 +252,37 @@ namespace backend.Controllers
             }
             
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
-            if (userIdClaim is null) return NotFound("JWT doesn't correspond to any user");
-            if (!Guid.TryParse(userIdClaim.Value, out var userId)) return NotFound("JWT token is malformed");
-            if (id != userId) return BadRequest("User ID and JWT mismatch");
-            var user = _db.Users.FirstOrDefault(x => x.Id == userId);
-            
-            if (user is null) return NotFound("JWT doesn't correspond to any user");
 
-            if (request.Email != user.Email && _db.Users.FirstOrDefault(u => u.Email == request.Email) != null)
+            if (userIdClaim is null)
+            {
+                return NotFound("JWT doesn't correspond to any user");
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound("JWT token is malformed");
+            }
+
+            if (id != userId)
+            {
+                return BadRequest("User ID and JWT mismatch");
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return NotFound("JWT doesn't correspond to any user");
+            }
+
+            if (request.Email != user.Email && await _usersRepository.GetUserByEmail(request.Email) != null)
+            {
                 return Conflict("User with this email already exists");
+            }
 
-            if (!string.IsNullOrWhiteSpace(request.Email)) user.Email = request.Email;
+            if (!string.IsNullOrWhiteSpace(request.Email))
+            {
+                user.Email = request.Email;
+            }
             
             if ((string.IsNullOrWhiteSpace(request.OldPassword) && !string.IsNullOrWhiteSpace(request.NewPassword)) 
                 || !string.IsNullOrWhiteSpace(request.OldPassword) && string.IsNullOrWhiteSpace(request.NewPassword))
@@ -247,8 +292,10 @@ namespace backend.Controllers
             
             if (!string.IsNullOrWhiteSpace(request.OldPassword) && !string.IsNullOrWhiteSpace(request.NewPassword))
             {
-                if (request.OldPassword == request.NewPassword) 
+                if (request.OldPassword == request.NewPassword)
+                {
                     return BadRequest("New password is the same as the old");
+                }
                 
                 if(Hasher.CheckPlaintextAgainstHash(request.OldPassword, user.Password, user.Salt))
                 {
@@ -262,12 +309,13 @@ namespace backend.Controllers
             
             try
             {
-                _db.SaveChanges();
+                await _usersRepository.Save();
             }
             catch
             {
                 return StatusCode(500, "Error while saving user data");
             }
+
             return NoContent();
         }
     }

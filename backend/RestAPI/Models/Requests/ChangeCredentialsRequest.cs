@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using backend.Utils;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace backend.DTOs
+namespace RestAPI.Models.Requests
 {
     public class ChangeCredentialsRequest
     {

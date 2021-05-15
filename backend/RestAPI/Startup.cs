@@ -1,18 +1,19 @@
+using System.Collections.Generic;
 using System.Linq;
-using backend.JwtAuthentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using BusinessLogic.Configuration.Email;
+using BusinessLogic.Registry;
+using DataAccess;
+using DataAccess.Registry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Collections.Generic;
-using System.Text;
+using RestAPI.Registry;
 
-namespace backend
+namespace RestAPI
 {
     public class Startup
     {
@@ -26,8 +27,13 @@ namespace backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.RegisterDependencies(Configuration);
+            AddEmailConfiguration(services);
+
+            services.AddDataAccess(Configuration);
+            services.AddRepositories("backend.DataAccess");
+            services.AddBusinessLogicServices();
             services.AddControllers();
+
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -35,6 +41,7 @@ namespace backend
                         .AllowAnyMethod()
                         .AllowAnyHeader());
             });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "backend", Version = "v1" });
@@ -68,29 +75,7 @@ namespace backend
                 });
             });
 
-            var tokenKey = Configuration.GetValue<string>("TokenKey");
-            var key = Encoding.ASCII.GetBytes(tokenKey);
-
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
-
-            services.AddScoped<IJwtAuthentication>(provider =>
-                new JwtAuthentication.JwtAuthentication(tokenKey, provider.GetRequiredService<BackendContext>()));
+            services.AddJwtAuthentication(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -126,6 +111,14 @@ namespace backend
             {
                 context.Database.Migrate();
             }
+        }
+
+        private void AddEmailConfiguration(IServiceCollection services)
+        {
+            var emailConfiguration = new EmailConfiguration();
+
+            Configuration.Bind("EmailConfiguration", emailConfiguration);
+            services.AddSingleton<IEmailConfiguration, EmailConfiguration>(_ => emailConfiguration);
         }
     }
 }
