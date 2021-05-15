@@ -1,23 +1,39 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
 import ReactPlayer from 'react-player';
+import { withRouter } from 'react-router';
 import TopBar from '../../components/TopBar/TopBar';
-import {
-  confirmEmailDrawing,
-  DeleteIcon,
-  DownloadIcon,
-  InfoIcon,
-} from '../../assets';
+import { DeleteIcon, DownloadIcon, InfoIcon } from '../../assets';
 import './styles.css';
 
 class PlayerPage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      url: undefined,
+    };
+  }
+
+  componentDidMount() {
+    const { match } = this.props;
+    const id = match.params.videoId;
+    const url = `http://localhost:61346/api/Videos/stream?videoId=${id}`;
+    this.setState({ url });
+  }
+
   render() {
+    const { url } = this.state;
     const handleArrowBackClick = () => {
       window.location.href = '/library';
     };
     return (
-      <div className="root">
-        <div>
+      <Grid
+        className="container"
+        style={{ heigth: '100vh' }}
+        justify="center"
+        container
+      >
+        <Grid item className="video-wrapper">
           <TopBar
             darkMode
             firstName={window.sessionStorage.getItem('firstName')}
@@ -27,19 +43,21 @@ class PlayerPage extends React.Component {
             onActionIconClick={handleArrowBackClick}
             iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
           />
-        </div>
-        <div>
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-          <video autoPlay controls width="100%" height="100%">
-            <source
-              src="https://localhost:44344/api/Videos/stream?videoId=45b7ceea-3fc8-4149-afc8-2b38cd0cdbd0"
-              type="video/mp4"
-            />
-          </video>
-        </div>
-      </div>
+        </Grid>
+        <Grid item container xs={10} alignItems="center" justify="center">
+          <ReactPlayer
+            playing
+            className="react-player"
+            width="90%"
+            height="90%"
+            url={url}
+            controls
+            controlsList="nodownload"
+          />
+        </Grid>
+      </Grid>
     );
   }
 }
 
-export default PlayerPage;
+export default withRouter(PlayerPage);

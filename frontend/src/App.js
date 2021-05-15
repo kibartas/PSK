@@ -59,7 +59,7 @@ function App() {
           <Route exact path="/library">
             <LibraryPage />
           </Route>
-          <Route exact path="/player">
+          <Route path="/player/:videoId">
             <PlayerPage />
           </Route>
           <Route path="*">
