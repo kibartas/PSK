@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace backend.DTOs
 {
@@ -10,7 +8,6 @@ namespace backend.DTOs
         public Guid Id { get; set; }
         public long Size { get; set; }
         public string Title { get; set; }
-        public DateTime UploadDate { get; set; }
-
+        public string UploadDate { get; set; }
     }
 }

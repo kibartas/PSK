@@ -37,9 +37,46 @@ namespace backend.Controllers
         }
 
         [HttpGet,Route("all")]
-        public ActionResult<List<Video>> GetAllVideos()
+        public ActionResult<List<VideoDto>> AllVideos()
         {
-            return _db.Videos.ToList();
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            List<Video> videos = _db.Videos.Where(video => video.DeleteDate == null && video.UserId == userId).ToList();
+
+            List<VideoDto> videosDto = new List<VideoDto>();
+            videos.ForEach(v =>
+            {
+                videosDto.Add(new VideoDto()
+                {
+                    Id = v.Id,
+                    Title = v.Title,
+                    Size = v.Size,
+                    UploadDate = v.UploadDate.ToString("yyyy-MM-dd")
+                });
+            });
+
+            return Ok(videosDto);
+
+        }
+
+        [HttpGet, Route("thumbnail")]
+        public FileContentResult GetThumbnail(Guid videoId)
+        {
+            //if (videoId == Guid.Empty) return BadRequest("Bad video guid");
+            Video video = _db.Videos.Find(videoId);
+            //if (video == null) return NotFound();
+            string thumbnailPath = Path.Combine(_uploadPath, video.UserId + "\\Snapshots\\" + videoId + ".png");
+            Byte[] videoBytes = System.IO.File.ReadAllBytes(thumbnailPath);
+            return File(videoBytes, "image/png");
         }
 
         [HttpPost, Route("UploadChunks")]
@@ -154,7 +191,7 @@ namespace backend.Controllers
                     Id = video.Id,
                     Title = video.Title,
                     Size = video.Size,
-                    UploadDate = video.UploadDate
+                    UploadDate = video.UploadDate.ToString("yyyy-MM-dd")
                 };
 
                 return Ok(response);
@@ -202,7 +239,7 @@ namespace backend.Controllers
                 Id = video.Id,
                 Title = video.Title,
                 Size = video.Size,
-                UploadDate = video.UploadDate
+                UploadDate = video.UploadDate.ToString("yyyy-MM-dd")
             };
 
             return Ok(response);
