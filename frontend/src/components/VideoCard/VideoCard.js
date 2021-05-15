@@ -14,14 +14,17 @@ import { getVideoThumbnail } from '../../api/VideoAPI';
 
 const VideoCard = ({ title, onSelect, id, isSelected }) => {
   const [thumbnail, setThumbnail] = useState(undefined);
+
   useEffect(() => {
     getVideoThumbnail(id)
       .then((response) => setThumbnail(URL.createObjectURL(response.data)))
       .catch(() => setThumbnail(missingImageIcon));
   }, []);
+
   const handleClick = () => {
     window.location.href = `/player/${id}`;
   };
+
   return (
     <Card
       className="card"

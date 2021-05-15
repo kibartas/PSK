@@ -11,10 +11,6 @@ using System;
 using System.Text.RegularExpressions;
 using backend.Utils;
 using Xabe.FFmpeg;
-using System.Net.Http;
-using System.Net;
-using System.Net.Http.Headers;
-//using System.Web.Http;
 
 namespace backend.Controllers
 {
@@ -65,13 +61,11 @@ namespace backend.Controllers
             });
 
             return Ok(videosDto);
-
         }
 
         [HttpGet]
         public ActionResult<VideoDto> GetVideo(Guid videoId)
         {
-            if (videoId == Guid.Empty) return BadRequest("Guid is not valid");
             Video video = _db.Videos.Find(videoId);
             if (video == null) return NotFound();
 
@@ -86,6 +80,7 @@ namespace backend.Controllers
                 return NotFound();
             }
 
+            if (videoId == Guid.Empty) return BadRequest("Guid is not valid");
             if (video.UserId != userId) return Unauthorized();
 
             VideoDto videoDto = new VideoDto()
@@ -280,8 +275,9 @@ namespace backend.Controllers
         public ActionResult Stream(Guid videoId, Guid userId)
         {
             if (videoId == Guid.Empty) return BadRequest("Video id is not valid");
-            if (userId == Guid.Empty) return BadRequest("User is is not valid");
+            if (userId == Guid.Empty) return BadRequest("User is not valid");
             Video video = _db.Videos.Find(videoId);
+            if (video == null) return NotFound();
             if (video.UserId != userId) return Unauthorized();
             var response = File(System.IO.File.OpenRead(video.Path), "video/mp4", enableRangeProcessing: true);
             return response;

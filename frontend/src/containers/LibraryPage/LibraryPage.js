@@ -148,7 +148,6 @@ class LibraryPage extends React.Component {
                 onSelect={handleSelect}
                 videoCards={videoCards[uploadDate]}
                 selectedCards={selectedCards}
-                onVideoCardLoad={this.fetchThumbnail}
               />
             ))}
           </Grid>

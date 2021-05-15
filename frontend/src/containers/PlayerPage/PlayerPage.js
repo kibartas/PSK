@@ -33,12 +33,7 @@ class PlayerPage extends React.Component {
     };
 
     return (
-      <Grid
-        className="container"
-        style={{ heigth: '100vh' }}
-        justify="center"
-        container
-      >
+      <Grid className="container" justify="center" container>
         {video === undefined ? null : (
           <>
             <Grid item>
@@ -52,7 +47,7 @@ class PlayerPage extends React.Component {
                 iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
               />
             </Grid>
-            <Grid item container xs={9}>
+            <Grid item xs={9}>
               <ReactPlayer
                 playing
                 className="react-player"
