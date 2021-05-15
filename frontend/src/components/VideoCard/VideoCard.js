@@ -9,8 +9,8 @@ import {
 } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import './styles.css';
-import { getVideoThumbnail } from '../../api/UserAPI';
 import { missingImageIcon } from '../../assets';
+import { getVideoThumbnail } from '../../api/VideoAPI';
 
 const VideoCard = ({ title, onSelect, id, isSelected }) => {
   const [thumbnail, setThumbnail] = useState(undefined);

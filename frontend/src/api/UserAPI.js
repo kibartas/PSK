@@ -13,8 +13,3 @@ const Api = axios.create({
 export const updateCredentials = (id, credentials) => {
   return Api.patch(`/users/${id}`, credentials);
 };
-
-export const getAllVideos = () => Api.get('/videos/all');
-
-export const getVideoThumbnail = (videoId) =>
-  Api.get('/videos/thumbnail/', { params: { videoId }, responseType: 'blob' });

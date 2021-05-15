@@ -68,12 +68,43 @@ namespace backend.Controllers
 
         }
 
-        [HttpGet, Route("thumbnail")]
-        public FileContentResult GetThumbnail(Guid videoId)
+        [HttpGet]
+        public ActionResult<VideoDto> GetVideo(Guid videoId)
         {
-            //if (videoId == Guid.Empty) return BadRequest("Bad video guid");
+            if (videoId == Guid.Empty) return BadRequest("Guid is not valid");
             Video video = _db.Videos.Find(videoId);
-            //if (video == null) return NotFound();
+            if (video == null) return NotFound();
+
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            if (video.UserId != userId) return Unauthorized();
+
+            VideoDto videoDto = new VideoDto()
+            {
+                Id = video.Id,
+                Size = video.Size,
+                Title = video.Title,
+                UploadDate = video.UploadDate.ToString("yyyy-MM-dd")
+            };
+
+            return Ok(videoDto);
+        }
+
+        [HttpGet, Route("thumbnail")]
+        public ActionResult GetThumbnail(Guid videoId)
+        {
+            if (videoId == Guid.Empty) return BadRequest("Bad video guid");
+            Video video = _db.Videos.Find(videoId);
+            if (video == null) return NotFound();
             string thumbnailPath = Path.Combine(_uploadPath, video.UserId + "\\Snapshots\\" + videoId + ".png");
             Byte[] videoBytes = System.IO.File.ReadAllBytes(thumbnailPath);
             return File(videoBytes, "image/png");
@@ -246,9 +277,12 @@ namespace backend.Controllers
         }
 
         [HttpGet, Route("stream"), AllowAnonymous]
-        public FileStreamResult Video(Guid videoId)
+        public ActionResult Stream(Guid videoId, Guid userId)
         {
+            if (videoId == Guid.Empty) return BadRequest("Video id is not valid");
+            if (userId == Guid.Empty) return BadRequest("User is is not valid");
             Video video = _db.Videos.Find(videoId);
+            if (video.UserId != userId) return Unauthorized();
             var response = File(System.IO.File.OpenRead(video.Path), "video/mp4", enableRangeProcessing: true);
             return response;
         }

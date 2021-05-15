@@ -7,7 +7,7 @@ import TopBar from '../../components/TopBar/TopBar';
 import UploadModal from '../../components/UploadModal/UploadModal';
 import './styles.css';
 import VideoCardsByDate from '../../components/VideoCardsByDate/VideoCardsByDate';
-import { getAllVideos } from '../../api/UserAPI';
+import { getAllVideos } from '../../api/VideoAPI';
 
 const transformCards = (cards) => {
   const transformedCards = cards.reduce((acc, val) => {
@@ -96,7 +96,7 @@ class LibraryPage extends React.Component {
     return (
       <Grid
         className="root"
-        style={{ height: videoCards.length === undefined ? '100vh' : 'auto' }}
+        style={{ height: videoCards.length === 0 ? '100vh' : 'auto' }}
         container
         direction="column"
       >
