@@ -1,7 +1,7 @@
-﻿using backend.Models;
+﻿using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend
+namespace DataAccess
 {
     public class BackendContext : DbContext
     {

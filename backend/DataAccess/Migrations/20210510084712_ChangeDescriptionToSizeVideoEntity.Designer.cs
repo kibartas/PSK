@@ -4,10 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using backend;
 
-namespace backend.Migrations
+namespace DataAccess.Migrations
 {
     [DbContext(typeof(BackendContext))]
     [Migration("20210510084712_ChangeDescriptionToSizeVideoEntity")]
@@ -18,10 +16,10 @@ namespace backend.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("backend.Models.User", b =>
+            modelBuilder.Entity("DataAccess.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -55,7 +53,7 @@ namespace backend.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("backend.Models.Video", b =>
+            modelBuilder.Entity("DataAccess.Models.Video", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,9 +82,9 @@ namespace backend.Migrations
                     b.ToTable("Videos");
                 });
 
-            modelBuilder.Entity("backend.Models.Video", b =>
+            modelBuilder.Entity("DataAccess.Models.Video", b =>
                 {
-                    b.HasOne("backend.Models.User", "User")
+                    b.HasOne("DataAccess.Models.User", "User")
                         .WithMany("Videos")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

@@ -1,9 +1,9 @@
-﻿using backend.Models;
+﻿using System.Collections.Generic;
+using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Collections.Generic;
 
-namespace backend.EntityConfigurations
+namespace DataAccess.EntityConfigurations
 {
     public class VideoEntityConfiguration : IEntityTypeConfiguration<Video>
     {

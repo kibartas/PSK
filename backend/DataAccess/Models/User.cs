@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using DataAccess.Utils;
 
-namespace backend.Models
+namespace DataAccess.Models
 {
     public class User
     {
@@ -13,7 +14,7 @@ namespace backend.Models
         public User(string password)
         {
             Confirmed = false;
-            (Salt, Password) = Utils.Hasher.HashPassword(password);
+            (Salt, Password) = Hasher.HashPassword(password);
         }
         public Guid Id { get; set; }
 
@@ -38,7 +39,7 @@ namespace backend.Models
         // Password change entrypoint
         public void SetNewPassword(string password)
         {
-            (Salt, Password) = Utils.Hasher.HashPassword(password);
+            (Salt, Password) = Hasher.HashPassword(password);
         }
     }
 }

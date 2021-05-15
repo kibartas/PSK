@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace backend.Migrations
+namespace DataAccess.Migrations
 {
     public partial class ChangeDescriptionToSizeVideoEntity : Migration
     {

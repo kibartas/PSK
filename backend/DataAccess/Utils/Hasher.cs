@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System;
 using System.Security.Cryptography;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace backend.Utils
+namespace DataAccess.Utils
 {
     public class Hasher
     {
