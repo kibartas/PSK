@@ -48,12 +48,18 @@ class LibraryPage extends React.Component {
 
   componentDidMount() {
     getAllVideos().then((response) => {
-      const { transformedCards } = transformCards(response.data); // should be info from backend
-      const sortedDates = sortCardDates(transformedCards);
-      this.setState({
-        videoCards: transformedCards,
-        sortedVideoCardDates: sortedDates,
-      });
+      if (response.data.length !== 0) {
+        const { transformedCards } = transformCards(response.data);
+        const sortedDates = sortCardDates(transformedCards);
+        this.setState({
+          videoCards: transformedCards,
+          sortedVideoCardDates: sortedDates,
+        });
+      } else {
+        this.setState({
+          videoCards: [],
+        });
+      }
     });
   }
 

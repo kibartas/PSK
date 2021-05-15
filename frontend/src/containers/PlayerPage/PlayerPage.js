@@ -32,40 +32,41 @@ class PlayerPage extends React.Component {
       window.location.href = '/library';
     };
 
-    if (video !== undefined) {
-      return (
-        <Grid
-          className="container"
-          style={{ heigth: '100vh' }}
-          justify="center"
-          container
-        >
-          <Grid item className="video-wrapper">
-            <TopBar
-              darkMode
-              firstName={window.sessionStorage.getItem('firstName')}
-              lastName={window.sessionStorage.getItem('lastName')}
-              title={video.title}
-              showArrow
-              onActionIconClick={handleArrowBackClick}
-              iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
-            />
-          </Grid>
-          <Grid item container xs={10} alignItems="center" justify="center">
-            <ReactPlayer
-              playing
-              className="react-player"
-              width="90%"
-              height="90%"
-              url={url}
-              controls
-              controlsList="nodownload"
-            />
-          </Grid>
-        </Grid>
-      );
-    }
-    return null;
+    return (
+      <Grid
+        className="container"
+        style={{ heigth: '100vh' }}
+        justify="center"
+        container
+      >
+        {video === undefined ? null : (
+          <>
+            <Grid item>
+              <TopBar
+                darkMode
+                firstName={window.sessionStorage.getItem('firstName')}
+                lastName={window.sessionStorage.getItem('lastName')}
+                title={video.title}
+                showArrow
+                onActionIconClick={handleArrowBackClick}
+                iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
+              />
+            </Grid>
+            <Grid item container xs={9}>
+              <ReactPlayer
+                playing
+                className="react-player"
+                width="90%"
+                height="90%"
+                url={url}
+                controls
+                controlsList="nodownload"
+              />
+            </Grid>
+          </>
+        )}
+      </Grid>
+    );
   }
 }
 
