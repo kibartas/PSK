@@ -1,5 +1,6 @@
-import { Grid } from '@material-ui/core';
 import React from 'react';
+import { withRouter } from 'react-router-dom';
+import { Grid } from '@material-ui/core';
 import { updateCredentials } from '../../api/UserAPI';
 import ChangeProfileForm from '../../components/ChangeProfileForm/ChangeProfileForm';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
@@ -29,7 +30,8 @@ class ProfilePage extends React.Component {
     } = this.state;
 
     const handleArrowBackClick = () => {
-      window.location.href = '/library';
+      const { history } = this.props;
+      history.goBack();
     };
 
     const hideGeneralError = () => {
@@ -138,4 +140,4 @@ class ProfilePage extends React.Component {
   }
 }
 
-export default ProfilePage;
+export default withRouter(ProfilePage);
