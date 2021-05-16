@@ -202,6 +202,11 @@ namespace RestAPI.Controllers
                     return NotFound();
                 }
 
+                if (video.UserId != user.Id)
+                {
+                    return NotFound();
+                }
+
                 try
                 {
                     await _videoService.DeleteVideo(video, user.Id);
