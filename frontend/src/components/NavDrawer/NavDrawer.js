@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { List, ListItem, ListItemIcon, ListItemText, SwipeableDrawer, Typography } from '@material-ui/core';
 import VideoLibraryIcon from '@material-ui/icons/VideoLibrary';
 import DeleteIcon from '@material-ui/icons/Delete';
-import './styles.css';
 import { formatBytesToString } from '../../util';
 
 export default function NavDrawer({
@@ -55,8 +54,8 @@ export default function NavDrawer({
   };
 
   const renderSpaceTakenListItem = () => (
-    <ListItem key="SpaceTakenLabel" className="navDrawer__spaceTakenItem">
-      <Typography className="navDrawer__spaceTakenLabel">
+    <ListItem key="SpaceTakenLabel" style={{ position: 'absolute', bottom: '1px' }}>
+      <Typography style={{ fontWeight: '600' }}>
         {`Total space taken: ${formatBytesToString(spaceTaken)}`}
       </Typography>
     </ListItem>
@@ -69,7 +68,7 @@ export default function NavDrawer({
       onOpen={onOpen}
       onClose={onClose}
     >
-      <List className='navDrawer'>
+      <List style={{ width: '40vh', height: '100%', position: 'relative' }}>
         {renderTabListItems()}
         {renderSpaceTakenListItem()}
       </List>
