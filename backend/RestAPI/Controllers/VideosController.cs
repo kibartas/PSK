@@ -213,7 +213,7 @@ namespace RestAPI.Controllers
                 }
                 catch (FileNotFoundException ex)
                 {
-                    return BadRequest(ex.Message);
+                    return NotFound(ex.Message);
                 }
                 catch
                 {
