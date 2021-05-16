@@ -93,7 +93,7 @@ namespace DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("backend.Models.User", b =>
+            modelBuilder.Entity("DataAccess.Models.User", b =>
                 {
                     b.Navigation("Videos");
                 });
