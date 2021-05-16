@@ -35,6 +35,7 @@ export default function UploadModal({ show, onClose }) {
   const cancelTokenSource = useRef(undefined);
 
   const [showSnackbar, setShowSnackbar] = useState({
+    onlyVideoFileTypesAccepted: false,
     noVideoAttached: false,
     uploadInProgress: false,
     videoTitleMissing: false,
@@ -50,6 +51,10 @@ export default function UploadModal({ show, onClose }) {
     setVideosToUpload([...acceptedVideoFiles]);
     setInUploadVideo(nextVideo);
   };
+
+  const handleReject = () => (
+    setShowSnackbar({ ...showSnackbar, onlyVideoFileTypesAccepted: true })
+  )
 
   const handleClose = () => {
     window.location.reload();
@@ -191,6 +196,17 @@ export default function UploadModal({ show, onClose }) {
   )
 
   const renderSnackbars = () => {
+    if (showSnackbar.onlyVideoFileTypesAccepted) {
+      return (
+        <CustomSnackbar
+          message="Only video file types are accepted"
+          onClose={() =>
+            setShowSnackbar({ ...showSnackbar, onlyVideoFileTypesAccepted: false })
+          }
+          severity="error"
+        />
+      );
+    }
     if (showSnackbar.uploadError) {
       return (
         <CustomSnackbar
@@ -264,7 +280,7 @@ export default function UploadModal({ show, onClose }) {
     if (title !== null) {
       return (
         <Grid item xs={12}>
-          <Typography variant="subtitle1">
+          <Typography style={{ fontWeight: 600 }} variant="subtitle1">
             {title}
           </Typography>
         </Grid>
@@ -294,6 +310,7 @@ export default function UploadModal({ show, onClose }) {
                   <Grid item xs={12}>
                     <StyledDropzone
                       onAdd={handleAdd}
+                      onReject={handleReject}
                     />
                   </Grid>
                 }
