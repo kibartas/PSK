@@ -1,5 +1,4 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
 import ReactPlayer from 'react-player';
 import { withRouter } from 'react-router';
 import TopBar from '../../components/TopBar/TopBar';
@@ -13,10 +12,12 @@ class PlayerPage extends React.Component {
     this.state = {
       url: undefined,
       video: undefined,
+      width: window.innerWidth,
     };
   }
 
   componentDidMount() {
+    window.addEventListener('resize', this.updateWindowDimensions);
     const { match } = this.props;
     const { videoId } = match.params;
     getVideoDetails(videoId).then((response) => {
@@ -26,17 +27,26 @@ class PlayerPage extends React.Component {
     });
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateWindowDimensions);
+  }
+
+  updateWindowDimensions = () => (
+    this.setState({ width: window.innerWidth })
+  )
+
   render() {
-    const { url, video } = this.state;
+    const { url, video, width } = this.state;
+
     const handleArrowBackClick = () => {
       window.location.href = '/library';
     };
 
     return (
-      <Grid className="container" justify="center" container>
+      <div className='.root'>
         {video === undefined ? null : (
           <>
-            <Grid item>
+            <div>
               <TopBar
                 darkMode
                 firstName={window.sessionStorage.getItem('firstName')}
@@ -46,21 +56,20 @@ class PlayerPage extends React.Component {
                 onActionIconClick={handleArrowBackClick}
                 iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
               />
-            </Grid>
-            <Grid item xs={9}>
+            </div>
+            <div className="player-wrapper">
               <ReactPlayer
                 playing
-                className="react-player"
-                width="90%"
-                height="90%"
+                width="100%"
+                height={width >= 600 ? "91.5vh" : "92.3vh"}
                 url={url}
                 controls
                 controlsList="nodownload"
               />
-            </Grid>
+            </div>
           </>
         )}
-      </Grid>
+      </div>
     );
   }
 }
