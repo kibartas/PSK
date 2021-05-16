@@ -10,13 +10,14 @@ import {
   Typography,
 } from '@material-ui/core';
 import { CancelToken, isCancel } from 'axios';
-import './styles.css';
 import { uploadChunk, finishUpload, deleteChunks, changeTitle, deleteVideo } from '../../api/VideoAPI';
 import { getChunkCount } from '../../util';
 import StyledDropzone from './StyledDropzone';
 import CustomSnackbar from '../CustomSnackbar/CustomSnackbar';
 import { CHUNK_SIZE } from '../../constants';
 import VideosList from './VideosList';
+import './styles.css';
+
 
 export default function UploadModal({ show, onClose }) {
   const [videosToUpload, setVideosToUpload] = useState([]);
@@ -280,7 +281,7 @@ export default function UploadModal({ show, onClose }) {
     if (title !== null) {
       return (
         <Grid item xs={12}>
-          <Typography style={{ fontWeight: 600 }} variant="subtitle1">
+          <Typography className="modal__title" variant="subtitle1">
             {title}
           </Typography>
         </Grid>

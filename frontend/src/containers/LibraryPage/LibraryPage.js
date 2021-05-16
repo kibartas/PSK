@@ -136,10 +136,6 @@ class LibraryPage extends React.Component {
     this.setState({ showUploadModal: !showUploadModal });
   };
 
-  handleUploadModalClose = () => {
-    this.toggleUploadModal();
-  };
-
   render() {
     const {
       showUploadModal,
@@ -168,7 +164,7 @@ class LibraryPage extends React.Component {
       >
         <UploadModal
           show={showUploadModal}
-          onClose={this.handleUploadModalClose}
+          onClose={this.toggleUploadModal}
         />
         <Grid item className="flexGrow">
           {selectedCards.length === 0 ? (
