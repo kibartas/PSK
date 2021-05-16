@@ -136,15 +136,6 @@ class LibraryPage extends React.Component {
     this.setState({ showUploadModal: !showUploadModal });
   };
 
-  // eslint-disable-next-line no-unused-vars
-  handleUpload = (addedVideos, videoNames) => {
-    // [TM]: TODO WDB-104
-  };
-
-  handleUploadModalClose = () => {
-    this.toggleUploadModal();
-  };
-
   render() {
     const {
       showUploadModal,
@@ -173,8 +164,7 @@ class LibraryPage extends React.Component {
       >
         <UploadModal
           show={showUploadModal}
-          onUpload={this.handleUpload}
-          onClose={this.handleUploadModalClose}
+          onClose={this.toggleUploadModal}
         />
         <Grid item className="flexGrow">
           {selectedCards.length === 0 ? (

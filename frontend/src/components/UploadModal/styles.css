@@ -5,7 +5,11 @@
 }
 
 .modal__paper {
-  width: 60vh;
+  width: 70vh;
+}
+
+.modal__title {
+  font-weight: 600;
 }
 
 .modal__dropzone {
@@ -28,4 +32,8 @@
 .modal__dropzone--reject {
   border-color: #ff1744;
   background-color: #ff174450;
+}
+
+.modal__progressBar {
+  width: 100%;
 }
