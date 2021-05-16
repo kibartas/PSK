@@ -1,0 +1,14 @@
+.navDrawer {
+  width: 35vh;
+  height: 100%;
+  position: relative;
+}
+
+.navDrawer__spaceTakenItem {
+  position: absolute;
+  bottom: 1vh;
+}
+
+.navDrawer__spaceTakenLabel {
+  font-weight: 600;
+}
