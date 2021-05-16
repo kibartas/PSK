@@ -16,7 +16,7 @@ import {
   finishUpload,
   deleteChunks,
   changeTitle,
-  deleteVideo,
+  deleteVideos,
 } from '../../api/VideoAPI';
 import { getChunkCount } from '../../util';
 import InUploadVideoItem from './InUploadVideoItem';
@@ -62,7 +62,7 @@ export default function UploadModal({ show, onClose }) {
       cancelTokenSource.current.cancel();
       deleteChunks(videoToUpload.name).then(() => handleClose());
     } else if (uploadedVideo !== undefined) {
-      deleteVideo(uploadedVideo.id).then(() => handleClose());
+      deleteVideos([uploadedVideo.id]).then(() => handleClose());
     }
   };
 
