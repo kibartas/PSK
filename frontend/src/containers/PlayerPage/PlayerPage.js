@@ -15,6 +15,7 @@ class PlayerPage extends React.Component {
       screenWidth: window.innerWidth,
       screenHeight: window.innerHeight,
     };
+    this.topBarRef = React.createRef();
   }
 
   componentDidMount() {
@@ -24,10 +25,7 @@ class PlayerPage extends React.Component {
     getVideoDetails(videoId).then((response) => {
       const userId = window.sessionStorage.getItem('id');
       const url = `http://localhost:61346/api/Videos/stream?videoId=${videoId}&userId=${userId}`;
-      this.setState({ 
-        url,
-        video: response.data,
-      });
+      this.setState({ url, video: response.data });
     });
   }
 
@@ -45,7 +43,9 @@ class PlayerPage extends React.Component {
   render() {
     const { url, video, screenWidth, screenHeight } = this.state;
 
-    const topBarHeight = screenWidth > 600 ? 64 : 56; // These values are from Material UI AppBar source code
+    // This fallback height is needed, since TopBar is not rendered until video information is fetched, so ref will be null
+    const fallBackTopBarHeight = screenWidth > 600 ? 64 : 56 // These values are from Material UI AppBar source code
+    const topBarHeight = this.topBarRef.current !== null ? this.topBarRef.current.clientHeight : fallBackTopBarHeight;
 
     const handleArrowBackClick = () => {
       window.location.href = '/library';
@@ -55,7 +55,7 @@ class PlayerPage extends React.Component {
       <div className='.root'>
         {video === undefined ? null : (
           <>
-            <div>
+            <div ref={this.topBarRef}>
               <TopBar
                 darkMode
                 firstName={window.sessionStorage.getItem('firstName')}
