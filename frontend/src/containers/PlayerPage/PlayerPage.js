@@ -1,5 +1,4 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
 import ReactPlayer from 'react-player';
 import { withRouter } from 'react-router';
 import TopBar from '../../components/TopBar/TopBar';
@@ -13,10 +12,14 @@ class PlayerPage extends React.Component {
     this.state = {
       url: undefined,
       video: undefined,
+      screenWidth: window.innerWidth,
+      screenHeight: window.innerHeight,
     };
+    this.topBarRef = React.createRef();
   }
 
   componentDidMount() {
+    window.addEventListener('resize', this.updateWindowDimensions);
     const { match } = this.props;
     const { videoId } = match.params;
     getVideoDetails(videoId).then((response) => {
@@ -26,17 +29,33 @@ class PlayerPage extends React.Component {
     });
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateWindowDimensions);
+  }
+
+  updateWindowDimensions = () => (
+    this.setState({ 
+      screenWidth: window.innerWidth,
+      screenHeight: window.innerHeight,
+    })
+  )
+
   render() {
-    const { url, video } = this.state;
+    const { url, video, screenWidth, screenHeight } = this.state;
+
+    // This fallback height is needed, since TopBar is not rendered until video information is fetched, so ref will be null
+    const fallBackTopBarHeight = screenWidth > 600 ? 64 : 56 // These values are from Material UI AppBar source code
+    const topBarHeight = this.topBarRef.current !== null ? this.topBarRef.current.clientHeight : fallBackTopBarHeight;
+
     const handleArrowBackClick = () => {
       window.location.href = '/library';
     };
 
     return (
-      <Grid className="container" justify="center" container>
+      <div className='.root'>
         {video === undefined ? null : (
           <>
-            <Grid item>
+            <div ref={this.topBarRef}>
               <TopBar
                 darkMode
                 firstName={window.sessionStorage.getItem('firstName')}
@@ -46,21 +65,20 @@ class PlayerPage extends React.Component {
                 onActionIconClick={handleArrowBackClick}
                 iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
               />
-            </Grid>
-            <Grid item xs={9}>
+            </div>
+            <div className="player-wrapper">
               <ReactPlayer
                 playing
-                className="react-player"
-                width="90%"
-                height="90%"
+                width={screenWidth}
+                height={screenHeight - topBarHeight}
                 url={url}
                 controls
                 controlsList="nodownload"
               />
-            </Grid>
+            </div>
           </>
         )}
-      </Grid>
+      </div>
     );
   }
 }
