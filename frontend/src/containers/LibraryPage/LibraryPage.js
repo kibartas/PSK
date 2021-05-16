@@ -180,7 +180,7 @@ class LibraryPage extends React.Component {
           show={showUploadModal}
           onClose={this.toggleUploadModal}
         />
-        <Grid item className="flexGrow">
+        <Grid item>
           {selectedCards.length === 0 ? (
             <TopBar
               title="Video Library"
