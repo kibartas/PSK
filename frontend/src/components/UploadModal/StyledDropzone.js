@@ -3,7 +3,7 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import React, { useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-export default function StyledDropzone({ onAdd }) {
+export default function StyledDropzone({ onAdd, onReject }) {
   const {
     getRootProps,
     getInputProps,
@@ -11,8 +11,8 @@ export default function StyledDropzone({ onAdd }) {
     isDragReject,
   } = useDropzone({
     onDropAccepted: onAdd,
-    accept: 'video/*',
-    multiple: false
+    onDropRejected: onReject,
+    accept: 'video/*'
   });
 
   const className = useMemo(() => {

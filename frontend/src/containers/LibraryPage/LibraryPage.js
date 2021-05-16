@@ -108,8 +108,7 @@ class LibraryPage extends React.Component {
       >
         <UploadModal
           show={showUploadModal}
-          onUpload={this.handleUpload}
-          onClose={this.handleUploadModalClose}
+          onClose={this.toggleUploadModal}
         />
         <Grid item className="flexGrow">
           {selectedCards.length === 0 ? (
