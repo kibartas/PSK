@@ -12,7 +12,8 @@ class PlayerPage extends React.Component {
     this.state = {
       url: undefined,
       video: undefined,
-      width: window.innerWidth,
+      screenWidth: window.innerWidth,
+      screenHeight: window.innerHeight,
     };
   }
 
@@ -23,7 +24,10 @@ class PlayerPage extends React.Component {
     getVideoDetails(videoId).then((response) => {
       const userId = window.sessionStorage.getItem('id');
       const url = `http://localhost:61346/api/Videos/stream?videoId=${videoId}&userId=${userId}`;
-      this.setState({ url, video: response.data });
+      this.setState({ 
+        url,
+        video: response.data,
+      });
     });
   }
 
@@ -32,11 +36,16 @@ class PlayerPage extends React.Component {
   }
 
   updateWindowDimensions = () => (
-    this.setState({ width: window.innerWidth })
+    this.setState({ 
+      screenWidth: window.innerWidth,
+      screenHeight: window.innerHeight,
+    })
   )
 
   render() {
-    const { url, video, width } = this.state;
+    const { url, video, screenWidth, screenHeight } = this.state;
+
+    const topBarHeight = screenWidth > 600 ? 64 : 56; // These values are from Material UI AppBar source code
 
     const handleArrowBackClick = () => {
       window.location.href = '/library';
@@ -60,8 +69,8 @@ class PlayerPage extends React.Component {
             <div className="player-wrapper">
               <ReactPlayer
                 playing
-                width="100%"
-                height={width >= 600 ? "91.5vh" : "92.3vh"}
+                width={screenWidth}
+                height={screenHeight - topBarHeight}
                 url={url}
                 controls
                 controlsList="nodownload"
