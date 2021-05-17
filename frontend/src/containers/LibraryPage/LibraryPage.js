@@ -7,6 +7,7 @@ import TopBar from '../../components/TopBar/TopBar';
 import UploadModal from '../../components/UploadModal/UploadModal';
 import './styles.css';
 import VideoCardsByDate from '../../components/VideoCardsByDate/VideoCardsByDate';
+import NavDrawer from '../../components/NavDrawer/NavDrawer';
 
 const mockedCards = [
   {
@@ -109,6 +110,7 @@ class LibraryPage extends React.Component {
       sortedVideoCardDates: [],
       selectedCards: [],
       showUploadModal: false,
+      showNavDrawer: false,
       sortAscending: false,
     };
   }
@@ -131,23 +133,20 @@ class LibraryPage extends React.Component {
     });
   };
 
+  toggleNavDrawer = () => {
+    const { showNavDrawer } = this.state;
+    this.setState({ showNavDrawer: !showNavDrawer });
+  }
+
   toggleUploadModal = () => {
     const { showUploadModal } = this.state;
     this.setState({ showUploadModal: !showUploadModal });
   };
 
-  // eslint-disable-next-line no-unused-vars
-  handleUpload = (addedVideos, videoNames) => {
-    // [TM]: TODO WDB-104
-  };
-
-  handleUploadModalClose = () => {
-    this.toggleUploadModal();
-  };
-
   render() {
     const {
       showUploadModal,
+      showNavDrawer,
       videoCards,
       sortedVideoCardDates,
       selectedCards,
@@ -171,18 +170,21 @@ class LibraryPage extends React.Component {
         container
         direction="column"
       >
+        <NavDrawer
+          open={showNavDrawer}
+          onOpen={this.toggleNavDrawer}
+          onClose={this.toggleNavDrawer}
+          spaceTaken={100000000} // [TM]: TODO WDB-122 fetch space taken in LibraryPage componentDidMount and save it in state
+        />
         <UploadModal
           show={showUploadModal}
-          onUpload={this.handleUpload}
-          onClose={this.handleUploadModalClose}
+          onClose={this.toggleUploadModal}
         />
-        <Grid item className="flexGrow">
+        <Grid item>
           {selectedCards.length === 0 ? (
             <TopBar
               title="Video Library"
-              onActionIconClick={() => {
-                /* [TM:] TODO WDB-29 */
-              }}
+              onActionIconClick={this.toggleNavDrawer}
               showAvatarAndLogout
               firstName={window.sessionStorage.getItem('firstName')}
               lastName={window.sessionStorage.getItem('lastName')}
