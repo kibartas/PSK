@@ -135,7 +135,7 @@ namespace RestAPI.Controllers
         }
 
         [HttpGet, Route("stream"), AllowAnonymous]
-        public async Task<ActionResult<FileStreamResult>> Stream(Guid videoId, Guid userId)
+        public async Task<ActionResult> Stream(Guid videoId, Guid userId)
         {
             if (videoId == Guid.Empty)
             {
