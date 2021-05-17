@@ -5,7 +5,11 @@ import fileDownload from 'js-file-download';
 import TopBar from '../../components/TopBar/TopBar';
 import { DeleteIcon, DownloadIcon, InfoIcon } from '../../assets';
 import './styles.css';
-import { downloadVideo, getVideoDetails } from '../../api/VideoAPI';
+import {
+  downloadVideo,
+  getVideoDetails,
+  deleteVideos,
+} from '../../api/VideoAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
 
@@ -21,6 +25,8 @@ class PlayerPage extends React.Component {
       showDownloadError: false,
       showDownloadInProgress: false,
       showDownloadSuccess: false,
+      showDeletionDialog: false,
+      deletionErrorShowing: false,
     };
     this.topBarRef = React.createRef();
   }
@@ -57,7 +63,7 @@ class PlayerPage extends React.Component {
   toggleDeletionDialog = () => {
     const { showDeletionDialog } = this.state;
     this.setState({ showDeletionDialog: !showDeletionDialog });
-  }
+  };
 
   handleVideoDeletion = () => {
     const { video } = this.state;
@@ -67,14 +73,14 @@ class PlayerPage extends React.Component {
         this.setState({ deletionErrorShowing: true });
         this.toggleDeletionDialog();
       });
-  }
+  };
 
   hideDeletionError = () => {
     this.setState({ deletionErrorShowing: false });
-  }
+  };
 
   hidePlaybackError = () => {
-    this.setState({ playbackErrorShowing: false });
+    this.setState({ showPlaybackError: false });
     this.handleArrowBackClick();
   };
 
@@ -88,6 +94,8 @@ class PlayerPage extends React.Component {
       showDownloadError,
       showDownloadInProgress,
       showDownloadSuccess,
+      showDeletionDialog,
+      deletionErrorShowing,
     } = this.state;
 
     // This fallback height is needed, since TopBar is not rendered until video information is fetched, so ref will be null
@@ -96,10 +104,6 @@ class PlayerPage extends React.Component {
       this.topBarRef.current !== null
         ? this.topBarRef.current.clientHeight
         : fallBackTopBarHeight;
-
-    const handleArrowBackClick = () => {
-      window.location.href = '/library';
-    };
 
     const toggleVideoInformation = () => {
       // WDB-118
@@ -126,11 +130,6 @@ class PlayerPage extends React.Component {
         );
     };
 
-    const hidePlaybackError = () => {
-      this.setState({ showPlaybackError: false });
-      handleArrowBackClick();
-    };
-
     const renderDownloadSnackbars = () => {
       if (showDownloadError) {
         return (
@@ -152,7 +151,7 @@ class PlayerPage extends React.Component {
       if (showDownloadSuccess) {
         return (
           <CustomSnackbar
-            message="Video downloaded successfully"
+            message="Video is ready to be downloaded"
             onClose={() => this.setState({ showDownloadSuccess: false })}
             severity="success"
           />
@@ -175,6 +174,18 @@ class PlayerPage extends React.Component {
         ) : (
           <>
             {renderDownloadSnackbars()}
+            <DeleteConfirmationDialog
+              open={showDeletionDialog}
+              onConfirm={this.handleVideoDeletion}
+              onCancel={this.toggleDeletionDialog}
+            />
+            {deletionErrorShowing && (
+              <CustomSnackbar
+                message="Oops... Something wrong happened, we could not delete your video"
+                onClose={this.hideDeletionError}
+                severity="error"
+              />
+            )}
             <div ref={this.topBarRef}>
               <TopBar
                 darkMode
@@ -182,14 +193,13 @@ class PlayerPage extends React.Component {
                 lastName={window.sessionStorage.getItem('lastName')}
                 title={video.title}
                 showArrow
-                onIconsClick={[toggleVideoInformation, handleVideoDownload]}
-                onActionIconClick={handleArrowBackClick}
-                iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
                 onIconsClick={[
-                  () => {},
-                  () => {},
-                  this.toggleDeletionDialog
+                  toggleVideoInformation,
+                  handleVideoDownload,
+                  this.toggleDeletionDialog,
                 ]}
+                onActionIconClick={this.handleArrowBackClick}
+                iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
               />
             </div>
             <div className="player-wrapper">
