@@ -16,7 +16,7 @@ class PlayerPage extends React.Component {
       video: undefined,
       screenWidth: window.innerWidth,
       screenHeight: window.innerHeight,
-      showDeleteConfirmationDialog: false,
+      showDeletionDialog: false,
       playbackErrorShowing: false,
       deletionErrorShowing: false,
     };
@@ -59,12 +59,9 @@ class PlayerPage extends React.Component {
       .catch(() => this.setState({ deletionErrorShowing: true }));
   }
 
-  handleDeletionCancel = () => {
-    this.setState({ showDeleteConfirmationDialog: false });
-  }
-
-  handleDeleteIconClick = () => {
-    this.setState({ showDeleteConfirmationDialog: true });
+  toggleDeletionDialog = () => {
+    const { showDeletionDialog } = this.state;
+    this.setState({ showDeletionDialog: !showDeletionDialog });
   }
 
   hideDeletionError = () => {
@@ -82,7 +79,7 @@ class PlayerPage extends React.Component {
       video,
       screenWidth,
       screenHeight,
-      showDeleteConfirmationDialog,
+      showDeletionDialog,
       playbackErrorShowing,
       deletionErrorShowing
     } = this.state;
@@ -108,9 +105,9 @@ class PlayerPage extends React.Component {
         ) : (
           <>
             <DeleteConfirmationDialog 
-              open={showDeleteConfirmationDialog}
+              open={showDeletionDialog}
               onConfirm={this.handleVideoDeletion}
-              onCancel={this.handleDeletionCancel}
+              onCancel={this.toggleDeletionDialog}
             />
             {deletionErrorShowing &&
               <CustomSnackbar
@@ -131,7 +128,7 @@ class PlayerPage extends React.Component {
                 onIconsClick={[
                   () => {},
                   () => {},
-                  this.handleDeleteIconClick
+                  this.toggleDeletionDialog
                 ]}
               />
             </div>
