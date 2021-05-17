@@ -129,9 +129,15 @@ namespace RestAPI.Controllers
                 return Unauthorized();
             }
 
-            var thumbnailBytes = await _videoService.GetVideoThumbnail(video.UserId, video.Id);
-            var thumbnailFile = File(thumbnailBytes, "image/png");
-            return thumbnailFile;
+            try
+            {
+                var thumbnailBytes = await _videoService.GetVideoThumbnail(video.UserId, video.Id);
+                var thumbnailFile = File(thumbnailBytes, "image/png");
+                return thumbnailFile;
+            } catch
+            {
+                return NotFound("Thumbnail file does not exist");
+            }
         }
 
         [HttpGet, Route("stream"), AllowAnonymous]

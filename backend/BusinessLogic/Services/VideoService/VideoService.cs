@@ -28,6 +28,8 @@ namespace BusinessLogic.Services.VideoService
 
         public async Task UploadChunk(Stream requestBody, Guid userId, string chunkNumber, string fileName)
         {
+            CreateUserVideoDirectory(userId); // Creates storage folders for users if needed
+
             string newPath = Path.Combine(_tempPath, chunkNumber + "_" + Path.GetFileNameWithoutExtension(fileName) + "-" + userId + Path.GetExtension(fileName));
             if (!Directory.Exists(_tempPath))
             {
@@ -108,8 +110,15 @@ namespace BusinessLogic.Services.VideoService
         public void CreateUserVideoDirectory(Guid userId)
         {
             string userPath = Path.Combine(_uploadPath, userId.ToString());
-            Directory.CreateDirectory(userPath);
-            Directory.CreateDirectory(Path.Combine(userPath, "/Snapshots"));
+            if (!Directory.Exists(userPath))
+            {
+                Directory.CreateDirectory(userPath);
+            }
+            string snapshotsPath = Path.Combine(userPath, "/Snapshots");
+            if (!Directory.Exists(snapshotsPath))
+            {
+                Directory.CreateDirectory(snapshotsPath);
+            }
         }
 
         public void DeleteAllChunks(string fileName)
@@ -151,8 +160,8 @@ namespace BusinessLogic.Services.VideoService
         {
             string userPath = Path.Combine(_uploadPath, userId.ToString());
             string snapshotsPath = Path.Combine(userPath, "Snapshots");
-            string thumbnailPath = Path.Combine(snapshotsPath,videoId + ".png");
-            Byte[] videoBytes = await File.ReadAllBytesAsync(thumbnailPath);
+            string thumbnailPath = Path.Combine(snapshotsPath, videoId + ".png");
+            byte[] videoBytes = await File.ReadAllBytesAsync(thumbnailPath);
             return videoBytes;
         }
     }

@@ -156,15 +156,6 @@ namespace RestAPI.Controllers
                 return NotFound();
             }
 
-            try
-            {
-                _videoService.CreateUserVideoDirectory(user.Id);
-            }
-            catch
-            {
-                return StatusCode(500);
-            }
-
             user.Confirmed = true;
             await _usersRepository.Save();
 
