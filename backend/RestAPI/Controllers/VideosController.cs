@@ -296,8 +296,8 @@ namespace RestAPI.Controllers
             return Ok(response);
         }
 
-        [HttpDelete, Route("{id}")]
-        public async Task<IActionResult> DeleteVideo([FromRoute] Guid id)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteVideos([FromBody] List<Guid> ids)
         {
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null)
@@ -316,25 +316,33 @@ namespace RestAPI.Controllers
                 return NotFound();
             }
 
-            if (id == Guid.Empty) return BadRequest();
+            foreach (Guid id in ids)
+            {
+                if (id == Guid.Empty) return BadRequest();
 
-            var video = await _videosRepository.GetVideoById(id);
-            if (video == null)
-            {
-                return NotFound();
-            }
+                var video = await _videosRepository.GetVideoById(id);
+                if (video == null)
+                {
+                    return NotFound();
+                }
 
-            try
-            {
-                await _videoService.DeleteVideo(video, user.Id);
-            }
-            catch (FileNotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch
-            {
-                return StatusCode(500);
+                if (video.UserId != user.Id)
+                {
+                    return NotFound();
+                }
+
+                try
+                {
+                    await _videoService.DeleteVideo(video, user.Id);
+                }
+                catch (FileNotFoundException ex)
+                {
+                    return NotFound(ex.Message);
+                }
+                catch
+                {
+                    return StatusCode(500);
+                }
             }
 
             return Ok();

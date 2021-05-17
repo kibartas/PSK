@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { CancelToken, isCancel } from 'axios';
-import { uploadChunk, finishUpload, deleteChunks, changeTitle, deleteVideo } from '../../api/VideoAPI';
+import { uploadChunk, finishUpload, deleteChunks, changeTitle, deleteVideos } from '../../api/VideoAPI';
 import { getChunkCount } from '../../util';
 import StyledDropzone from './StyledDropzone';
 import CustomSnackbar from '../CustomSnackbar/CustomSnackbar';
@@ -65,13 +65,14 @@ export default function UploadModal({ show, onClose }) {
   const handleCancel = () => {
     if (cancelTokenSource.current !== undefined) {
       cancelTokenSource.current.cancel();
-    }
+    }      
     const requests = [];
     if (inUploadVideo !== undefined) {
       requests.push(deleteChunks(inUploadVideo.name));
     }
     if (uploadedVideos.length > 0) {
-      uploadedVideos.forEach(video => requests.push(deleteVideo(video.id)));
+      const videoIds = uploadedVideos.map((video) => video.id);
+      requests.push(deleteVideos(videoIds))
     }
     if (requests.length > 0) {
       Promise.all(requests)
@@ -191,7 +192,7 @@ export default function UploadModal({ show, onClose }) {
   };
 
   const handleVideoDeletion = (videoId) => () => (
-    deleteVideo(videoId).then(() => (
+    deleteVideos([videoId]).then(() => (
       setUploadedVideos([...uploadedVideos.filter(video => video.id !== videoId)])
     )).catch(() => setShowSnackbar({ ...showSnackbar, serverError: true }))
   )

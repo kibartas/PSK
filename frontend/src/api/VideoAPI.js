@@ -48,9 +48,8 @@ export const changeTitle = async (videoId, newTitle) => (
   Api.patch("/Videos", null, { params: { id: videoId, newTitle }})
 );
 
-export const deleteVideo = async (videoId) => (
-  Api.delete(`/Videos/${videoId}`)
-);
+export const deleteVideos = async (videoIds) =>
+  Api.delete(`/Videos`, { data: videoIds });
 
 export const getVideoDetails = (videoId) =>
   Api.get('/Videos/', { params: { videoId } });
