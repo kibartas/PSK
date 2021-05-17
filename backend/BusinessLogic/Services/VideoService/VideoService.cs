@@ -147,13 +147,6 @@ namespace BusinessLogic.Services.VideoService
             }
         }
 
-        public async Task<List<Video>> GetUserVideos(Guid userId)
-        {
-            var videos = await _videosRepository.GetAllVideos();
-            var filteredVideos = videos.Where(video => video.DeleteDate == null && video.UserId == userId).ToList();
-            return filteredVideos;
-        }
-
         public async Task<Byte[]> GetVideoThumbnail(Guid userId, Guid videoId)
         {
             string userPath = Path.Combine(_uploadPath, userId.ToString());

@@ -46,9 +46,10 @@ namespace RestAPI.Controllers
                 return NotFound();
             }
 
-            var videos = await _videoService.GetUserVideos(userId);
+            var videos = await _videosRepository.GetVideosByUserId(userId);
             List<VideoDto> videoDtos = new List<VideoDto>();
-            videos.ForEach(video =>
+
+            foreach(var video in videos)
             {
                 videoDtos.Add(new VideoDto()
                 {
@@ -57,7 +58,7 @@ namespace RestAPI.Controllers
                     Size = video.Size,
                     UploadDate = video.UploadDate.ToString("yyyy-MM-dd")
                 });
-            });
+            }
 
             return Ok(videoDtos);
         }
@@ -96,22 +97,68 @@ namespace RestAPI.Controllers
         [HttpGet, Route("thumbnail")]
         public async Task<IActionResult> GetThumbnail(Guid videoId)
         {
-            if (videoId == Guid.Empty) return BadRequest("Bad video guid");
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+            
+            if (videoId == Guid.Empty)
+            {
+                return BadRequest("Bad video guid");
+            }
+
             var video = await _videosRepository.GetVideoById(videoId);
-            if (video == null) return NotFound();
+            if (video == null)
+            {
+                return NotFound();
+            }
+
+            if (user.Id != video.UserId)
+            {
+                return Unauthorized();
+            }
+
             var thumbnailBytes = await _videoService.GetVideoThumbnail(video.UserId, video.Id);
             var thumbnailFile = File(thumbnailBytes, "image/png");
             return thumbnailFile;
         }
 
         [HttpGet, Route("stream"), AllowAnonymous]
-        public async Task<IActionResult> Stream(Guid videoId, Guid userId)
+        public async Task<ActionResult<FileStreamResult>> Stream(Guid videoId, Guid userId)
         {
-            if (videoId == Guid.Empty) return BadRequest("Video id is not valid");
-            if (userId == Guid.Empty) return BadRequest("User is not valid");
+            if (videoId == Guid.Empty)
+            {
+                return BadRequest("Video id is not valid");
+            }
+
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User is not valid");
+            }
+
             var video = await _videosRepository.GetVideoById(videoId);
-            if (video == null) return NotFound();
-            if (video.UserId != userId) return Unauthorized();
+            if (video == null)
+            {
+                return NotFound();
+            }
+
+            if (video.UserId != userId)
+            {
+                return Unauthorized();
+            }
+
             var response = File(System.IO.File.OpenRead(video.Path), "video/mp4", enableRangeProcessing: true);
             return response;
         }
