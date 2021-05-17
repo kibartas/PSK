@@ -52,16 +52,19 @@ class PlayerPage extends React.Component {
     window.location.href = '/library';
   };
 
+  toggleDeletionDialog = () => {
+    const { showDeletionDialog } = this.state;
+    this.setState({ showDeletionDialog: !showDeletionDialog });
+  }
+
   handleVideoDeletion = () => {
     const { video } = this.state;
     deleteVideos([video.id])
       .then(() => this.handleArrowBackClick())
-      .catch(() => this.setState({ deletionErrorShowing: true }));
-  }
-
-  toggleDeletionDialog = () => {
-    const { showDeletionDialog } = this.state;
-    this.setState({ showDeletionDialog: !showDeletionDialog });
+      .catch(() => {
+        this.setState({ deletionErrorShowing: true });
+        this.toggleDeletionDialog();
+      });
   }
 
   hideDeletionError = () => {
