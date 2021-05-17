@@ -7,6 +7,7 @@ import { DeleteIcon, DownloadIcon, InfoIcon } from '../../assets';
 import './styles.css';
 import { downloadVideo, getVideoDetails } from '../../api/VideoAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
+import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
 
 class PlayerPage extends React.Component {
   constructor(props) {
@@ -48,6 +49,34 @@ class PlayerPage extends React.Component {
       screenWidth: window.innerWidth,
       screenHeight: window.innerHeight,
     });
+
+  handleArrowBackClick = () => {
+    window.location.href = '/library';
+  };
+
+  toggleDeletionDialog = () => {
+    const { showDeletionDialog } = this.state;
+    this.setState({ showDeletionDialog: !showDeletionDialog });
+  }
+
+  handleVideoDeletion = () => {
+    const { video } = this.state;
+    deleteVideos([video.id])
+      .then(() => this.handleArrowBackClick())
+      .catch(() => {
+        this.setState({ deletionErrorShowing: true });
+        this.toggleDeletionDialog();
+      });
+  }
+
+  hideDeletionError = () => {
+    this.setState({ deletionErrorShowing: false });
+  }
+
+  hidePlaybackError = () => {
+    this.setState({ playbackErrorShowing: false });
+    this.handleArrowBackClick();
+  };
 
   render() {
     const {
@@ -139,7 +168,7 @@ class PlayerPage extends React.Component {
             <CustomSnackbar
               topCenter
               message="A playback error has occured. Please try again later"
-              onClose={hidePlaybackError}
+              onClose={this.hidePlaybackError}
               severity="error"
             />
           )
@@ -156,6 +185,11 @@ class PlayerPage extends React.Component {
                 onIconsClick={[toggleVideoInformation, handleVideoDownload]}
                 onActionIconClick={handleArrowBackClick}
                 iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
+                onIconsClick={[
+                  () => {},
+                  () => {},
+                  this.toggleDeletionDialog
+                ]}
               />
             </div>
             <div className="player-wrapper">

@@ -46,6 +46,8 @@ class LibraryPage extends React.Component {
       selectedCards: [],
       showUploadModal: false,
       showNavDrawer: false,
+      showDeletionDialog: false, 
+      showDeletionError: false,
       sortAscending: false,
       showDownloadError: false,
       showDownloadSuccess: false,
@@ -88,9 +90,10 @@ class LibraryPage extends React.Component {
     this.setState({ showUploadModal: !showUploadModal });
   };
 
-  handleUploadModalClose = () => {
-    this.toggleUploadModal();
-  };
+  toggleDeletionDialog = () => {
+    const { showDeletionDialog } = this.state;
+    this.setState({ showDeletionDialog: !showDeletionDialog });
+  }
 
   handleVideosDownload = () => {
     const { selectedCards } = this.state;
@@ -118,6 +121,7 @@ class LibraryPage extends React.Component {
     const {
       showUploadModal,
       showNavDrawer,
+      showDeletionDialog,
       videoCards,
       sortedVideoCardDates,
       selectedCards,
