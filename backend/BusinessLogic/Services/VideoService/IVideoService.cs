@@ -14,5 +14,8 @@ namespace BusinessLogic.Services.VideoService
         void CreateUserVideoDirectory(Guid userId);
         void DeleteAllChunks(string fileName);
         Task<Byte[]> GetVideoThumbnail(Guid userId, Guid videoId);
+        Task<MemoryStream> GetVideoFileStream(string path);
+        Task<MemoryStream> GetVideosZipFileStream(List<Video> videos);
+        string GetContentType(string path);
     }
 }

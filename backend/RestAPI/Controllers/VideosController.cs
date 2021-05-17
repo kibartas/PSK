@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BusinessLogic.Services.VideoService;
+using DataAccess.Models;
 using DataAccess.Repositories.Users;
 using DataAccess.Repositories.Videos;
 using Microsoft.AspNetCore.Authorization;
@@ -160,6 +161,97 @@ namespace RestAPI.Controllers
 
             var response = File(System.IO.File.OpenRead(video.Path), "video/mp4", enableRangeProcessing: true);
             return response;
+        }
+
+        [HttpGet, Route("Download")]
+        public async Task<ActionResult> DownloadSingle(Guid videoId)
+        {
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            if (videoId == Guid.Empty)
+            {
+                return BadRequest("video guid is not valid");
+            }
+
+            var video = await _videosRepository.GetVideoById(videoId);
+            if (video == null)
+            {
+                return NotFound();
+            }
+
+            if (!System.IO.File.Exists(video.Path))
+            {
+                return NotFound();
+            }
+
+            if (video.UserId != user.Id)
+            {
+                return Unauthorized();
+            }
+
+            var stream = await _videoService.GetVideoFileStream(video.Path);
+            var videoFile = File(stream, _videoService.GetContentType(video.Path), video.Title + Path.GetExtension(video.Path));
+            return videoFile;
+        }
+
+        [HttpPost, Route("DownloadMultiple"), AllowAnonymous]
+        public async Task<IActionResult> DownloadMultiple([FromBody] List<Guid> videoIds)
+        {
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            if (videoIds.Count == 0)
+            {
+                return BadRequest("No ids provided");
+            }
+
+            var videos = new List<Video>();
+            foreach(var videoId in videoIds)
+            {
+                if (videoId == Guid.Empty)
+                {
+                    return Unauthorized();
+                }
+                var video = await _videosRepository.GetVideoById(videoId);
+                if (video.UserId != user.Id)
+                {
+                    return Unauthorized();
+                }
+                videos.Add(video);
+            }
+
+            var stream = await _videoService.GetVideosZipFileStream(videos);
+            var zipName = "Videos-" + Guid.NewGuid();
+            return File(stream, "application/zip", zipName);
         }
 
         [HttpPost, Route("UploadChunks")]
