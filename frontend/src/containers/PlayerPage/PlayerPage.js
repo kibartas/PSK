@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactPlayer from 'react-player';
 import { withRouter } from 'react-router';
+import fileDownload from 'js-file-download';
 import TopBar from '../../components/TopBar/TopBar';
 import { DeleteIcon, DownloadIcon, InfoIcon } from '../../assets';
 import './styles.css';
-import { getVideoDetails } from '../../api/VideoAPI';
+import { downloadVideo, getVideoDetails } from '../../api/VideoAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 
 class PlayerPage extends React.Component {
@@ -65,6 +66,19 @@ class PlayerPage extends React.Component {
       window.location.href = '/library';
     };
 
+    const toggleVideoInformation = () => {
+      // WDB-118
+    };
+
+    const handleVideoDownload = () => {
+      const userId = window.sessionStorage.getItem('id');
+      downloadVideo(video.id, userId).then((response) => {
+        const contentDisposition = response.headers['content-disposition'];
+        const filename = contentDisposition.split(';')[1].split('filename=')[1];
+        fileDownload(response.data, filename);
+      });
+    };
+
     const hidePlaybackError = () => {
       this.setState({ playbackErrorShowing: false });
       handleArrowBackClick();
@@ -90,6 +104,7 @@ class PlayerPage extends React.Component {
                 lastName={window.sessionStorage.getItem('lastName')}
                 title={video.title}
                 showArrow
+                onIconsClick={[toggleVideoInformation, handleVideoDownload]}
                 onActionIconClick={handleArrowBackClick}
                 iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
               />

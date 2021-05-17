@@ -158,17 +158,6 @@ namespace BusinessLogic.Services.VideoService
             return videoBytes;
         }
 
-        public async Task<MemoryStream> GetVideoFileStream(string path)
-        {
-            var memory = new MemoryStream();
-            await using (var stream = new FileStream(path, FileMode.Open))
-            {
-                await stream.CopyToAsync(memory);
-            }
-            memory.Position = 0;
-            return memory;
-        }
-
         public async Task<MemoryStream> GetVideosZipFileStream(List<Video> videos)
         {
             string zipName = Guid.NewGuid() + ".zip";
@@ -191,19 +180,6 @@ namespace BusinessLogic.Services.VideoService
 
             File.Delete(zipCreatePath);
             return memory;
-        }
-
-        public string GetContentType(string path)
-        {
-            var provider = new FileExtensionContentTypeProvider();
-            string contentType;
-
-            if (!provider.TryGetContentType(path, out contentType))
-            {
-                contentType = "application/octet-stream";
-            }
-
-            return contentType;
         }
     }
 }

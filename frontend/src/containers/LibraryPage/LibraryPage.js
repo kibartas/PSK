@@ -1,6 +1,7 @@
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import SortIcon from '@material-ui/icons/Sort';
+import fileDownload from 'js-file-download';
 import { DeleteIcon, DownloadIcon, UploadIcon } from '../../assets';
 import EmptyLibraryContent from '../../components/EmptyLibraryContent/EmptyLibraryContent';
 import TopBar from '../../components/TopBar/TopBar';
@@ -8,7 +9,7 @@ import UploadModal from '../../components/UploadModal/UploadModal';
 import './styles.css';
 import VideoCardsByDate from '../../components/VideoCardsByDate/VideoCardsByDate';
 import NavDrawer from '../../components/NavDrawer/NavDrawer';
-import { getAllVideos } from '../../api/VideoAPI';
+import { downloadMultipleVideos, getAllVideos } from '../../api/VideoAPI';
 
 const transformCards = (cards) => {
   const transformedCards = cards.reduce((acc, val) => {
@@ -87,6 +88,15 @@ class LibraryPage extends React.Component {
     this.toggleUploadModal();
   };
 
+  handleVideosDownload = () => {
+    const { selectedCards } = this.state;
+    downloadMultipleVideos(selectedCards).then((response) => {
+      const contentDisposition = response.headers['content-disposition'];
+      const filename = contentDisposition.split(';')[1].split('filename=')[1];
+      fileDownload(response.data, filename);
+    });
+  };
+
   render() {
     const {
       showUploadModal,
@@ -139,6 +149,7 @@ class LibraryPage extends React.Component {
               } selected`}
               showArrow
               iconsToShow={[DownloadIcon, DeleteIcon]}
+              onIconsClick={[this.handleVideosDownload]}
               onActionIconClick={() => this.setState({ selectedCards: [] })}
             />
           )}

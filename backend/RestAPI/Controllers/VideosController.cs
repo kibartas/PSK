@@ -136,7 +136,7 @@ namespace RestAPI.Controllers
         }
 
         [HttpGet, Route("stream"), AllowAnonymous]
-        public async Task<ActionResult<FileStreamResult>> Stream(Guid videoId, Guid userId)
+        public async Task<ActionResult> Stream(Guid videoId, Guid userId)
         {
             if (videoId == Guid.Empty)
             {
@@ -159,57 +159,11 @@ namespace RestAPI.Controllers
                 return Unauthorized();
             }
 
-            var response = File(System.IO.File.OpenRead(video.Path), "video/mp4", enableRangeProcessing: true);
+            var response = File(System.IO.File.OpenRead(video.Path), "video/mp4",video.Title + Path.GetExtension(video.Path),enableRangeProcessing: true);
             return response;
         }
 
-        [HttpGet, Route("Download")]
-        public async Task<ActionResult> DownloadSingle(Guid videoId)
-        {
-            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
-            if (userIdClaim is null)
-            {
-                return NotFound();
-            }
-
-            if (!Guid.TryParse(userIdClaim.Value, out var userId))
-            {
-                return NotFound();
-            }
-
-            var user = await _usersRepository.GetUserById(userId);
-            if (user is null)
-            {
-                return NotFound();
-            }
-
-            if (videoId == Guid.Empty)
-            {
-                return BadRequest("video guid is not valid");
-            }
-
-            var video = await _videosRepository.GetVideoById(videoId);
-            if (video == null)
-            {
-                return NotFound();
-            }
-
-            if (!System.IO.File.Exists(video.Path))
-            {
-                return NotFound();
-            }
-
-            if (video.UserId != user.Id)
-            {
-                return Unauthorized();
-            }
-
-            var stream = await _videoService.GetVideoFileStream(video.Path);
-            var videoFile = File(stream, _videoService.GetContentType(video.Path), video.Title + Path.GetExtension(video.Path));
-            return videoFile;
-        }
-
-        [HttpPost, Route("DownloadMultiple"), AllowAnonymous]
+        [HttpPost, Route("DownloadMultiple")]
         public async Task<IActionResult> DownloadMultiple([FromBody] List<Guid> videoIds)
         {
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
@@ -251,7 +205,7 @@ namespace RestAPI.Controllers
 
             var stream = await _videoService.GetVideosZipFileStream(videos);
             var zipName = "Videos-" + Guid.NewGuid();
-            return File(stream, "application/zip", zipName);
+            return File(stream, "application/zip", zipName + ".zip");
         }
 
         [HttpPost, Route("UploadChunks")]
