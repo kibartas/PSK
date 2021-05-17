@@ -1,7 +1,7 @@
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import SortIcon from '@material-ui/icons/Sort';
-import { UploadIcon } from '../../assets';
+import { DeleteIcon, DownloadIcon, UploadIcon } from '../../assets';
 import EmptyLibraryContent from '../../components/EmptyLibraryContent/EmptyLibraryContent';
 import TopBar from '../../components/TopBar/TopBar';
 import UploadModal from '../../components/UploadModal/UploadModal';
@@ -76,7 +76,7 @@ class LibraryPage extends React.Component {
   toggleNavDrawer = () => {
     const { showNavDrawer } = this.state;
     this.setState({ showNavDrawer: !showNavDrawer });
-  }
+  };
 
   toggleUploadModal = () => {
     const { showUploadModal } = this.state;
@@ -120,10 +120,7 @@ class LibraryPage extends React.Component {
           onClose={this.toggleNavDrawer}
           spaceTaken={100000000} // [TM]: TODO WDB-122 fetch space taken in LibraryPage componentDidMount and save it in state
         />
-        <UploadModal
-          show={showUploadModal}
-          onClose={this.toggleUploadModal}
-        />
+        <UploadModal show={showUploadModal} onClose={this.toggleUploadModal} />
         <Grid item>
           {selectedCards.length === 0 ? (
             <TopBar
@@ -141,6 +138,7 @@ class LibraryPage extends React.Component {
                 selectedCards.length === 1 ? 'video' : 'videos'
               } selected`}
               showArrow
+              iconsToShow={[DownloadIcon, DeleteIcon]}
               onActionIconClick={() => this.setState({ selectedCards: [] })}
             />
           )}
