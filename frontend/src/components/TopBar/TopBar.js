@@ -22,6 +22,7 @@ export default function TopBar({
   showAvatarAndLogout,
   firstName,
   lastName,
+  disableIcons,
 }) {
   const backgroundColor = darkMode ? GRAY_1 : GRAY_6;
   const iconFillColor = darkMode ? GRAY_5 : GRAY_1;
@@ -35,7 +36,11 @@ export default function TopBar({
   const renderIcons = () => {
     const iconItems = iconsToShow.map((Icon, index) => (
       <Grid item key={index.toString()}>
-        <IconButton onClick={onIconsClick[index]} edge="end">
+        <IconButton
+          onClick={onIconsClick[index]}
+          edge="end"
+          disabled={disableIcons}
+        >
           <Icon fill={iconFillColor} />
         </IconButton>
       </Grid>

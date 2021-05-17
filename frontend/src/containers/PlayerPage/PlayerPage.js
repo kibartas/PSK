@@ -16,7 +16,10 @@ class PlayerPage extends React.Component {
       video: undefined,
       screenWidth: window.innerWidth,
       screenHeight: window.innerHeight,
-      playbackErrorShowing: false,
+      showPlaybackError: false,
+      showDownloadError: false,
+      showDownloadInProgress: false,
+      showDownloadSuccess: false,
     };
     this.topBarRef = React.createRef();
   }
@@ -33,7 +36,7 @@ class PlayerPage extends React.Component {
         const url = `http://localhost:61346/api/Videos/stream?videoId=${videoId}&userId=${userId}`;
         this.setState({ url, video: response.data });
       })
-      .catch(() => this.setState({ playbackErrorShowing: true }));
+      .catch(() => this.setState({ showPlaybackError: true }));
   }
 
   componentWillUnmount() {
@@ -52,7 +55,10 @@ class PlayerPage extends React.Component {
       video,
       screenWidth,
       screenHeight,
-      playbackErrorShowing,
+      showPlaybackError,
+      showDownloadError,
+      showDownloadInProgress,
+      showDownloadSuccess,
     } = this.state;
 
     // This fallback height is needed, since TopBar is not rendered until video information is fetched, so ref will be null
@@ -72,22 +78,68 @@ class PlayerPage extends React.Component {
 
     const handleVideoDownload = () => {
       const userId = window.sessionStorage.getItem('id');
-      downloadVideo(video.id, userId).then((response) => {
-        const contentDisposition = response.headers['content-disposition'];
-        const filename = contentDisposition.split(';')[1].split('filename=')[1];
-        fileDownload(response.data, filename);
-      });
+      this.setState({ showDownloadInProgress: true });
+      downloadVideo(video.id, userId)
+        .then((response) => {
+          const contentDisposition = response.headers['content-disposition'];
+          const filename = contentDisposition.split(';')[1].replaceAll('"', '');
+          fileDownload(response.data, filename);
+          this.setState({
+            showDownloadInProgress: false,
+            showDownloadSuccess: true,
+          });
+          console.log(filename);
+        })
+        .catch(() =>
+          this.setState({
+            showDownloadInProgress: false,
+            showDownloadError: true,
+          }),
+        );
     };
 
     const hidePlaybackError = () => {
-      this.setState({ playbackErrorShowing: false });
+      this.setState({ showPlaybackError: false });
       handleArrowBackClick();
+    };
+
+    const renderDownloadSnackbars = () => {
+      if (showDownloadError) {
+        return (
+          <CustomSnackbar
+            message="Ooops.. Something wrong happened. Please try again later"
+            onClose={() => this.setState({ showDownloadError: false })}
+            severity="error"
+            topCenter
+          />
+        );
+      }
+      if (showDownloadInProgress) {
+        return (
+          <CustomSnackbar
+            message="We are pumping the video for you"
+            severity="info"
+            topCenter
+          />
+        );
+      }
+      if (showDownloadSuccess) {
+        return (
+          <CustomSnackbar
+            message="Video downloaded successfully"
+            onClose={() => this.setState({ showDownloadSuccess: false })}
+            severity="success"
+            topCenter
+          />
+        );
+      }
+      return null;
     };
 
     return (
       <div className=".root">
         {video === undefined ? (
-          playbackErrorShowing && (
+          showPlaybackError && (
             <CustomSnackbar
               topCenter
               message="A playback error has occured. Please try again later"
@@ -97,6 +149,7 @@ class PlayerPage extends React.Component {
           )
         ) : (
           <>
+            {renderDownloadSnackbars()}
             <div ref={this.topBarRef}>
               <TopBar
                 darkMode
