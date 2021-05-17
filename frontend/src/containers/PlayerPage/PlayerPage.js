@@ -88,7 +88,6 @@ class PlayerPage extends React.Component {
             showDownloadInProgress: false,
             showDownloadSuccess: true,
           });
-          console.log(filename);
         })
         .catch(() =>
           this.setState({
@@ -110,16 +109,14 @@ class PlayerPage extends React.Component {
             message="Ooops.. Something wrong happened. Please try again later"
             onClose={() => this.setState({ showDownloadError: false })}
             severity="error"
-            topCenter
           />
         );
       }
       if (showDownloadInProgress) {
         return (
           <CustomSnackbar
-            message="We are pumping the video for you"
+            message="We are crunhing the video for you"
             severity="info"
-            topCenter
           />
         );
       }
@@ -129,7 +126,6 @@ class PlayerPage extends React.Component {
             message="Video downloaded successfully"
             onClose={() => this.setState({ showDownloadSuccess: false })}
             severity="success"
-            topCenter
           />
         );
       }

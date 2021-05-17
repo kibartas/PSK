@@ -41,7 +41,6 @@ namespace RestAPI
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .WithExposedHeaders("Content-Disposition"));
-
             });
 
             services.AddSwaggerGen(c =>

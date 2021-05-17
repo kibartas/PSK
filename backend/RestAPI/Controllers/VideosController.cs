@@ -159,7 +159,7 @@ namespace RestAPI.Controllers
                 return Unauthorized();
             }
 
-            var response = File(System.IO.File.OpenRead(video.Path), "video/mp4",video.Title + Path.GetExtension(video.Path),enableRangeProcessing: true);
+            var response = File(System.IO.File.OpenRead(video.Path), "video/mp4",video.Title + Path.GetExtension(video.Path));
             return response;
         }
 
@@ -193,7 +193,7 @@ namespace RestAPI.Controllers
             {
                 if (videoId == Guid.Empty)
                 {
-                    return Unauthorized();
+                    return BadRequest("Guid is not valid");
                 }
                 var video = await _videosRepository.GetVideoById(videoId);
                 if (video.UserId != user.Id)

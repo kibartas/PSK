@@ -144,26 +144,31 @@ class LibraryPage extends React.Component {
             message="Ooops.. Something wrong happened. Please try again later"
             onClose={() => this.setState({ showDownloadError: false })}
             severity="error"
-            topCenter
           />
         );
       }
       if (showDownloadInProgress) {
         return (
           <CustomSnackbar
-            message="Please wait. We are crunching the videos for you"
+            message={
+              selectedCards.length === 1
+                ? 'Please wait. We are crunching your video'
+                : 'Please wait. We are crunching the videos for you'
+            }
             severity="info"
-            topCenter
           />
         );
       }
       if (showDownloadSuccess) {
         return (
           <CustomSnackbar
-            message="Videos downloaded successfully"
+            message={
+              selectedCards.length === 1
+                ? 'Video download started successfully'
+                : 'Videos download started successfully'
+            }
             onClose={() => this.setState({ showDownloadSuccess: false })}
             severity="success"
-            topCenter
           />
         );
       }
