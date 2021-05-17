@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestAPI.Models.Responses;
 
-
 namespace RestAPI.Controllers
 {
     [Route("api/[controller]")]
