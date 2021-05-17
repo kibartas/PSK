@@ -4,6 +4,14 @@
   justify-content: center;
 }
 
+.modal__paper {
+  width: 70vh;
+}
+
+.modal__title {
+  font-weight: 600;
+}
+
 .modal__dropzone {
   padding: 20px;
   border-width: 2;
@@ -26,6 +34,6 @@
   background-color: #ff174450;
 }
 
-.linearProgressBar {
+.modal__progressBar {
   width: 100%;
 }

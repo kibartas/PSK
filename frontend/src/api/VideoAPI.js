@@ -9,7 +9,7 @@ const Api = axios.create({
   },
 });
 
-export const uploadChunk = async (chunkNumber, videoFileName, chunk) => (
+export const uploadChunk = async (chunkNumber, videoFileName, chunk, cancelTokenSource) => (
   Api.post(
     "/Videos/UploadChunks",
     chunk,
@@ -18,24 +18,43 @@ export const uploadChunk = async (chunkNumber, videoFileName, chunk) => (
         chunkNumber,
         fileName: videoFileName
       },
-      headers: { 'Content-Type': 'application/json' }
-      // cancelToken: new axios.CancelToken(cancelExecutor), // TODO
+      headers: { 'Content-Type': 'application/json' },
+      cancelToken: cancelTokenSource.token
     }
   )
 );
 
-export const finishUpload = async (videoFileName) => (
-  Api.post("/Videos/UploadComplete", null, { params: { fileName: videoFileName }})
+export const finishUpload = async (videoFileName, cancelTokenSource) => (
+  Api.post(
+    "/Videos/UploadComplete",
+    null,
+    { 
+      params: { fileName: videoFileName }, 
+      cancelToken: cancelTokenSource.token 
+    }
+  )
 );
 
-export const deleteChunks = async (videoFileName) => {
-  Api.delete("/Videos/DeleteChunks", null, { params: { fileName: videoFileName }})
-};
+export const deleteChunks = async (videoFileName) => (
+  Api.delete(
+    "/Videos/DeleteChunks",
+    {
+      params: { fileName: videoFileName }
+    }
+  )
+);
 
 export const changeTitle = async (videoId, newTitle) => (
-  Api.patch("/Videos/ChangeTitle", null, { params: { id: videoId, newTitle }})
+  Api.patch("/Videos", null, { params: { id: videoId, newTitle }})
 );
 
-export const deleteVideo = async (videoId) => (
-  Api.delete(`/Videos/${videoId}`)
-);
+export const deleteVideos = async (videoIds) =>
+  Api.delete(`/Videos`, { data: videoIds });
+
+export const getVideoDetails = (videoId) =>
+  Api.get('/Videos/', { params: { videoId } });
+
+export const getAllVideos = () => Api.get('/videos/all');
+
+export const getVideoThumbnail = (videoId) =>
+  Api.get('/videos/thumbnail/', { params: { videoId }, responseType: 'blob' });

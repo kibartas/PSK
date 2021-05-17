@@ -1,40 +1,64 @@
 import React from 'react';
 import { List } from '@material-ui/core';
-import VideoUploadingListItem from './VideoUploadingListItem';
-import VideoListItem from './VideoListItem';
+import VideoToUploadListItem from './VideoToUploadListItem';
+import InUploadVideoListItem from './InUploadVideoListItem';
+import UploadedVideoListItem from './UploadedVideoListItem';
 
-export default function VideosList({ 
-  videosToBeUploaded,
+export default function VideosList({
+  videosToUploadNames,
+  onRemoveVideoToUpload,
+  inUploadVideoName,
+  uploadProgress,
   onUploadCancel,
-  onUploadFinish,
   uploadedVideos,
   onVideoTitleChange,
-  onVideoDelete
+  onVideoDeletion
 }) {
-  const videoUploadingListItems =
-    videosToBeUploaded.map((video) => (
-      <VideoUploadingListItem
-        key={video.name}
-        videoToBeUploaded={video}
-        onUploadCancel={onUploadCancel(video.name)}
-        onUploadFinish={onUploadFinish(video.name)}
-      />
-    ));
+  const renderVideosToUploadListItems = () => {
+    if (videosToUploadNames.length > 0) {
+      return videosToUploadNames.map((name, index) => (
+        <VideoToUploadListItem
+          key={name + index.toString()}
+          index={index}
+          videoName={name}
+          onRemoveVideoToUpload={onRemoveVideoToUpload(name)}
+        />
+      ));
+    }
+    return null;
+  };
 
-  const videoListItems =
-    uploadedVideos.map((video) => (
-      <VideoListItem
-        key={video.id}
-        video={video}
-        onVideoTitleChange={onVideoTitleChange(video.id)}
-        onVideoDelete={onVideoDelete(video.id)}
+  const renderInUploadVideoListItem = () => {
+    if (inUploadVideoName !== undefined) {
+      return <InUploadVideoListItem
+        key={inUploadVideoName}
+        videoName={inUploadVideoName}
+        progress={uploadProgress}
+        onUploadCancel={onUploadCancel}
       />
-  ));
+    }
+    return null;
+  };
+
+  const renderUploadedVideosListItems = () => {
+    if (uploadedVideos.length > 0) {
+      return uploadedVideos.map(video => (
+        <UploadedVideoListItem
+          key={video.id}
+          video={video}
+          onVideoTitleChange={onVideoTitleChange(video.id)}
+          onVideoDeletion={onVideoDeletion(video.id)}
+        />
+      ));
+    }
+    return null;
+  };
 
   return (
-    <List>
-      {videoUploadingListItems}
-      {videoListItems}
+    <List dense>
+      {renderVideosToUploadListItems()}
+      {renderInUploadVideoListItem()}
+      {renderUploadedVideosListItems()}
     </List>
   );
 }

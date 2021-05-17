@@ -23,6 +23,10 @@ import forgotPasswordDrawing from './ForgotPasswordPage/forgot-password.svg';
 
 import emptyLibraryDrawing from './LibraryPage/empty-library.svg';
 
+import missingImageIcon from './LibraryPage/missing-image.svg';
+
+import emptyRecyclingBinDrawing from './RecyclingBinPage/ill-recycling-bin.svg';
+
 export {
   ArrowBackIcon,
   DeleteForeverIcon,
@@ -47,3 +51,7 @@ export { verifiedAccountDrawing };
 export { forgotPasswordDrawing };
 
 export { emptyLibraryDrawing };
+
+export { missingImageIcon };
+
+export { emptyRecyclingBinDrawing };

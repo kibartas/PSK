@@ -1,9 +1,11 @@
-import { Grid } from '@material-ui/core';
 import React from 'react';
+import { withRouter } from 'react-router-dom';
+import { Grid } from '@material-ui/core';
 import { updateCredentials } from '../../api/UserAPI';
 import ChangeProfileForm from '../../components/ChangeProfileForm/ChangeProfileForm';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import TopBar from '../../components/TopBar/TopBar';
+import './styles.css';
 
 class ProfilePage extends React.Component {
   constructor(props) {
@@ -28,7 +30,8 @@ class ProfilePage extends React.Component {
     } = this.state;
 
     const handleArrowBackClick = () => {
-      window.location.href = '/library';
+      const { history } = this.props;
+      history.goBack();
     };
 
     const hideGeneralError = () => {
@@ -110,7 +113,7 @@ class ProfilePage extends React.Component {
             severity="success"
           />
         )}
-        <Grid container className="root">
+        <Grid className="root" container direction='column'>
           <Grid item>
             <TopBar
               showArrow
@@ -121,7 +124,7 @@ class ProfilePage extends React.Component {
               lastName={lastName}
             />
           </Grid>
-          <Grid container alignItems="center" justify="center">
+          <Grid className="profileFormContainer" container alignItems="center" justify="center">
             <Grid item xs={11} sm={6} md={4} lg={3}>
               <ChangeProfileForm
                 firstName={firstName}
@@ -137,4 +140,4 @@ class ProfilePage extends React.Component {
   }
 }
 
-export default ProfilePage;
+export default withRouter(ProfilePage);

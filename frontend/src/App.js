@@ -11,11 +11,12 @@ import LoginPage from './containers/LoginPage/LoginPage';
 import RegisterPage from './containers/RegisterPage/RegisterPage';
 import ConfirmEmailPage from './containers/ConfirmEmailPage/ConfirmEmailPage';
 import LibraryPage from './containers/LibraryPage/LibraryPage';
-import TrashBinPage from './containers/TrashBinPage/TrashBinPage';
+import RecyclingBinPage from './containers/RecyclingBinPage/RecyclingBinPage';
 import ProfilePage from './containers/ProfilePage/ProfilePage';
 import ForgotPasswordPage from './containers/ForgotPasswordPage/ForgotPasswordPage';
 import ResetPasswordPage from './containers/ResetPasswordPage/ResetPasswordPage';
 import VerifyAccountPage from './containers/VerifyAccountPage/VerifyAccountPage';
+import PlayerPage from './containers/PlayerPage/PlayerPage';
 
 function App() {
   return (
@@ -50,13 +51,16 @@ function App() {
       ) : (
         <Switch>
           <Route exact path="/bin">
-            <TrashBinPage />
+            <RecyclingBinPage />
           </Route>
           <Route exact path="/profile">
             <ProfilePage />
           </Route>
           <Route exact path="/library">
             <LibraryPage />
+          </Route>
+          <Route path="/player/:videoId">
+            <PlayerPage />
           </Route>
           <Route path="*">
             <Redirect to="/library">
