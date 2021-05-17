@@ -16,6 +16,7 @@ import ProfilePage from './containers/ProfilePage/ProfilePage';
 import ForgotPasswordPage from './containers/ForgotPasswordPage/ForgotPasswordPage';
 import ResetPasswordPage from './containers/ResetPasswordPage/ResetPasswordPage';
 import VerifyAccountPage from './containers/VerifyAccountPage/VerifyAccountPage';
+import PlayerPage from './containers/PlayerPage/PlayerPage';
 
 function App() {
   return (
@@ -57,6 +58,9 @@ function App() {
           </Route>
           <Route exact path="/library">
             <LibraryPage />
+          </Route>
+          <Route path="/player/:videoId">
+            <PlayerPage />
           </Route>
           <Route path="*">
             <Redirect to="/library">

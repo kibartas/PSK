@@ -50,3 +50,11 @@ export const changeTitle = async (videoId, newTitle) => (
 
 export const deleteVideos = async (videoIds) =>
   Api.delete(`/Videos`, { data: videoIds });
+
+export const getVideoDetails = (videoId) =>
+  Api.get('/Videos/', { params: { videoId } });
+
+export const getAllVideos = () => Api.get('/videos/all');
+
+export const getVideoThumbnail = (videoId) =>
+  Api.get('/videos/thumbnail/', { params: { videoId }, responseType: 'blob' });

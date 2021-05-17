@@ -9,6 +9,8 @@ namespace DataAccess.Repositories.Videos
     {
         Task<Video> GetVideoById(Guid videoId);
         Task<IEnumerable<Video>> GetAllVideos();
+        Task<IEnumerable<Video>> GetVideosByUserId(Guid userId);
+        Task<IEnumerable<Video>> GetDeletedVideosByUserId(Guid userId);
         Task InsertVideo(Video video);
         void RemoveVideo(Video video);
         Task Save();

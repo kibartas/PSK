@@ -8,7 +8,6 @@ import RemoveIcon from './generic/RemoveIcon';
 import RestoreIcon from './generic/RestoreIcon';
 import SelectAllIcon from './generic/SelectAllIcon';
 import UploadIcon from './generic/UploadIcon';
-import McRideScreaming from './generic/mcRideScreaming.jpg';
 
 import productIcon from './generic/product-icon.svg';
 import visibilityIcon from './generic/visibility.svg';
@@ -56,5 +55,3 @@ export { emptyLibraryDrawing };
 export { missingImageIcon };
 
 export { emptyRecyclingBinDrawing };
-
-export { McRideScreaming };

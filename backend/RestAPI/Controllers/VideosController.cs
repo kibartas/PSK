@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BusinessLogic.Services.VideoService;
-using DataAccess.Models;
 using DataAccess.Repositories.Users;
 using DataAccess.Repositories.Videos;
 using Microsoft.AspNetCore.Authorization;
@@ -33,10 +31,135 @@ namespace RestAPI.Controllers
             _videoService = videoService;
         }
 
-        [HttpGet,Route("all")]
-        public async Task<ActionResult<IEnumerable<Video>>> GetAllVideos()
+        [HttpGet, Route("all")]
+        public async Task<IActionResult> AllVideos()
         {
-            return (await _videosRepository.GetAllVideos()).ToList();
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var videos = await _videosRepository.GetVideosByUserId(userId);
+            List<VideoDto> videoDtos = new List<VideoDto>();
+
+            foreach(var video in videos)
+            {
+                videoDtos.Add(new VideoDto()
+                {
+                    Id = video.Id,
+                    Title = video.Title,
+                    Size = video.Size,
+                    UploadDate = video.UploadDate.ToString("yyyy-MM-dd")
+                });
+            }
+
+            return Ok(videoDtos);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetVideo(Guid videoId)
+        {
+            var video = await _videosRepository.GetVideoById(videoId);
+            if (video == null) return NotFound();
+
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            if (videoId == Guid.Empty) return BadRequest("Guid is not valid");
+            if (video.UserId != userId) return Unauthorized();
+
+            VideoDto videoDto = new VideoDto()
+            {
+                Id = video.Id,
+                Size = video.Size,
+                Title = video.Title,
+                UploadDate = video.UploadDate.ToString("yyyy-MM-dd")
+            };
+
+            return Ok(videoDto);
+        }
+
+        [HttpGet, Route("thumbnail")]
+        public async Task<IActionResult> GetThumbnail(Guid videoId)
+        {
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+            
+            if (videoId == Guid.Empty)
+            {
+                return BadRequest("Bad video guid");
+            }
+
+            var video = await _videosRepository.GetVideoById(videoId);
+            if (video == null)
+            {
+                return NotFound();
+            }
+
+            if (user.Id != video.UserId)
+            {
+                return Unauthorized();
+            }
+
+            var thumbnailBytes = await _videoService.GetVideoThumbnail(video.UserId, video.Id);
+            var thumbnailFile = File(thumbnailBytes, "image/png");
+            return thumbnailFile;
+        }
+
+        [HttpGet, Route("stream"), AllowAnonymous]
+        public async Task<ActionResult<FileStreamResult>> Stream(Guid videoId, Guid userId)
+        {
+            if (videoId == Guid.Empty)
+            {
+                return BadRequest("Video id is not valid");
+            }
+
+            if (userId == Guid.Empty)
+            {
+                return BadRequest("User is not valid");
+            }
+
+            var video = await _videosRepository.GetVideoById(videoId);
+            if (video == null)
+            {
+                return NotFound();
+            }
+
+            if (video.UserId != userId)
+            {
+                return Unauthorized();
+            }
+
+            var response = File(System.IO.File.OpenRead(video.Path), "video/mp4", enableRangeProcessing: true);
+            return response;
         }
 
         [HttpPost, Route("UploadChunks")]
@@ -107,7 +230,7 @@ namespace RestAPI.Controllers
                     Id = video.Id,
                     Title = video.Title,
                     Size = video.Size,
-                    UploadDate = video.UploadDate
+                    UploadDate = video.UploadDate.ToString("yyyy-MM-dd")
                 };
 
                 return Ok(response);
@@ -166,7 +289,7 @@ namespace RestAPI.Controllers
                 Id = video.Id,
                 Title = video.Title,
                 Size = video.Size,
-                UploadDate = video.UploadDate
+                UploadDate = video.UploadDate.ToString("yyyy-MM-dd")
             };
 
             return Ok(response);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -144,6 +145,15 @@ namespace BusinessLogic.Services.VideoService
                 if (fs2 != null) fs2.Close();
                 File.Delete(chunk2);
             }
+        }
+
+        public async Task<Byte[]> GetVideoThumbnail(Guid userId, Guid videoId)
+        {
+            string userPath = Path.Combine(_uploadPath, userId.ToString());
+            string snapshotsPath = Path.Combine(userPath, "Snapshots");
+            string thumbnailPath = Path.Combine(snapshotsPath,videoId + ".png");
+            Byte[] videoBytes = await File.ReadAllBytesAsync(thumbnailPath);
+            return videoBytes;
         }
     }
 }
