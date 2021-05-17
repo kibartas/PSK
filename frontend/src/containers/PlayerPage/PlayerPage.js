@@ -4,8 +4,9 @@ import { withRouter } from 'react-router';
 import TopBar from '../../components/TopBar/TopBar';
 import { DeleteIcon, DownloadIcon, InfoIcon } from '../../assets';
 import './styles.css';
-import { getVideoDetails } from '../../api/VideoAPI';
+import { getVideoDetails, deleteVideos } from '../../api/VideoAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
+import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
 
 class PlayerPage extends React.Component {
   constructor(props) {
@@ -15,7 +16,9 @@ class PlayerPage extends React.Component {
       video: undefined,
       screenWidth: window.innerWidth,
       screenHeight: window.innerHeight,
+      showDeletionDialog: false,
       playbackErrorShowing: false,
+      deletionErrorShowing: false,
     };
     this.topBarRef = React.createRef();
   }
@@ -45,13 +48,43 @@ class PlayerPage extends React.Component {
       screenHeight: window.innerHeight,
     });
 
+  handleArrowBackClick = () => {
+    window.location.href = '/library';
+  };
+
+  toggleDeletionDialog = () => {
+    const { showDeletionDialog } = this.state;
+    this.setState({ showDeletionDialog: !showDeletionDialog });
+  }
+
+  handleVideoDeletion = () => {
+    const { video } = this.state;
+    deleteVideos([video.id])
+      .then(() => this.handleArrowBackClick())
+      .catch(() => {
+        this.setState({ deletionErrorShowing: true });
+        this.toggleDeletionDialog();
+      });
+  }
+
+  hideDeletionError = () => {
+    this.setState({ deletionErrorShowing: false });
+  }
+
+  hidePlaybackError = () => {
+    this.setState({ playbackErrorShowing: false });
+    this.handleArrowBackClick();
+  };
+
   render() {
     const {
       url,
       video,
       screenWidth,
       screenHeight,
+      showDeletionDialog,
       playbackErrorShowing,
+      deletionErrorShowing
     } = this.state;
 
     // This fallback height is needed, since TopBar is not rendered until video information is fetched, so ref will be null
@@ -61,15 +94,6 @@ class PlayerPage extends React.Component {
         ? this.topBarRef.current.clientHeight
         : fallBackTopBarHeight;
 
-    const handleArrowBackClick = () => {
-      window.location.href = '/library';
-    };
-
-    const hidePlaybackError = () => {
-      this.setState({ playbackErrorShowing: false });
-      handleArrowBackClick();
-    };
-
     return (
       <div className=".root">
         {video === undefined ? (
@@ -77,12 +101,24 @@ class PlayerPage extends React.Component {
             <CustomSnackbar
               topCenter
               message="A playback error has occured. Please try again later"
-              onClose={hidePlaybackError}
+              onClose={this.hidePlaybackError}
               severity="error"
             />
           )
         ) : (
           <>
+            <DeleteConfirmationDialog 
+              open={showDeletionDialog}
+              onConfirm={this.handleVideoDeletion}
+              onCancel={this.toggleDeletionDialog}
+            />
+            {deletionErrorShowing &&
+              <CustomSnackbar
+                message="Oops... Something wrong happened, we could not delete your video"
+                onClose={this.hideDeletionError}
+                severity="error"
+              />
+            }
             <div ref={this.topBarRef}>
               <TopBar
                 darkMode
@@ -90,8 +126,13 @@ class PlayerPage extends React.Component {
                 lastName={window.sessionStorage.getItem('lastName')}
                 title={video.title}
                 showArrow
-                onActionIconClick={handleArrowBackClick}
+                onActionIconClick={this.handleArrowBackClick}
                 iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
+                onIconsClick={[
+                  () => {},
+                  () => {},
+                  this.toggleDeletionDialog
+                ]}
               />
             </div>
             <div className="player-wrapper">

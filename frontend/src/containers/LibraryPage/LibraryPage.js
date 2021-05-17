@@ -1,14 +1,16 @@
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import SortIcon from '@material-ui/icons/Sort';
-import { UploadIcon } from '../../assets';
+import { UploadIcon, DownloadIcon, DeleteIcon } from '../../assets';
 import EmptyLibraryContent from '../../components/EmptyLibraryContent/EmptyLibraryContent';
 import TopBar from '../../components/TopBar/TopBar';
 import UploadModal from '../../components/UploadModal/UploadModal';
 import './styles.css';
 import VideoCardsByDate from '../../components/VideoCardsByDate/VideoCardsByDate';
 import NavDrawer from '../../components/NavDrawer/NavDrawer';
-import { getAllVideos } from '../../api/VideoAPI';
+import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
+import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
+import { getAllVideos, deleteVideos } from '../../api/VideoAPI';
 
 const transformCards = (cards) => {
   const transformedCards = cards.reduce((acc, val) => {
@@ -44,6 +46,8 @@ class LibraryPage extends React.Component {
       selectedCards: [],
       showUploadModal: false,
       showNavDrawer: false,
+      showDeletionDialog: false, 
+      showDeletionError: false,
       sortAscending: false,
     };
   }
@@ -83,17 +87,32 @@ class LibraryPage extends React.Component {
     this.setState({ showUploadModal: !showUploadModal });
   };
 
-  handleUploadModalClose = () => {
-    this.toggleUploadModal();
-  };
+  toggleDeletionDialog = () => {
+    const { showDeletionDialog } = this.state;
+    this.setState({ showDeletionDialog: !showDeletionDialog });
+  }
+
+  handleVideoDeletion = () => {
+    const { selectedCards } = this.state;
+    deleteVideos(selectedCards)
+      .then(() => window.location.reload())
+      .catch(() => this.setState({ showDeletionError: true }));
+  }
+
+  hideDeletionError = () => {
+    this.setState({ showDeletionError: false });
+    window.location.reload();
+  }
 
   render() {
     const {
       showUploadModal,
       showNavDrawer,
+      showDeletionDialog,
       videoCards,
       sortedVideoCardDates,
       selectedCards,
+      showDeletionError,
     } = this.state;
 
     const handleSelect = (id) => {
@@ -124,6 +143,22 @@ class LibraryPage extends React.Component {
           show={showUploadModal}
           onClose={this.toggleUploadModal}
         />
+        <DeleteConfirmationDialog
+          open={showDeletionDialog}
+          onConfirm={this.handleVideoDeletion}
+          onCancel={this.toggleDeletionDialog}
+          multipleVideos={selectedCards.length > 1}
+        />
+        {showDeletionError &&
+          <CustomSnackbar
+            message={selectedCards.length === 1 ? 
+              "Oops... Something wrong happened. We could not delete your video" :
+              "Oops... Something wrong happened. Some videos might not have been deleted"
+            }
+            onClose={this.hideDeletionError}
+            severity="error"
+          />
+        }
         <Grid item>
           {selectedCards.length === 0 ? (
             <TopBar
@@ -142,6 +177,11 @@ class LibraryPage extends React.Component {
               } selected`}
               showArrow
               onActionIconClick={() => this.setState({ selectedCards: [] })}
+              iconsToShow={[DownloadIcon, DeleteIcon]}
+              onIconsClick={[
+                () => {},
+                this.toggleDeletionDialog
+              ]}
             />
           )}
         </Grid>
