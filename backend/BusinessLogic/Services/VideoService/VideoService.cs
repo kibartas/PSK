@@ -116,7 +116,7 @@ namespace BusinessLogic.Services.VideoService
             {
                 Directory.CreateDirectory(userPath);
             }
-            string snapshotsPath = Path.Combine(userPath, "/Snapshots");
+            string snapshotsPath = Path.Combine(userPath, "Snapshots");
             if (!Directory.Exists(snapshotsPath))
             {
                 Directory.CreateDirectory(snapshotsPath);
