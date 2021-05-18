@@ -4,8 +4,6 @@ Api.defaults.headers = {
   'Content-Type': 'application/json',
 };
 
-// eslint-disable-next-line
-
 export const register = (data) => Api.post('/users/register', data);
 
 export const verify = (id) =>

@@ -5,7 +5,7 @@ Api.defaults.headers = {
   Authorization: `Bearer ${sessionStorage.getItem('token')}`,
 };
 
-// eslint-disable-next-line
-export const updateCredentials = (id, credentials) => {
-  return Api.patch(`/users/${id}`, credentials);
-};
+export const updateCredentials = (id, credentials) =>
+  Api.patch(`/Users/${id}`, credentials);
+
+export const getUserVideosSize = () => Api.get('/Users/size');
