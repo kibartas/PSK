@@ -12,7 +12,7 @@ import NavDrawer from '../../components/NavDrawer/NavDrawer';
 import {
   downloadMultipleVideos,
   getAllVideos,
-  markDeleted,
+  markForDeletion,
 } from '../../api/VideoAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
@@ -102,7 +102,7 @@ class LibraryPage extends React.Component {
 
   handleVideoDeletion = () => {
     const { selectedCards } = this.state;
-    markDeleted(selectedCards)
+    markForDeletion(selectedCards)
       .then(() => window.location.reload())
       .catch(() => this.setState({ showDeletionError: true }));
   };
@@ -210,7 +210,7 @@ class LibraryPage extends React.Component {
             open={showNavDrawer}
             onOpen={this.toggleNavDrawer}
             onClose={this.toggleNavDrawer}
-            spaceTaken={100000000}
+            spaceTaken={100000000} // [TM]: TODO WDB-122 fetch space taken in RecyclingBinPage componentDidMount and save it in state
           />
           <UploadModal
             show={showUploadModal}

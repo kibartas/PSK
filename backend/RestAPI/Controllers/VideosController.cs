@@ -347,7 +347,7 @@ namespace RestAPI.Controllers
             return Ok(response);
         }
 
-        [HttpPatch, Route("MarkDeleted")]
+        [HttpPatch, Route("MarkForDeletion")]
         public async Task<ActionResult> MarkVideosForDeletion([FromBody] List<Guid> ids)
         {
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
@@ -380,7 +380,7 @@ namespace RestAPI.Controllers
                     return NotFound();
                 }
 
-                _videoService.MarkVideoForDeleteion(video);
+                await _videoService.MarkVideoForDeletion(video);
             }
 
             return Ok();

@@ -191,7 +191,7 @@ namespace BusinessLogic.Services.VideoService
             return memory;
         }
 
-        public async Task MarkVideoForDeleteion(Video video)
+        public async Task MarkVideoForDeletion(Video video)
         {
             video.DeleteDate = DateTime.Today.AddMonths(1);
             await _videosRepository.Save();
