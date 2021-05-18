@@ -12,7 +12,7 @@ import NavDrawer from '../../components/NavDrawer/NavDrawer';
 import {
   downloadMultipleVideos,
   getAllVideos,
-  deleteVideos,
+  markDeleted,
 } from '../../api/VideoAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
@@ -102,7 +102,7 @@ class LibraryPage extends React.Component {
 
   handleVideoDeletion = () => {
     const { selectedCards } = this.state;
-    deleteVideos(selectedCards)
+    markDeleted(selectedCards)
       .then(() => window.location.reload())
       .catch(() => this.setState({ showDeletionError: true }));
   };

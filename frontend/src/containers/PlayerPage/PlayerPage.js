@@ -8,7 +8,7 @@ import './styles.css';
 import {
   downloadVideo,
   getVideoDetails,
-  deleteVideos,
+  markDeleted,
 } from '../../api/VideoAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
@@ -26,7 +26,7 @@ class PlayerPage extends React.Component {
       showDownloadInProgress: false,
       showDownloadSuccess: false,
       showDeletionDialog: false,
-      deletionErrorShowing: false,
+      showDeletionError: false,
     };
     this.topBarRef = React.createRef();
   }
@@ -67,16 +67,16 @@ class PlayerPage extends React.Component {
 
   handleVideoDeletion = () => {
     const { video } = this.state;
-    deleteVideos([video.id])
+    markDeleted([video.id])
       .then(() => this.handleArrowBackClick())
       .catch(() => {
-        this.setState({ deletionErrorShowing: true });
+        this.setState({ showDeletionError: true });
         this.toggleDeletionDialog();
       });
   };
 
   hideDeletionError = () => {
-    this.setState({ deletionErrorShowing: false });
+    this.setState({ showDeletionError: false });
   };
 
   hidePlaybackError = () => {
@@ -95,7 +95,7 @@ class PlayerPage extends React.Component {
       showDownloadInProgress,
       showDownloadSuccess,
       showDeletionDialog,
-      deletionErrorShowing,
+      showDeletionError,
     } = this.state;
 
     // This fallback height is needed, since TopBar is not rendered until video information is fetched, so ref will be null
@@ -179,7 +179,7 @@ class PlayerPage extends React.Component {
               onConfirm={this.handleVideoDeletion}
               onCancel={this.toggleDeletionDialog}
             />
-            {deletionErrorShowing && (
+            {showDeletionError && (
               <CustomSnackbar
                 message="Oops... Something wrong happened, we could not delete your video"
                 onClose={this.hideDeletionError}

@@ -36,10 +36,13 @@ export const deleteChunks = async (videoFileName) =>
   });
 
 export const changeTitle = async (videoId, newTitle) =>
-  Api.patch('/Videos', null, { params: { id: videoId, newTitle } });
+  Api.patch('/Videos/title', null, { params: { id: videoId, newTitle } });
 
 export const deleteVideos = async (videoIds) =>
   Api.delete(`/Videos`, { data: videoIds });
+
+export const markDeleted = async (videoIds) =>
+  Api.patch('/Videos/markDeleted', videoIds);
 
 export const getVideoDetails = (videoId) =>
   Api.get('/Videos/', { params: { videoId } });

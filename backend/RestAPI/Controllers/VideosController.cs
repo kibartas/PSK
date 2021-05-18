@@ -159,7 +159,7 @@ namespace RestAPI.Controllers
                 return Unauthorized();
             }
 
-            var response = File(System.IO.File.OpenRead(video.Path), "video/mp4",video.Title + Path.GetExtension(video.Path));
+            var response = File(System.IO.File.OpenRead(video.Path), "video/mp4",video.Title + Path.GetExtension(video.Path), enableRangeProcessing: true);
             return response;
         }
 
@@ -308,7 +308,7 @@ namespace RestAPI.Controllers
             }
         }
 
-        [HttpPatch]
+        [HttpPatch, Route("Title")]
         public async Task<ActionResult<VideoDto>> ChangeTitle(Guid id, string newTitle)
         {
             if (id == Guid.Empty)
@@ -341,6 +341,47 @@ namespace RestAPI.Controllers
             return Ok(response);
         }
 
+        [HttpPatch, Route("MarkDeleted")]
+        public async Task<ActionResult> MarkVideosForDeletion([FromBody] List<Guid> ids)
+        {
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            foreach(Guid id in ids)
+            {
+                var video = await _videosRepository.GetVideoById(id);
+                if (video == null)
+                {
+                    return NotFound();
+                }
+
+                if (video.UserId != user.Id)
+                {
+                    return NotFound();
+                }
+
+                video.DeleteDate = DateTime.Today.AddMonths(1);
+                await _videosRepository.Save();
+            }
+
+            return Ok();
+        }
+
+        //For recycle bin page
         [HttpDelete]
         public async Task<IActionResult> DeleteVideos([FromBody] List<Guid> ids)
         {
