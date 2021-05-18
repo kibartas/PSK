@@ -39,7 +39,8 @@ namespace RestAPI
                 options.AddPolicy("CorsPolicy",
                     builder => builder.AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader());
+                        .AllowAnyHeader()
+                        .WithExposedHeaders("Content-Disposition"));
             });
 
             services.AddSwaggerGen(c =>
