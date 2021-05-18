@@ -3,7 +3,7 @@ import { Grid } from '@material-ui/core';
 import NavDrawer from '../../components/NavDrawer/NavDrawer';
 import TopBar from '../../components/TopBar/TopBar';
 import './styles.css';
-import EmptyRecylingBinContent from '../../components/EmptyRecyclingBinContent/EmptyRecyclingBinContent';
+import EmptyRecyclingBinContent from '../../components/EmptyRecyclingBinContent/EmptyRecyclingBinContent';
 
 class RecyclingBinPage extends React.Component {
   constructor(props) {
@@ -16,19 +16,13 @@ class RecyclingBinPage extends React.Component {
   toggleNavDrawer = () => {
     const { showNavDrawer } = this.state;
     this.setState({ showNavDrawer: !showNavDrawer });
-  }
+  };
 
   render() {
-    const {
-      showNavDrawer,
-    } = this.state;
+    const { showNavDrawer } = this.state;
 
     return (
-      <Grid
-        className="root"
-        container
-        direction="column"
-      >
+      <Grid className="root" container direction="column">
         <NavDrawer
           open={showNavDrawer}
           onOpen={this.toggleNavDrawer}
@@ -44,8 +38,8 @@ class RecyclingBinPage extends React.Component {
             lastName={window.sessionStorage.getItem('lastName')}
           />
         </Grid>
-        <Grid item className='flexGrow'>
-          <EmptyRecylingBinContent />
+        <Grid item className="flexGrow">
+          <EmptyRecyclingBinContent />
         </Grid>
       </Grid>
     );
