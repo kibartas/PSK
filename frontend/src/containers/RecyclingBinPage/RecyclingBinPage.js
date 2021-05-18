@@ -4,36 +4,38 @@ import NavDrawer from '../../components/NavDrawer/NavDrawer';
 import TopBar from '../../components/TopBar/TopBar';
 import './styles.css';
 import EmptyRecylingBinContent from '../../components/EmptyRecyclingBinContent/EmptyRecyclingBinContent';
+import { getUserVideosSize } from '../../api/UserAPI';
 
 class RecyclingBinPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       showNavDrawer: false,
+      size: 0,
     };
+  }
+
+  componentDidMount() {
+    getUserVideosSize().then((response) =>
+      this.setState({ size: response.data }),
+    );
   }
 
   toggleNavDrawer = () => {
     const { showNavDrawer } = this.state;
     this.setState({ showNavDrawer: !showNavDrawer });
-  }
+  };
 
   render() {
-    const {
-      showNavDrawer,
-    } = this.state;
+    const { showNavDrawer, size } = this.state;
 
     return (
-      <Grid
-        className="root"
-        container
-        direction="column"
-      >
+      <Grid className="root" container direction="column">
         <NavDrawer
           open={showNavDrawer}
           onOpen={this.toggleNavDrawer}
           onClose={this.toggleNavDrawer}
-          spaceTaken={100000000} // [TM]: TODO WDB-122 fetch space taken in RecyclingBinPage componentDidMount and save it in state
+          spaceTaken={size}
         />
         <Grid item>
           <TopBar
@@ -44,7 +46,7 @@ class RecyclingBinPage extends React.Component {
             lastName={window.sessionStorage.getItem('lastName')}
           />
         </Grid>
-        <Grid item className='flexGrow'>
+        <Grid item className="flexGrow">
           <EmptyRecylingBinContent />
         </Grid>
       </Grid>
