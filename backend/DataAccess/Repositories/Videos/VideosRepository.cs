@@ -29,6 +29,13 @@ namespace DataAccess.Repositories.Videos
 
             return videos;
         }
+
+        public async Task<IEnumerable<Video>> GetAllVideosByUserId(Guid userId)
+        {
+            var videos = await _db.Videos.Where(video => video.UserId == userId).ToListAsync();
+            return videos;
+        }
+
         public async Task<IEnumerable<Video>> GetVideosByUserId(Guid userId)
         {
             var videos = await _db.Videos.Where(video => video.UserId == userId && video.DeleteDate == null).ToListAsync();

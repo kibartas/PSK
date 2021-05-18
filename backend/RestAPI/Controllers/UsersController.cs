@@ -73,6 +73,30 @@ namespace RestAPI.Controllers
             return userDto;
         }
 
+        [HttpGet, Route("size")]
+        public async Task<ActionResult<long>> GetUserVideosSize()
+        {
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            var size = await _videoService.GetUserVideosSize(user);
+            return Ok(size);
+        }
+
         [HttpPost, Route("authentication"), AllowAnonymous]
         public async Task<ActionResult<string>> Authenticate(string email, string password)
         {

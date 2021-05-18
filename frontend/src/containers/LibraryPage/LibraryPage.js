@@ -16,6 +16,7 @@ import {
 } from '../../api/VideoAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
+import { getUserVideosSize } from '../../api/UserAPI';
 
 const transformCards = (cards) => {
   const transformedCards = cards.reduce((acc, val) => {
@@ -47,6 +48,7 @@ class LibraryPage extends React.Component {
     super(props);
     this.state = {
       videoCards: [],
+      size: 0,
       sortedVideoCardDates: [],
       selectedCards: [],
       showUploadModal: false,
@@ -75,6 +77,9 @@ class LibraryPage extends React.Component {
         });
       }
     });
+    getUserVideosSize().then((response) =>
+      this.setState({ size: response.data }),
+    );
   }
 
   toggleSort = () => {
@@ -141,6 +146,7 @@ class LibraryPage extends React.Component {
       showDeletionDialog,
       showDeletionError,
       videoCards,
+      size,
       sortedVideoCardDates,
       selectedCards,
       showDownloadError,
@@ -210,7 +216,7 @@ class LibraryPage extends React.Component {
             open={showNavDrawer}
             onOpen={this.toggleNavDrawer}
             onClose={this.toggleNavDrawer}
-            spaceTaken={100000000} // [TM]: TODO WDB-122 fetch space taken in RecyclingBinPage componentDidMount and save it in state
+            spaceTaken={size}
           />
           <UploadModal
             show={showUploadModal}
