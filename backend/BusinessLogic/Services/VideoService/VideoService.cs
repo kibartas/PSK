@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DataAccess.Models;
 using DataAccess.Repositories.Videos;
 using DataAccess.Utils;
+using Microsoft.AspNetCore.StaticFiles;
 using Xabe.FFmpeg;
 
 namespace BusinessLogic.Services.VideoService
@@ -154,6 +156,36 @@ namespace BusinessLogic.Services.VideoService
             string thumbnailPath = Path.Combine(snapshotsPath,videoId + ".png");
             Byte[] videoBytes = await File.ReadAllBytesAsync(thumbnailPath);
             return videoBytes;
+        }
+
+        public async Task<MemoryStream> GetVideosZipFileStream(List<Video> videos)
+        {
+            string zipName = Guid.NewGuid() + ".zip";
+            string zipCreatePath = Path.Combine(_uploadPath, zipName);
+
+            using (ZipArchive archive = ZipFile.Open(zipCreatePath, ZipArchiveMode.Create))
+            {
+                foreach(var video in videos)
+                {
+                    archive.CreateEntryFromFile(video.Path, video.Title + Path.GetExtension(video.Path));
+                }
+            }
+
+            var memory = new MemoryStream();
+            await using (var stream = new FileStream(zipCreatePath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+
+            File.Delete(zipCreatePath);
+            return memory;
+        }
+
+        public async Task MarkVideoForDeleteion(Video video)
+        {
+            video.DeleteDate = DateTime.Today.AddMonths(1);
+            await _videosRepository.Save();
         }
     }
 }

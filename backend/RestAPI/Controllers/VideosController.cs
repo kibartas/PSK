@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BusinessLogic.Services.VideoService;
+using DataAccess.Models;
 using DataAccess.Repositories.Users;
 using DataAccess.Repositories.Videos;
 using Microsoft.AspNetCore.Authorization;
@@ -158,8 +159,53 @@ namespace RestAPI.Controllers
                 return Unauthorized();
             }
 
-            var response = File(System.IO.File.OpenRead(video.Path), "video/mp4", enableRangeProcessing: true);
+            var response = File(System.IO.File.OpenRead(video.Path), "video/mp4",video.Title + Path.GetExtension(video.Path), enableRangeProcessing: true);
             return response;
+        }
+
+        [HttpPost, Route("DownloadMultiple")]
+        public async Task<IActionResult> DownloadMultiple([FromBody] List<Guid> videoIds)
+        {
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            if (videoIds.Count == 0)
+            {
+                return BadRequest("No ids provided");
+            }
+
+            var videos = new List<Video>();
+            foreach(var videoId in videoIds)
+            {
+                if (videoId == Guid.Empty)
+                {
+                    return BadRequest("Guid is not valid");
+                }
+                var video = await _videosRepository.GetVideoById(videoId);
+                if (video.UserId != user.Id)
+                {
+                    return Unauthorized();
+                }
+                videos.Add(video);
+            }
+
+            var stream = await _videoService.GetVideosZipFileStream(videos);
+            var zipName = "Videos-" + Guid.NewGuid();
+            return File(stream, "application/zip", zipName + ".zip");
         }
 
         [HttpPost, Route("UploadChunks")]
@@ -262,7 +308,7 @@ namespace RestAPI.Controllers
             }
         }
 
-        [HttpPatch]
+        [HttpPatch, Route("Title")]
         public async Task<ActionResult<VideoDto>> ChangeTitle(Guid id, string newTitle)
         {
             if (id == Guid.Empty)
@@ -295,6 +341,46 @@ namespace RestAPI.Controllers
             return Ok(response);
         }
 
+        [HttpPatch, Route("MarkDeleted")]
+        public async Task<ActionResult> MarkVideosForDeletion([FromBody] List<Guid> ids)
+        {
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            foreach(Guid id in ids)
+            {
+                var video = await _videosRepository.GetVideoById(id);
+                if (video == null)
+                {
+                    return NotFound();
+                }
+
+                if (video.UserId != user.Id)
+                {
+                    return NotFound();
+                }
+
+                _videoService.MarkVideoForDeleteion(video);
+            }
+
+            return Ok();
+        }
+
+        //For recycle bin page
         [HttpDelete]
         public async Task<IActionResult> DeleteVideos([FromBody] List<Guid> ids)
         {
