@@ -210,7 +210,7 @@ class LibraryPage extends React.Component {
             open={showNavDrawer}
             onOpen={this.toggleNavDrawer}
             onClose={this.toggleNavDrawer}
-            spaceTaken={100000000} // [TM]: TODO WDB-122 fetch space taken in LibraryPage componentDidMount and save it in state
+            spaceTaken={100000000}
           />
           <UploadModal
             show={showUploadModal}

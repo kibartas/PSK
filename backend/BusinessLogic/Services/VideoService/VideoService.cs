@@ -181,5 +181,11 @@ namespace BusinessLogic.Services.VideoService
             File.Delete(zipCreatePath);
             return memory;
         }
+
+        public async Task MarkVideoForDeleteion(Video video)
+        {
+            video.DeleteDate = DateTime.Today.AddMonths(1);
+            await _videosRepository.Save();
+        }
     }
 }

@@ -374,8 +374,7 @@ namespace RestAPI.Controllers
                     return NotFound();
                 }
 
-                video.DeleteDate = DateTime.Today.AddMonths(1);
-                await _videosRepository.Save();
+                _videoService.MarkVideoForDeleteion(video);
             }
 
             return Ok();

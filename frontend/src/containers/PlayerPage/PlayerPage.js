@@ -115,7 +115,10 @@ class PlayerPage extends React.Component {
       downloadVideo(video.id, userId)
         .then((response) => {
           const contentDisposition = response.headers['content-disposition'];
-          const filename = contentDisposition.split(';')[1].replaceAll('"', '');
+          let filename = contentDisposition.split(';')[1].replaceAll('"', '');
+          if (filename.includes('=')) {
+            filename = filename.replace('filename=', '');
+          }
           fileDownload(response.data, filename);
           this.setState({
             showDownloadInProgress: false,
