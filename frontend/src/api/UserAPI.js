@@ -1,14 +1,10 @@
-import axios from 'axios';
+import Api from './Api';
 
-const baseUri = 'http://localhost:61346/api';
+Api.defaults.headers = {
+  'Content-Type': 'application/json',
+  Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+};
 
-const Api = axios.create({
-  baseURL: baseUri,
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-  },
-});
 // eslint-disable-next-line
 export const updateCredentials = (id, credentials) => {
   return Api.patch(`/users/${id}`, credentials);

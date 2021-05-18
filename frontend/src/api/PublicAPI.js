@@ -1,13 +1,8 @@
-import axios from 'axios';
+import Api from './Api';
 
-const baseUri = 'http://localhost:61346/api';
-
-const Api = axios.create({
-  baseURL: baseUri,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+Api.defaults.headers = {
+  'Content-Type': 'application/json',
+};
 
 // eslint-disable-next-line
 

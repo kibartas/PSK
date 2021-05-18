@@ -1,13 +1,8 @@
-import axios from 'axios';
+import Api from './Api';
 
-const baseUri = 'http://localhost:61346/api';
-
-const Api = axios.create({
-  baseURL: baseUri,
-  headers: {
-    Authorization: `Bearer ${window.sessionStorage.getItem('token')}`,
-  },
-});
+Api.defaults.headers = {
+  Authorization: `Bearer ${window.sessionStorage.getItem('token')}`,
+};
 
 export const uploadChunk = async (
   chunkNumber,
