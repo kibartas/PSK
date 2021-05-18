@@ -191,9 +191,9 @@ namespace BusinessLogic.Services.VideoService
             return memory;
         }
 
-        public async Task<long> GetUserVideosSize(User user)
+        public async Task<long> GetUserVideosSize(Guid userId)
         {
-            var videos = await _videosRepository.GetAllVideosByUserId(user.Id);
+            var videos = await _videosRepository.GetAllVideosByUserId(userId);
             long size = videos.Select(video => video.Size).Sum();
             return size;
         }
