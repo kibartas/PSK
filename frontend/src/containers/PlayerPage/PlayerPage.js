@@ -8,7 +8,7 @@ import './styles.css';
 import {
   downloadVideo,
   getVideoDetails,
-  markDeleted,
+  markForDeletion,
 } from '../../api/VideoAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
@@ -67,7 +67,7 @@ class PlayerPage extends React.Component {
 
   handleVideoDeletion = () => {
     const { video } = this.state;
-    markDeleted([video.id])
+    markForDeletion([video.id])
       .then(() => this.handleArrowBackClick())
       .catch(() => {
         this.setState({ showDeletionError: true });

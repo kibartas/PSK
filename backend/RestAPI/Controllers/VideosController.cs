@@ -130,9 +130,15 @@ namespace RestAPI.Controllers
                 return Unauthorized();
             }
 
-            var thumbnailBytes = await _videoService.GetVideoThumbnail(video.UserId, video.Id);
-            var thumbnailFile = File(thumbnailBytes, "image/png");
-            return thumbnailFile;
+            try
+            {
+                var thumbnailBytes = await _videoService.GetVideoThumbnail(video.UserId, video.Id);
+                var thumbnailFile = File(thumbnailBytes, "image/png");
+                return thumbnailFile;
+            } catch
+            {
+                return NotFound("Thumbnail file does not exist");
+            }
         }
 
         [HttpGet, Route("stream"), AllowAnonymous]
@@ -341,7 +347,7 @@ namespace RestAPI.Controllers
             return Ok(response);
         }
 
-        [HttpPatch, Route("MarkDeleted")]
+        [HttpPatch, Route("MarkForDeletion")]
         public async Task<ActionResult> MarkVideosForDeletion([FromBody] List<Guid> ids)
         {
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
@@ -374,7 +380,7 @@ namespace RestAPI.Controllers
                     return NotFound();
                 }
 
-                _videoService.MarkVideoForDeleteion(video);
+                await _videoService.MarkVideoForDeletion(video);
             }
 
             return Ok();

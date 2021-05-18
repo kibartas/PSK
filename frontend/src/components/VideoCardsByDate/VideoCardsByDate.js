@@ -10,13 +10,12 @@ const VideoCardsByDate = ({ videoCards, onSelect, selectedCards }) => (
       <Divider />
     </Grid>
     <Grid container item direction="row" spacing={5} style={{ marginTop: 0 }}>
-      {videoCards.map(({ title, thumbnail, id }) => (
+      {videoCards.map(({ title, id }) => (
         <Grid item className="card_grid" key={id}>
           <VideoCard
             id={id}
             title={title}
             onSelect={onSelect}
-            thumbnail={thumbnail}
             isSelected={
               selectedCards
                 ? selectedCards.find((cardId) => cardId === id)
