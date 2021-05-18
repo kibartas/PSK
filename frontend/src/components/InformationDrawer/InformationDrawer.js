@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
+import { debounce } from 'lodash';
 import {
   List,
   ListItem,
@@ -9,7 +10,6 @@ import {
   Typography,
 } from '@material-ui/core';
 import { SdCard, Schedule, Movie, Crop, Close } from '@material-ui/icons';
-import { formatBytesToString } from '../../util';
 
 export default function InformationDrawer({
   open,
@@ -52,7 +52,10 @@ export default function InformationDrawer({
 
   const renderSidebarTitle = () => (
     <ListItem>
-      <ListItemIcon onClick={onClose}>
+      <ListItemIcon
+        style={title.length === 0 ? null : { cursor: 'pointer' }}
+        onClick={onClose}
+      >
         <Close />
       </ListItemIcon>
       <ListItemText>
@@ -93,7 +96,7 @@ export default function InformationDrawer({
   return (
     <SwipeableDrawer
       anchor="right"
-      open={open}
+      open={open || title.length === 0}
       onOpen={onOpen}
       onClose={onClose}
     >

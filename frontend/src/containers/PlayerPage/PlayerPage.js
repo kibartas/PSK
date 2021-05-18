@@ -6,6 +6,7 @@ import TopBar from '../../components/TopBar/TopBar';
 import { DeleteIcon, DownloadIcon, InfoIcon } from '../../assets';
 import './styles.css';
 import {
+  changeTitle,
   downloadVideo,
   getVideoDetails,
   markForDeletion,
@@ -13,6 +14,7 @@ import {
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
 import InformationDrawer from '../../components/InformationDrawer/InformationDrawer';
+import { formatBytesToString } from '../../util';
 
 class PlayerPage extends React.Component {
   constructor(props) {
@@ -43,7 +45,9 @@ class PlayerPage extends React.Component {
       .then((response) => {
         const userId = window.sessionStorage.getItem('id');
         const url = `http://localhost:61346/api/Videos/stream?videoId=${videoId}&userId=${userId}`;
-        this.setState({ url, video: response.data });
+
+        const video = this.transformVideo(response.data);
+        this.setState({ url, video });
       })
       .catch(() => this.setState({ showPlaybackError: true }));
   }
@@ -51,6 +55,35 @@ class PlayerPage extends React.Component {
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateWindowDimensions);
   }
+
+  secondsToHms = (seconds) => {
+    const SECONDS_PER_DAY = 86400;
+    const HOURS_PER_DAY = 24;
+
+    const days = Math.floor(seconds / SECONDS_PER_DAY);
+    const remainderSeconds = seconds % SECONDS_PER_DAY;
+    const hms = new Date(remainderSeconds * 1000)
+      .toISOString()
+      .substring(11, 19);
+    return hms.replace(/^(\d+)/, (h) =>
+      `${Number(h) + days * HOURS_PER_DAY}`.padStart(2, '0'),
+    );
+  };
+
+  transformVideo = (source) => {
+    const size = formatBytesToString(source.size);
+    const resolution = `${source.width}x${source.height}`;
+    const duration = this.secondsToHms(source.duration);
+    const output = {
+      id: source.id,
+      title: source.title,
+      format: source.format,
+      duration,
+      resolution,
+      size,
+    };
+    return output;
+  };
 
   updateWindowDimensions = () =>
     this.setState({
@@ -137,6 +170,13 @@ class PlayerPage extends React.Component {
         );
     };
 
+    const handleVideoTitleChange = (title) => {
+      changeTitle(video.id, title).then(() => {
+        video.title = title;
+        this.setState({ video });
+      });
+    };
+
     const renderDownloadSnackbars = () => {
       if (showDownloadError) {
         return (
@@ -213,6 +253,12 @@ class PlayerPage extends React.Component {
               open={showInformationDrawer}
               onOpen={this.toggleInformationDrawer}
               onClose={this.toggleInformationDrawer}
+              videoTitle={video.title}
+              videoDuration={video.duration}
+              videoSize={video.size}
+              videoFormat={video.format}
+              videoResolution={video.resolution}
+              onVideoTitleChange={handleVideoTitleChange}
             />
             <div className="player-wrapper">
               <ReactPlayer
@@ -221,7 +267,14 @@ class PlayerPage extends React.Component {
                 height={screenHeight - topBarHeight}
                 url={url}
                 controls
-                controlsList="nodownload"
+                config={{
+                  file: {
+                    attributes: {
+                      oncontextmenu: (e) => e.preventDefault(),
+                      controlsList: 'nodownload',
+                    },
+                  },
+                }}
               />
             </div>
           </>
