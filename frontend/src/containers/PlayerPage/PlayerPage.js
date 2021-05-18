@@ -12,6 +12,7 @@ import {
 } from '../../api/VideoAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
+import InformationDrawer from '../../components/InformationDrawer/InformationDrawer';
 
 class PlayerPage extends React.Component {
   constructor(props) {
@@ -27,6 +28,7 @@ class PlayerPage extends React.Component {
       showDownloadSuccess: false,
       showDeletionDialog: false,
       showDeletionError: false,
+      showInformationDrawer: false,
     };
     this.topBarRef = React.createRef();
   }
@@ -84,6 +86,11 @@ class PlayerPage extends React.Component {
     this.handleArrowBackClick();
   };
 
+  toggleInformationDrawer = () => {
+    const { showInformationDrawer } = this.state;
+    this.setState({ showInformationDrawer: !showInformationDrawer });
+  };
+
   render() {
     const {
       url,
@@ -96,6 +103,7 @@ class PlayerPage extends React.Component {
       showDownloadSuccess,
       showDeletionDialog,
       showDeletionError,
+      showInformationDrawer,
     } = this.state;
 
     // This fallback height is needed, since TopBar is not rendered until video information is fetched, so ref will be null
@@ -104,10 +112,6 @@ class PlayerPage extends React.Component {
       this.topBarRef.current !== null
         ? this.topBarRef.current.clientHeight
         : fallBackTopBarHeight;
-
-    const toggleVideoInformation = () => {
-      // WDB-118
-    };
 
     const handleVideoDownload = () => {
       const userId = window.sessionStorage.getItem('id');
@@ -197,7 +201,7 @@ class PlayerPage extends React.Component {
                 title={video.title}
                 showArrow
                 onIconsClick={[
-                  toggleVideoInformation,
+                  this.toggleInformationDrawer,
                   handleVideoDownload,
                   this.toggleDeletionDialog,
                 ]}
@@ -205,6 +209,11 @@ class PlayerPage extends React.Component {
                 iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
               />
             </div>
+            <InformationDrawer
+              open={showInformationDrawer}
+              onOpen={this.toggleInformationDrawer}
+              onClose={this.toggleInformationDrawer}
+            />
             <div className="player-wrapper">
               <ReactPlayer
                 playing
