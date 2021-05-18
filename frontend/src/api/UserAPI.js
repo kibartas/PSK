@@ -9,7 +9,7 @@ const Api = axios.create({
     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
   },
 });
-// eslint-disable-next-line
+
 export const updateCredentials = (id, credentials) =>
   Api.patch(`/Users/${id}`, credentials);
 
