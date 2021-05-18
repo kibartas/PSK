@@ -9,8 +9,6 @@ const Api = axios.create({
   },
 });
 
-// eslint-disable-next-line
-
 export const register = (data) => Api.post('/users/register', data);
 
 export const verify = (id) =>

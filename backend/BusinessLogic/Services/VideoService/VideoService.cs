@@ -158,7 +158,7 @@ namespace BusinessLogic.Services.VideoService
             }
         }
 
-        public async Task<Byte[]> GetVideoThumbnail(Guid userId, Guid videoId)
+        public async Task<byte[]> GetVideoThumbnail(Guid userId, Guid videoId)
         {
             string userPath = Path.Combine(_uploadPath, userId.ToString());
             string snapshotsPath = Path.Combine(userPath, "Snapshots");
@@ -189,6 +189,13 @@ namespace BusinessLogic.Services.VideoService
 
             File.Delete(zipCreatePath);
             return memory;
+        }
+
+        public async Task<long> GetUserVideosSize(User user)
+        {
+            var videos = await _videosRepository.GetAllVideosByUserId(user.Id);
+            long size = videos.Select(video => video.Size).Sum();
+            return size;
         }
 
         public async Task MarkVideoForDeletion(Video video)
