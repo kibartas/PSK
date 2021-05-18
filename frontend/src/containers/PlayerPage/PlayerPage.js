@@ -14,7 +14,7 @@ import {
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
 import InformationDrawer from '../../components/InformationDrawer/InformationDrawer';
-import { formatBytesToString } from '../../util';
+import { formatBytesToString, secondsToHms } from '../../util';
 
 class PlayerPage extends React.Component {
   constructor(props) {
@@ -37,7 +37,6 @@ class PlayerPage extends React.Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.updateWindowDimensions);
-
     const { match } = this.props;
     const { videoId } = match.params;
 
@@ -56,24 +55,10 @@ class PlayerPage extends React.Component {
     window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
-  secondsToHms = (seconds) => {
-    const SECONDS_PER_DAY = 86400;
-    const HOURS_PER_DAY = 24;
-
-    const days = Math.floor(seconds / SECONDS_PER_DAY);
-    const remainderSeconds = seconds % SECONDS_PER_DAY;
-    const hms = new Date(remainderSeconds * 1000)
-      .toISOString()
-      .substring(11, 19);
-    return hms.replace(/^(\d+)/, (h) =>
-      `${Number(h) + days * HOURS_PER_DAY}`.padStart(2, '0'),
-    );
-  };
-
   transformVideo = (source) => {
     const size = formatBytesToString(source.size);
     const resolution = `${source.width}x${source.height}`;
-    const duration = this.secondsToHms(source.duration);
+    const duration = secondsToHms(source.duration);
     const output = {
       id: source.id,
       title: source.title,
