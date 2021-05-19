@@ -78,6 +78,14 @@ namespace BusinessLogic.Services.VideoService
             string finalFilePath = Path.Combine(userPath, video.Id + Path.GetExtension(fileName));
             File.Move(tempFilePath, finalFilePath);
             video.Path = finalFilePath;
+
+            var info = await FFmpeg.GetMediaInfo(finalFilePath);
+            video.Duration = (int)info.Duration.TotalSeconds;
+            var streamInfo = info.VideoStreams.ToList()[0];
+            video.Width = streamInfo.Width;
+            video.Height = streamInfo.Height;
+            video.Format = Path.GetExtension(finalFilePath).Replace(".", "");
+
             string snapshotFolderPath = Path.Combine(userPath, "Snapshots");
             string snapshotPath = Path.Combine(snapshotFolderPath, video.Id + ".png");
             IConversion conversion = await FFmpeg.Conversions.FromSnippet.Snapshot(finalFilePath, snapshotPath, TimeSpan.FromSeconds(1));
@@ -191,9 +199,9 @@ namespace BusinessLogic.Services.VideoService
             return memory;
         }
 
-        public async Task<long> GetUserVideosSize(User user)
+        public async Task<long> GetUserVideosSize(Guid userId)
         {
-            var videos = await _videosRepository.GetAllVideosByUserId(user.Id);
+            var videos = await _videosRepository.GetAllVideosByUserId(userId);
             long size = videos.Select(video => video.Size).Sum();
             return size;
         }

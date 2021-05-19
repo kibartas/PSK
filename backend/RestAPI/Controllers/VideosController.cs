@@ -87,12 +87,16 @@ namespace RestAPI.Controllers
             if (videoId == Guid.Empty) return BadRequest("Guid is not valid");
             if (video.UserId != userId) return Unauthorized();
 
-            VideoDto videoDto = new VideoDto()
+            VideoInformationDto videoDto = new VideoInformationDto()
             {
                 Id = video.Id,
                 Size = video.Size,
                 Title = video.Title,
-                UploadDate = video.UploadDate.ToString("yyyy-MM-dd")
+                UploadDate = video.UploadDate.ToString("yyyy-MM-dd"),
+                Duration = video.Duration,
+                Format = video.Format,
+                Height = video.Height,
+                Width = video.Width
             };
 
             return Ok(videoDto);

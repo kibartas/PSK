@@ -15,7 +15,7 @@ namespace BusinessLogic.Services.VideoService
         void DeleteAllChunks(string fileName);
         Task<byte[]> GetVideoThumbnail(Guid userId, Guid videoId);
         Task<MemoryStream> GetVideosZipFileStream(List<Video> videos);
-        Task<long> GetUserVideosSize(User user);
+        Task<long> GetUserVideosSize(Guid userId);
         Task MarkVideoForDeletion(Video video);
         Task RestoreVideo(Video video);
     }
