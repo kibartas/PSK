@@ -16,9 +16,11 @@ class RecyclingBinPage extends React.Component {
   }
 
   componentDidMount() {
-    getUserVideosSize().then((response) =>
-      this.setState({ size: response.data }),
-    );
+    getUserVideosSize()
+      .then((response) => this.setState({ size: response.data }))
+      .catch(() => {
+        this.setState({ size: 0 });
+      });
   }
 
   toggleNavDrawer = () => {
