@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -72,6 +74,39 @@ namespace RestAPI.Services.JwtAuthentication
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+        
+        public string ManualValidation(string token) {
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_tokenKey));
+            var validator = new JwtSecurityTokenHandler();
+            
+            if (!validator.CanReadToken(token)) return null;
+        
+            // Parameters copied straight outta ServiceCollectionExtensions.cs
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = key,
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+            
+            try
+            {
+                // This line throws if invalid
+                var principal = validator.ValidateToken(token, validationParameters, out _);
+
+                if (principal.HasClaim(c => c.Type == ClaimTypes.NameIdentifier))
+                {
+                    return principal.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+
+            return null;
         }
     }
 }
