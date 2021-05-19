@@ -453,6 +453,12 @@ namespace RestAPI.Controllers
                 return NotFound();
             }
 
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null) 
+            { 
+                return NotFound(); 
+            }
+
             var videos = await _videosRepository.GetDeletedVideosByUserId(userId);
             List<DeletedVideoDto> videoDtos = new List<DeletedVideoDto>();
 
