@@ -10,6 +10,7 @@ using DataAccess.Repositories.Videos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestAPI.Models.Responses;
+using RestAPI.Services.JwtAuthentication;
 
 namespace RestAPI.Controllers
 {
@@ -21,15 +22,18 @@ namespace RestAPI.Controllers
         private readonly IVideosRepository _videosRepository;
         private readonly IUsersRepository _usersRepository;
         private readonly IVideoService _videoService;
+        private readonly IJwtAuthentication _jwtAuthentication;
 
         public VideosController(
             IVideosRepository videosRepository, 
             IUsersRepository usersRepository, 
-            IVideoService videoService)
+            IVideoService videoService,
+            IJwtAuthentication jwtAuthentication)
         {
             _videosRepository = videosRepository;
             _usersRepository = usersRepository;
             _videoService = videoService;
+            _jwtAuthentication = jwtAuthentication;
         }
 
         [HttpGet, Route("all")]
@@ -142,16 +146,34 @@ namespace RestAPI.Controllers
         }
 
         [HttpGet, Route("stream"), AllowAnonymous]
-        public async Task<ActionResult> Stream(Guid videoId, Guid userId)
+        public async Task<ActionResult> Stream(Guid videoId, string token)
         {
+            if (String.IsNullOrWhiteSpace(token))
+            {
+                return Unauthorized("No authorization token provided");
+            }
+            
+            var userIdClaimValue = _jwtAuthentication.ManualValidation(token);
+            
+            if (userIdClaimValue == null)
+            {
+                return Unauthorized("Token is invalid");
+            }
+            
+            if (!Guid.TryParse(userIdClaimValue, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+            
             if (videoId == Guid.Empty)
             {
                 return BadRequest("Video id is not valid");
-            }
-
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User is not valid");
             }
 
             var video = await _videosRepository.GetVideoById(videoId);

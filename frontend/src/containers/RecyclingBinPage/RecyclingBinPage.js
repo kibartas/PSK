@@ -3,7 +3,7 @@ import { Grid } from '@material-ui/core';
 import NavDrawer from '../../components/NavDrawer/NavDrawer';
 import TopBar from '../../components/TopBar/TopBar';
 import './styles.css';
-import EmptyRecylingBinContent from '../../components/EmptyRecyclingBinContent/EmptyRecyclingBinContent';
+import EmptyRecyclingBinContent from '../../components/EmptyRecyclingBinContent/EmptyRecyclingBinContent';
 import { getUserVideosSize } from '../../api/UserAPI';
 
 class RecyclingBinPage extends React.Component {
@@ -47,7 +47,7 @@ class RecyclingBinPage extends React.Component {
           />
         </Grid>
         <Grid item className="flexGrow">
-          <EmptyRecylingBinContent />
+          <EmptyRecyclingBinContent />
         </Grid>
       </Grid>
     );

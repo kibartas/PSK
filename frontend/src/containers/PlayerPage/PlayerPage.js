@@ -39,8 +39,8 @@ class PlayerPage extends React.Component {
 
     getVideoDetails(videoId)
       .then((response) => {
-        const userId = window.sessionStorage.getItem('id');
-        const url = `http://localhost:61346/api/Videos/stream?videoId=${videoId}&userId=${userId}`;
+        const token = sessionStorage.getItem('token');
+        const url = `http://localhost:61346/api/Videos/stream?videoId=${videoId}&token=${token}`;
         this.setState({ url, video: response.data });
       })
       .catch(() => this.setState({ showPlaybackError: true }));
@@ -146,7 +146,7 @@ class PlayerPage extends React.Component {
       if (showDownloadInProgress) {
         return (
           <CustomSnackbar
-            message="We are crunhing the video for you"
+            message="We are crunching the video for you"
             severity="info"
           />
         );
@@ -164,12 +164,12 @@ class PlayerPage extends React.Component {
     };
 
     return (
-      <div className=".root">
+      <div className="root">
         {video === undefined ? (
           showPlaybackError && (
             <CustomSnackbar
               topCenter
-              message="A playback error has occured. Please try again later"
+              message="A playback error has occurred. Please try again later"
               onClose={this.hidePlaybackError}
               severity="error"
             />
