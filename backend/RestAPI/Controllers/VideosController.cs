@@ -499,5 +499,43 @@ namespace RestAPI.Controllers
 
             return Ok();
         }
+
+        [HttpGet, Route("Recycled")]
+        public async Task<IActionResult> AllRecycledVideos()
+        {
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null) 
+            { 
+                return NotFound(); 
+            }
+
+            var videos = await _videosRepository.GetDeletedVideosByUserId(userId);
+            List<DeletedVideoDto> videoDtos = new List<DeletedVideoDto>();
+
+            foreach(var video in videos)
+            {
+                videoDtos.Add(new DeletedVideoDto()
+                {
+                    Id = video.Id,
+                    Title = video.Title,
+                    Size = video.Size,
+                    UploadDate = video.UploadDate.ToString("yyyy-MM-dd"),
+                    DeleteDate = video.DeleteDate?.ToString("yyyy-MM-dd")
+                });
+            }
+
+            return Ok(videoDtos);
+        }
     }
 }
