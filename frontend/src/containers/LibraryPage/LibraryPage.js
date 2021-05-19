@@ -59,27 +59,34 @@ class LibraryPage extends React.Component {
       showDownloadError: false,
       showDownloadSuccess: false,
       showDownloadInProgress: false,
+      showVideoRetrievalError: false,
     };
   }
 
   componentDidMount() {
-    getAllVideos().then((response) => {
-      if (response.data.length !== 0) {
-        const { transformedCards } = transformCards(response.data);
-        const sortedDates = sortCardDates(transformedCards);
-        this.setState({
-          videoCards: transformedCards,
-          sortedVideoCardDates: sortedDates,
-        });
-      } else {
-        this.setState({
-          videoCards: [],
-        });
-      }
-    });
-    getUserVideosSize().then((response) =>
-      this.setState({ size: response.data }),
-    );
+    getAllVideos()
+      .then((response) => {
+        if (response.data.length !== 0) {
+          const { transformedCards } = transformCards(response.data);
+          const sortedDates = sortCardDates(transformedCards);
+          this.setState({
+            videoCards: transformedCards,
+            sortedVideoCardDates: sortedDates,
+          });
+        } else {
+          this.setState({
+            videoCards: [],
+          });
+        }
+      })
+      .catch(() => {
+        this.setState({ showVideoRetrievalError: true });
+      });
+    getUserVideosSize()
+      .then((response) => this.setState({ size: response.data }))
+      .catch(() => {
+        this.setState({ size: 0 });
+      });
   }
 
   toggleSort = () => {
@@ -152,6 +159,7 @@ class LibraryPage extends React.Component {
       showDownloadError,
       showDownloadInProgress,
       showDownloadSuccess,
+      showVideoRetrievalError,
     } = this.state;
 
     const handleSelect = (id) => {
@@ -165,12 +173,21 @@ class LibraryPage extends React.Component {
       }
     };
 
-    const renderDownloadSnackbars = () => {
+    const renderSnackbars = () => {
       if (showDownloadError) {
         return (
           <CustomSnackbar
             message="Ooops.. Something wrong happened. Please try again later"
             onClose={() => this.setState({ showDownloadError: false })}
+            severity="error"
+          />
+        );
+      }
+      if (showVideoRetrievalError) {
+        return (
+          <CustomSnackbar
+            message="There was an error retrieving your videos. Please try again later"
+            onClose={() => this.setState({ showVideoRetrievalError: false })}
             severity="error"
           />
         );
@@ -205,7 +222,7 @@ class LibraryPage extends React.Component {
 
     return (
       <>
-        {renderDownloadSnackbars()}
+        {renderSnackbars()}
         <Grid
           className="root"
           style={{ height: videoCards.length === 0 ? '100vh' : 'auto' }}
