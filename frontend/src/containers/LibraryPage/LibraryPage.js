@@ -190,10 +190,10 @@ class LibraryPage extends React.Component {
         );
         this.setState({ selectedCards: newSelectedCards });
       } else {
-        let newSelectedCards = selectedCards;
+        const newSelectedCards = selectedCards.slice();
         ids.forEach((id) => {
           if (!selectedCards.includes(id))
-            newSelectedCards = [...newSelectedCards, id];
+            newSelectedCards.push(id);
         });
         this.setState({ selectedCards: newSelectedCards });
       }
