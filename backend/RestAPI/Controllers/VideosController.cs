@@ -150,7 +150,7 @@ namespace RestAPI.Controllers
         {
             if (String.IsNullOrWhiteSpace(token))
             {
-                return Unauthorized("No authorization token supplied");
+                return Unauthorized("No authorization token provided");
             }
             
             var userIdClaimValue = _jwtAuthentication.ManualValidation(token);
