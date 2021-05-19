@@ -203,5 +203,11 @@ namespace BusinessLogic.Services.VideoService
             video.DeleteDate = DateTime.Today.AddMonths(1);
             await _videosRepository.Save();
         }
+
+        public async Task RestoreVideo(Video video)
+        {
+            video.DeleteDate = null;
+            await _videosRepository.Save();
+        }
     }
 }

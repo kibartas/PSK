@@ -408,6 +408,45 @@ namespace RestAPI.Controllers
             return Ok();
         }
 
+        [HttpPatch, Route("Restore")]
+        public async Task<IActionResult> RestoreVideos([FromBody] List<Guid> ids)
+        {
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            foreach (Guid id in ids)
+            {
+                var video = await _videosRepository.GetVideoById(id);
+                if (video == null)
+                {
+                    return NotFound();
+                }
+
+                if (video.UserId != user.Id)
+                {
+                    return Unauthorized();
+                }
+
+                await _videoService.RestoreVideo(video);
+            }
+
+            return Ok();
+        }
+
         //For recycle bin page
         [HttpDelete]
         public async Task<IActionResult> DeleteVideos([FromBody] List<Guid> ids)
