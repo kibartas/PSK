@@ -51,7 +51,7 @@ export default function InformationDrawer({
   );
 
   const renderSidebarTitle = () => (
-    <ListItem>
+    <ListItem disabled={title.length === 0}>
       <ListItemIcon
         style={title.length === 0 ? null : { cursor: 'pointer' }}
         onClick={onClose}
@@ -100,7 +100,7 @@ export default function InformationDrawer({
       onOpen={onOpen}
       onClose={onClose}
     >
-      <List style={{ width: '40vh', height: '100%', position: 'relative' }}>
+      <List style={{ width: '40vh' }}>
         {renderSidebarTitle()}
         {renderVideoTitleTextfield()}
         {renderInformationItems()}
