@@ -287,7 +287,7 @@ namespace RestAPI.Controllers
 
                 return Ok(response);
             }
-            catch(Exception)
+            catch(Exception e)
             {
                 try
                 {

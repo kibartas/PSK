@@ -165,6 +165,22 @@ class LibraryPage extends React.Component {
       }
     };
 
+    const handleDateSelect = (ids) => {
+      if (ids.every((id) => selectedCards.includes(id))) {
+        const newSelectedCards = selectedCards.filter(
+          (id) => !ids.includes(id),
+        );
+        this.setState({ selectedCards: newSelectedCards });
+      } else {
+        let newSelectedCards = selectedCards;
+        ids.forEach((id) => {
+          if (!selectedCards.includes(id))
+            newSelectedCards = [...newSelectedCards, id];
+        });
+        this.setState({ selectedCards: newSelectedCards });
+      }
+    };
+
     const renderDownloadSnackbars = () => {
       if (showDownloadError) {
         return (
@@ -279,6 +295,7 @@ class LibraryPage extends React.Component {
                   key={uploadDate}
                   onSelect={handleSelect}
                   videoCards={videoCards[uploadDate]}
+                  onSelectDate={handleDateSelect}
                   selectedCards={selectedCards}
                 />
               ))}
