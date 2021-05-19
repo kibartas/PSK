@@ -2,6 +2,7 @@ import { Grid } from '@material-ui/core';
 import React from 'react';
 import SortIcon from '@material-ui/icons/Sort';
 import fileDownload from 'js-file-download';
+import SelectAllIcon from '../../assets/generic/SelectAllIcon';
 import { DeleteIcon, DownloadIcon, UploadIcon } from '../../assets';
 import EmptyLibraryContent from '../../components/EmptyLibraryContent/EmptyLibraryContent';
 import TopBar from '../../components/TopBar/TopBar';
@@ -88,6 +89,15 @@ class LibraryPage extends React.Component {
       sortAscending: !sortAscending,
       sortedVideoCardDates: sortCardDates(videoCards, sortAscending),
     });
+  };
+
+  toggleSelectAll = () => {
+    const { videoCards } = this.state;
+    if (Object.values(videoCards).length === 0) return;
+    const allCards = Object.values(videoCards)
+      .reduce((acc, val) => acc.concat(val), [])
+      .map((val) => val.id);
+    this.setState({ selectedCards: allCards });
   };
 
   toggleNavDrawer = () => {
@@ -263,8 +273,12 @@ class LibraryPage extends React.Component {
                 showAvatarAndLogout
                 firstName={window.sessionStorage.getItem('firstName')}
                 lastName={window.sessionStorage.getItem('lastName')}
-                iconsToShow={[SortIcon, UploadIcon]}
-                onIconsClick={[this.toggleSort, this.toggleUploadModal]}
+                iconsToShow={[SelectAllIcon, SortIcon, UploadIcon]}
+                onIconsClick={[
+                  this.toggleSelectAll,
+                  this.toggleSort,
+                  this.toggleUploadModal,
+                ]}
               />
             ) : (
               <TopBar
