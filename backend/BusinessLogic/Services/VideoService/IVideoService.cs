@@ -17,5 +17,6 @@ namespace BusinessLogic.Services.VideoService
         Task<MemoryStream> GetVideosZipFileStream(List<Video> videos);
         Task<long> GetUserVideosSize(Guid userId);
         Task MarkVideoForDeletion(Video video);
+        Task RestoreVideo(Video video);
     }
 }

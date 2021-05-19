@@ -10,6 +10,7 @@ using DataAccess.Repositories.Videos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestAPI.Models.Responses;
+using RestAPI.Services.JwtAuthentication;
 
 namespace RestAPI.Controllers
 {
@@ -21,15 +22,18 @@ namespace RestAPI.Controllers
         private readonly IVideosRepository _videosRepository;
         private readonly IUsersRepository _usersRepository;
         private readonly IVideoService _videoService;
+        private readonly IJwtAuthentication _jwtAuthentication;
 
         public VideosController(
             IVideosRepository videosRepository, 
             IUsersRepository usersRepository, 
-            IVideoService videoService)
+            IVideoService videoService,
+            IJwtAuthentication jwtAuthentication)
         {
             _videosRepository = videosRepository;
             _usersRepository = usersRepository;
             _videoService = videoService;
+            _jwtAuthentication = jwtAuthentication;
         }
 
         [HttpGet, Route("all")]
@@ -146,16 +150,34 @@ namespace RestAPI.Controllers
         }
 
         [HttpGet, Route("stream"), AllowAnonymous]
-        public async Task<ActionResult> Stream(Guid videoId, Guid userId)
+        public async Task<ActionResult> Stream(Guid videoId, string token)
         {
+            if (String.IsNullOrWhiteSpace(token))
+            {
+                return Unauthorized("No authorization token provided");
+            }
+            
+            var userIdClaimValue = _jwtAuthentication.ManualValidation(token);
+            
+            if (userIdClaimValue == null)
+            {
+                return Unauthorized("Token is invalid");
+            }
+            
+            if (!Guid.TryParse(userIdClaimValue, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+            
             if (videoId == Guid.Empty)
             {
                 return BadRequest("Video id is not valid");
-            }
-
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User is not valid");
             }
 
             var video = await _videosRepository.GetVideoById(videoId);
@@ -390,6 +412,45 @@ namespace RestAPI.Controllers
             return Ok();
         }
 
+        [HttpPatch, Route("Restore")]
+        public async Task<IActionResult> RestoreVideos([FromBody] List<Guid> ids)
+        {
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+
+            foreach (Guid id in ids)
+            {
+                var video = await _videosRepository.GetVideoById(id);
+                if (video == null)
+                {
+                    return NotFound();
+                }
+
+                if (video.UserId != user.Id)
+                {
+                    return Unauthorized();
+                }
+
+                await _videoService.RestoreVideo(video);
+            }
+
+            return Ok();
+        }
+
         //For recycle bin page
         [HttpDelete]
         public async Task<IActionResult> DeleteVideos([FromBody] List<Guid> ids)
@@ -441,6 +502,44 @@ namespace RestAPI.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpGet, Route("Recycled")]
+        public async Task<IActionResult> AllRecycledVideos()
+        {
+            var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim is null)
+            {
+                return NotFound();
+            }
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _usersRepository.GetUserById(userId);
+            if (user is null) 
+            { 
+                return NotFound(); 
+            }
+
+            var videos = await _videosRepository.GetDeletedVideosByUserId(userId);
+            List<DeletedVideoDto> videoDtos = new List<DeletedVideoDto>();
+
+            foreach(var video in videos)
+            {
+                videoDtos.Add(new DeletedVideoDto()
+                {
+                    Id = video.Id,
+                    Title = video.Title,
+                    Size = video.Size,
+                    UploadDate = video.UploadDate.ToString("yyyy-MM-dd"),
+                    DeleteDate = video.DeleteDate?.ToString("yyyy-MM-dd")
+                });
+            }
+
+            return Ok(videoDtos);
         }
     }
 }
