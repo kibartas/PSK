@@ -309,7 +309,7 @@ namespace RestAPI.Controllers
 
                 return Ok(response);
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 try
                 {
