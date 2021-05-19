@@ -14,7 +14,17 @@ namespace DataAccess.Models
 
         [Required]
         public string Title { get; set; }
+        [Required]
         public long Size { get; set; }
+        [Required]
+        public int Width { get; set; }
+        [Required]
+        public int Height { get; set; }
+        [Required]
+        public int Duration { get; set; }
+        [Required]
+        public string Format { get; set; }
+        [Required]
         public string Path { get; set; }
 
         [Required]

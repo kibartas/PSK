@@ -93,7 +93,7 @@ namespace RestAPI.Controllers
                 return NotFound();
             }
 
-            var size = await _videoService.GetUserVideosSize(user);
+            var size = await _videoService.GetUserVideosSize(user.Id);
             return Ok(size);
         }
 

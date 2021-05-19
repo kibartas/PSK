@@ -11,7 +11,7 @@ namespace DataAccess.Registry
         public static IServiceCollection AddDataAccess(this IServiceCollection services, IConfiguration configuration)
         {
             return services.AddDbContext<BackendContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString(nameof(BackendContext))));
+                options.UseSqlServer(configuration.GetConnectionString(nameof(BackendContext)), b => b.MigrationsAssembly("RestAPI")));
         }
 
         public static void AddRepositories(this IServiceCollection services, string assemblyName)

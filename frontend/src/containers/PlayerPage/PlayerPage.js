@@ -6,12 +6,15 @@ import TopBar from '../../components/TopBar/TopBar';
 import { DeleteIcon, DownloadIcon, InfoIcon } from '../../assets';
 import './styles.css';
 import {
+  changeTitle,
   downloadVideo,
   getVideoDetails,
   markForDeletion,
 } from '../../api/VideoAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
+import InformationDrawer from '../../components/InformationDrawer/InformationDrawer';
+import { formatBytesToString, secondsToHms } from '../../util';
 
 class PlayerPage extends React.Component {
   constructor(props) {
@@ -27,13 +30,13 @@ class PlayerPage extends React.Component {
       showDownloadSuccess: false,
       showDeletionDialog: false,
       showDeletionError: false,
+      showInformationDrawer: false,
     };
     this.topBarRef = React.createRef();
   }
 
   componentDidMount() {
     window.addEventListener('resize', this.updateWindowDimensions);
-
     const { match } = this.props;
     const { videoId } = match.params;
 
@@ -41,7 +44,9 @@ class PlayerPage extends React.Component {
       .then((response) => {
         const token = sessionStorage.getItem('token');
         const url = `http://localhost:61346/api/Videos/stream?videoId=${videoId}&token=${token}`;
-        this.setState({ url, video: response.data });
+
+        const video = this.transformVideo(response.data);
+        this.setState({ url, video });
       })
       .catch(() => this.setState({ showPlaybackError: true }));
   }
@@ -49,6 +54,21 @@ class PlayerPage extends React.Component {
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateWindowDimensions);
   }
+
+  transformVideo = (source) => {
+    const size = formatBytesToString(source.size);
+    const resolution = `${source.width}x${source.height}`;
+    const duration = secondsToHms(source.duration);
+    const output = {
+      id: source.id,
+      title: source.title,
+      format: source.format,
+      duration,
+      resolution,
+      size,
+    };
+    return output;
+  };
 
   updateWindowDimensions = () =>
     this.setState({
@@ -84,6 +104,11 @@ class PlayerPage extends React.Component {
     this.handleArrowBackClick();
   };
 
+  toggleInformationDrawer = () => {
+    const { showInformationDrawer } = this.state;
+    this.setState({ showInformationDrawer: !showInformationDrawer });
+  };
+
   render() {
     const {
       url,
@@ -96,6 +121,7 @@ class PlayerPage extends React.Component {
       showDownloadSuccess,
       showDeletionDialog,
       showDeletionError,
+      showInformationDrawer,
     } = this.state;
 
     // This fallback height is needed, since TopBar is not rendered until video information is fetched, so ref will be null
@@ -104,10 +130,6 @@ class PlayerPage extends React.Component {
       this.topBarRef.current !== null
         ? this.topBarRef.current.clientHeight
         : fallBackTopBarHeight;
-
-    const toggleVideoInformation = () => {
-      // WDB-118
-    };
 
     const handleVideoDownload = () => {
       const userId = window.sessionStorage.getItem('id');
@@ -131,6 +153,13 @@ class PlayerPage extends React.Component {
             showDownloadError: true,
           }),
         );
+    };
+
+    const handleVideoTitleChange = (title) => {
+      changeTitle(video.id, title).then(() => {
+        video.title = title;
+        this.setState({ video });
+      });
     };
 
     const renderDownloadSnackbars = () => {
@@ -197,7 +226,7 @@ class PlayerPage extends React.Component {
                 title={video.title}
                 showArrow
                 onIconsClick={[
-                  toggleVideoInformation,
+                  this.toggleInformationDrawer,
                   handleVideoDownload,
                   this.toggleDeletionDialog,
                 ]}
@@ -205,6 +234,17 @@ class PlayerPage extends React.Component {
                 iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
               />
             </div>
+            <InformationDrawer
+              open={showInformationDrawer}
+              onOpen={this.toggleInformationDrawer}
+              onClose={this.toggleInformationDrawer}
+              videoTitle={video.title}
+              videoDuration={video.duration}
+              videoSize={video.size}
+              videoFormat={video.format}
+              videoResolution={video.resolution}
+              onVideoTitleChange={handleVideoTitleChange}
+            />
             <div className="player-wrapper">
               <ReactPlayer
                 playing
@@ -212,7 +252,14 @@ class PlayerPage extends React.Component {
                 height={screenHeight - topBarHeight}
                 url={url}
                 controls
-                controlsList="nodownload"
+                config={{
+                  file: {
+                    attributes: {
+                      oncontextmenu: (e) => e.preventDefault(),
+                      controlsList: 'nodownload',
+                    },
+                  },
+                }}
               />
             </div>
           </>
