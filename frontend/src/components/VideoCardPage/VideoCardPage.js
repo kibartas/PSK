@@ -1,12 +1,12 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
-import TopBar from "../TopBar/TopBar";
-import UploadModal from "../UploadModal/UploadModal";
+import TopBar from '../TopBar/TopBar';
+import UploadModal from '../UploadModal/UploadModal';
 import './styles.css';
-import VideoCardsByDate from "../VideoCardsByDate/VideoCardsByDate";
-import NavDrawer from "../NavDrawer/NavDrawer";
-import CustomSnackbar from "../CustomSnackbar/CustomSnackbar";
-import DeleteConfirmationDialog from "../DeleteConfirmationDialog/DeleteConfirmationDialog";
+import VideoCardsByDate from '../VideoCardsByDate/VideoCardsByDate';
+import NavDrawer from '../NavDrawer/NavDrawer';
+import CustomSnackbar from '../CustomSnackbar/CustomSnackbar';
+import DeleteConfirmationDialog from '../DeleteConfirmationDialog/DeleteConfirmationDialog';
 
 class VideoCardPage extends React.Component {
   render() {

@@ -1,57 +1,28 @@
-import { Grid } from '@material-ui/core';
 import React from 'react';
 import SortIcon from '@material-ui/icons/Sort';
 import fileDownload from 'js-file-download';
 import SelectAllIcon from '../../assets/generic/SelectAllIcon';
 import { DeleteIcon, DownloadIcon, UploadIcon } from '../../assets';
-import EmptyLibraryContent from '../../components/EmptyLibraryContent/EmptyLibraryContent';
-import TopBar from '../../components/TopBar/TopBar';
-import UploadModal from '../../components/UploadModal/UploadModal';
 import './styles.css';
-import VideoCardsByDate from '../../components/VideoCardsByDate/VideoCardsByDate';
-import NavDrawer from '../../components/NavDrawer/NavDrawer';
 import {
   downloadMultipleVideos,
   getAllVideos,
   markForDeletion,
 } from '../../api/VideoAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
-import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
 import { getUserVideosSize } from '../../api/UserAPI';
-
-const transformCards = (cards) => {
-  const transformedCards = cards.reduce((acc, val) => {
-    if (!acc[val.uploadDate]) {
-      acc[val.uploadDate] = [];
-    }
-    acc[val.uploadDate].push(val);
-    return acc;
-  }, {});
-  return { transformedCards };
-};
-
-const sortCardDates = (cards, ascending = true) =>
-  Object.keys(cards).sort((a, b) => {
-    const dateA = new Date(a);
-    const dateB = new Date(b);
-    if (ascending) {
-      if (dateA.getTime() < dateB.getTime()) return 1;
-      if (dateA.getTime() === dateB.getTime()) return 0;
-      return -1;
-    }
-    if (dateA.getTime() < dateB.getTime()) return -1;
-    if (dateA.getTime() === dateB.getTime()) return 0;
-    return 1;
-  });
+import { normalizeCards, sortCardDates, transformCards } from '../../util/card';
+import VideoCardPage from '../../components/VideoCardPage/VideoCardPage';
+import EmptyLibraryContent from '../../components/EmptyLibraryContent/EmptyLibraryContent';
 
 class LibraryPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      videoCards: [],
+      videosInformation: {},
       size: 0,
-      sortedVideoCardDates: [],
-      selectedCards: [],
+      sortedVideoDates: [],
+      selectedCardIds: [],
       showUploadModal: false,
       showNavDrawer: false,
       showDeletionDialog: false,
@@ -61,6 +32,7 @@ class LibraryPage extends React.Component {
       showDownloadSuccess: false,
       showDownloadInProgress: false,
       showVideoRetrievalError: false,
+      showDeletionSuccess: false,
     };
   }
 
@@ -68,21 +40,25 @@ class LibraryPage extends React.Component {
     getAllVideos()
       .then((response) => {
         if (response.data.length !== 0) {
-          const { transformedCards } = transformCards(response.data);
-          const sortedDates = sortCardDates(transformedCards);
+          const { transformedVideosInformation } = transformCards(
+            response.data,
+            'uploadDate',
+          );
+          const sortedDates = sortCardDates(transformedVideosInformation);
           this.setState({
-            videoCards: transformedCards,
-            sortedVideoCardDates: sortedDates,
+            videosInformation: transformedVideosInformation,
+            sortedVideoDates: sortedDates,
           });
         } else {
           this.setState({
-            videoCards: [],
+            videosInformation: [],
           });
         }
       })
       .catch(() => {
         this.setState({ showVideoRetrievalError: true });
       });
+
     getUserVideosSize()
       .then((response) => this.setState({ size: response.data }))
       .catch(() => {
@@ -91,20 +67,20 @@ class LibraryPage extends React.Component {
   }
 
   toggleSort = () => {
-    const { sortAscending, videoCards } = this.state;
+    const { sortAscending, videosInformation } = this.state;
     this.setState({
       sortAscending: !sortAscending,
-      sortedVideoCardDates: sortCardDates(videoCards, sortAscending),
+      sortedVideoDates: sortCardDates(videosInformation, sortAscending),
     });
   };
 
   toggleSelectAll = () => {
-    const { videoCards } = this.state;
-    if (Object.values(videoCards).length === 0) return;
-    const allCards = Object.values(videoCards)
+    const { videosInformation } = this.state;
+    if (Object.values(videosInformation).length === 0) return;
+    const allCards = Object.values(videosInformation)
       .reduce((acc, val) => acc.concat(val), [])
       .map((val) => val.id);
-    this.setState({ selectedCards: allCards });
+    this.setState({ selectedCardIds: allCards });
   };
 
   toggleNavDrawer = () => {
@@ -123,9 +99,36 @@ class LibraryPage extends React.Component {
   };
 
   handleVideoDeletion = () => {
-    const { selectedCards } = this.state;
-    markForDeletion(selectedCards)
-      .then(() => window.location.reload())
+    const { selectedCardIds, videosInformation, sortAscending } = this.state;
+    markForDeletion(selectedCardIds)
+      .then((response) => {
+        let videoIds = response.data;
+        const normalizedVideosInformation = normalizeCards(videosInformation);
+        const newNormalizedVideosInformation = normalizedVideosInformation.filter(
+          ({ id }) => {
+            if (videoIds.includes(id)) {
+              videoIds = videoIds.filter((videoId) => videoId !== id);
+              return false;
+            }
+            return true;
+          },
+        );
+        const { transformedVideosInformation } = transformCards(
+          newNormalizedVideosInformation,
+          'uploadDate',
+        );
+        const newSortedVideoCardDates = sortCardDates(
+          transformedVideosInformation,
+          sortAscending,
+        );
+        this.setState({
+          videosInformation: transformedVideosInformation,
+          sortedVideoDates: newSortedVideoCardDates,
+          selectedCardIds: videoIds,
+          showDeletionSuccess: true,
+        });
+        this.toggleDeletionDialog();
+      })
       .catch(() => this.setState({ showDeletionError: true }));
   };
 
@@ -135,9 +138,9 @@ class LibraryPage extends React.Component {
   };
 
   handleVideosDownload = () => {
-    const { selectedCards } = this.state;
+    const { selectedCardIds } = this.state;
     this.setState({ showDownloadInProgress: true });
-    downloadMultipleVideos(selectedCards)
+    downloadMultipleVideos(selectedCardIds)
       .then((response) => {
         const contentDisposition = response.headers['content-disposition'];
         const filename = contentDisposition.split(';')[1].split('filename=')[1];
@@ -153,7 +156,7 @@ class LibraryPage extends React.Component {
           showDownloadError: true,
         }),
       )
-      .finally(() => this.setState({ selectedCards: [] }));
+      .finally(() => this.setState({ selectedCardIds: [] }));
   };
 
   render() {
@@ -162,40 +165,40 @@ class LibraryPage extends React.Component {
       showNavDrawer,
       showDeletionDialog,
       showDeletionError,
-      videoCards,
+      videosInformation,
       size,
-      sortedVideoCardDates,
-      selectedCards,
+      sortedVideoDates,
+      selectedCardIds,
       showDownloadError,
       showDownloadInProgress,
       showDownloadSuccess,
       showVideoRetrievalError,
+      showDeletionSuccess,
     } = this.state;
 
     const handleSelect = (id) => {
-      if (selectedCards.find((cardId) => cardId === id)) {
-        const newSelectedCards = selectedCards.filter(
+      if (selectedCardIds.find((cardId) => cardId === id)) {
+        const newSelectedCardIds = selectedCardIds.filter(
           (cardId) => cardId !== id,
         );
-        this.setState({ selectedCards: newSelectedCards });
+        this.setState({ selectedCardIds: newSelectedCardIds });
       } else {
-        this.setState({ selectedCards: [...selectedCards, id] });
+        this.setState({ selectedCardIds: [...selectedCardIds, id] });
       }
     };
 
     const handleDateSelect = (ids) => {
-      if (ids.every((id) => selectedCards.includes(id))) {
-        const newSelectedCards = selectedCards.filter(
+      if (ids.every((id) => selectedCardIds.includes(id))) {
+        const newSelectedCardIds = selectedCardIds.filter(
           (id) => !ids.includes(id),
         );
-        this.setState({ selectedCards: newSelectedCards });
+        this.setState({ selectedCardIds: newSelectedCardIds });
       } else {
-        const newSelectedCards = selectedCards.slice();
+        const newSelectedCardIds = selectedCardIds.slice();
         ids.forEach((id) => {
-          if (!selectedCards.includes(id))
-            newSelectedCards.push(id);
+          if (!selectedCardIds.includes(id)) newSelectedCardIds.push(id);
         });
-        this.setState({ selectedCards: newSelectedCards });
+        this.setState({ selectedCardIds: newSelectedCardIds });
       }
     };
 
@@ -209,6 +212,53 @@ class LibraryPage extends React.Component {
           />
         );
       }
+      if (showDownloadInProgress) {
+        return (
+          <CustomSnackbar
+            message={
+              selectedCardIds.length === 1
+                ? 'Please wait. We are crunching your video'
+                : 'Please wait. We are crunching the videos for you'
+            }
+            severity="info"
+          />
+        );
+      }
+
+      if (showDownloadSuccess) {
+        return (
+          <CustomSnackbar
+            message={
+              selectedCardIds.length === 1
+                ? 'Video is ready to be downloaded'
+                : 'Videos are ready to be downloaded'
+            }
+            onClose={() => this.setState({ showDownloadSuccess: false })}
+            severity="success"
+          />
+        );
+      }
+
+      if (showDownloadError) {
+        return (
+          <CustomSnackbar
+            message="Ooops.. Something wrong happened. Please try again later"
+            onClose={() => this.setState({ showDownloadError: false })}
+            severity="error"
+          />
+        );
+      }
+
+      if (showDeletionSuccess) {
+        return (
+          <CustomSnackbar
+            message="Selection moved to recycling bin successfully"
+            onClose={() => this.setState({ showDeletionSuccess: false })}
+            severity="success"
+          />
+        );
+      }
+
       if (showVideoRetrievalError) {
         return (
           <CustomSnackbar
@@ -218,126 +268,45 @@ class LibraryPage extends React.Component {
           />
         );
       }
-      if (showDownloadInProgress) {
-        return (
-          <CustomSnackbar
-            message={
-              selectedCards.length === 1
-                ? 'Please wait. We are crunching your video'
-                : 'Please wait. We are crunching the videos for you'
-            }
-            severity="info"
-          />
-        );
-      }
-      if (showDownloadSuccess) {
-        return (
-          <CustomSnackbar
-            message={
-              selectedCards.length === 1
-                ? 'Video is ready to be downloaded'
-                : 'Videos are ready to be downloaded'
-            }
-            onClose={() => this.setState({ showDownloadSuccess: false })}
-            severity="success"
-          />
-        );
-      }
+
       return null;
     };
 
     return (
-      <>
-        {renderSnackbars()}
-        <Grid
-          className="root"
-          style={{ height: videoCards.length === 0 ? '100vh' : 'auto' }}
-          container
-          direction="column"
-        >
-          <NavDrawer
-            open={showNavDrawer}
-            onOpen={this.toggleNavDrawer}
-            onClose={this.toggleNavDrawer}
-            spaceTaken={size}
-          />
-          <UploadModal
-            show={showUploadModal}
-            onClose={this.toggleUploadModal}
-          />
-          <DeleteConfirmationDialog
-            open={showDeletionDialog}
-            onConfirm={this.handleVideoDeletion}
-            onCancel={this.toggleDeletionDialog}
-            multipleVideos={selectedCards.length > 1}
-          />
-          {showDeletionError && (
-            <CustomSnackbar
-              message={
-                selectedCards.length === 1
-                  ? 'Oops... Something wrong happened. We could not delete your video'
-                  : 'Oops... Something wrong happened. Some videos might not have been deleted'
-              }
-              onClose={this.hideDeletionError}
-              severity="error"
-            />
-          )}
-          <Grid item>
-            {selectedCards.length === 0 ? (
-              <TopBar
-                title="Video Library"
-                onActionIconClick={this.toggleNavDrawer}
-                showAvatarAndLogout
-                firstName={window.sessionStorage.getItem('firstName')}
-                lastName={window.sessionStorage.getItem('lastName')}
-                iconsToShow={[SelectAllIcon, SortIcon, UploadIcon]}
-                onIconsClick={[
-                  this.toggleSelectAll,
-                  this.toggleSort,
-                  this.toggleUploadModal,
-                ]}
-              />
-            ) : (
-              <TopBar
-                title={`${selectedCards.length} ${
-                  selectedCards.length === 1 ? 'video' : 'videos'
-                } selected`}
-                showArrow
-                iconsToShow={[DownloadIcon, DeleteIcon]}
-                onIconsClick={[
-                  this.handleVideosDownload,
-                  this.toggleDeletionDialog,
-                ]}
-                onActionIconClick={() => this.setState({ selectedCards: [] })}
-                disableIcons={showDownloadInProgress}
-              />
-            )}
-          </Grid>
-          {videoCards.length !== 0 ? (
-            <Grid
-              className="card_container"
-              container
-              item
-              direction="column"
-              spacing={5}
-            >
-              {sortedVideoCardDates.map((uploadDate) => (
-                <VideoCardsByDate
-                  key={uploadDate}
-                  onSelect={handleSelect}
-                  videoCards={videoCards[uploadDate]}
-                  onSelectDate={handleDateSelect}
-                  selectedCards={selectedCards}
-                />
-              ))}
-            </Grid>
-          ) : (
-            <Grid container className="flex_grow">
-              <EmptyLibraryContent />
-            </Grid>
-          )}
-        </Grid>
-      </>
+      <VideoCardPage
+        renderSnackbars={renderSnackbars}
+        title="Library"
+        size={size}
+        showNavDrawer={showNavDrawer}
+        videosInformation={videosInformation}
+        showUploadModal={showUploadModal}
+        sortedVideoDates={sortedVideoDates}
+        showDeletionDialog={showDeletionDialog}
+        selectedCardIds={selectedCardIds}
+        showDeletionError={showDeletionError}
+        iconsToShow={[SelectAllIcon, SortIcon, UploadIcon]}
+        handleIconsClick={[
+          this.toggleSelectAll,
+          this.toggleSort,
+          this.toggleUploadModal,
+        ]}
+        iconsToShowOnSelected={[DownloadIcon, DeleteIcon]}
+        handleIconsClickOnSelected={[
+          this.handleVideosDownload,
+          this.toggleDeletionDialog,
+        ]}
+        handleActionIconClick={() => this.setState({ selectedCardIds: [] })}
+        handleDateSelect={handleDateSelect}
+        handleSelect={handleSelect}
+        showDownloadInProgress={showDownloadInProgress}
+        toggleNavDrawer={this.toggleNavDrawer}
+        toggleUploadModal={this.toggleUploadModal}
+        handleVideoDeletion={this.handleVideoDeletion}
+        toggleDeletionDialog={this.toggleDeletionDialog}
+        hideDeletionError={this.hideDeletionError}
+      >
+        <EmptyLibraryContent />
+      </VideoCardPage>
     );
   }
 }

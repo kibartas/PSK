@@ -55,3 +55,8 @@ export const downloadVideo = (videoId, userId) =>
 
 export const downloadMultipleVideos = (videosIds) =>
   Api.post('/Videos/downloadMultiple', videosIds, { responseType: 'blob' });
+
+export const getRecycledVideos = () => Api.get('/videos/recycled');
+
+export const restoreVideos = (videoIds) =>
+  Api.patch('/videos/restore', videoIds);
