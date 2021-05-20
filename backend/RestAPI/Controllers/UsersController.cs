@@ -154,7 +154,7 @@ namespace RestAPI.Controllers
 
             try
             {
-                string endpoint = "http://localhost:3000/verify/" + user.Id;
+                string endpoint = "http://playlist-destroyer.co/verify/" + user.Id;
                 _emailService.SendVerificationEmail(user.Firstname, user.Email, endpoint);
                 await _usersRepository.Save();
             }
@@ -202,7 +202,7 @@ namespace RestAPI.Controllers
 
             var token = await _jwtAuthentication.CreateResetPasswordToken(user.Email);
             
-            var endpoint = "http://localhost:3000/reset-password/" + token;
+            var endpoint = "http://playlist-destroyer.co/reset-password/" + token;
             try
             {
                 _emailService.SendForgotPasswordEmail(user.Firstname, user.Email, endpoint);
