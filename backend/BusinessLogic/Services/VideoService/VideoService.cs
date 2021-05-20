@@ -99,7 +99,7 @@ namespace BusinessLogic.Services.VideoService
 
         public async Task DeleteVideo(Video video, Guid userId)
         {
-            string snapshotPath = Path.Combine(Path.Combine(_uploadPath, userId.ToString()), "Snapshots\\" + video.Id + ".png");
+            string snapshotPath = Path.Combine(Path.Combine(_uploadPath, userId.ToString()), Path.Combine("Snapshots", video.Id + ".png"));
 
             if (!File.Exists(video.Path))
             {
