@@ -31,6 +31,7 @@ class RecyclingBinPage extends React.Component {
       showDeletionSuccess: false,
       showVideoRetrievalError: false,
       showVideoRestorationError: false,
+      isLoading: true,
     };
   }
 
@@ -55,6 +56,9 @@ class RecyclingBinPage extends React.Component {
       })
       .catch(() => {
         this.setState({ showVideoRetrievalError: true });
+      })
+      .finally(() => {
+        this.setState({ isLoading: false });
       });
 
     getUserVideosSize()
@@ -173,6 +177,7 @@ class RecyclingBinPage extends React.Component {
       showVideoRestorationError,
       showVideoRestorationSuccess,
       showDeletionSuccess,
+      isLoading,
     } = this.state;
 
     const renderSnackbars = () => {
@@ -222,7 +227,9 @@ class RecyclingBinPage extends React.Component {
       if (showDeletionError) {
         return (
           <CustomSnackbar
-            message="There was an error deleting your video"
+            message={`There was an error deleting your ${
+              selectedCardIds.length === 1 ? 'video' : 'videos'
+            }. Please try again later`}
             onClose={() => this.setState({ showVideoRetrievalError: false })}
             severity="error"
           />
@@ -270,7 +277,6 @@ class RecyclingBinPage extends React.Component {
         sortedVideoDates={sortedVideoDates}
         showDeletionDialog={showDeletionDialog}
         selectedCardIds={selectedCardIds}
-        showDeletionError={showDeletionError}
         iconsToShow={[SelectAllIcon, SortIcon]}
         handleIconsClick={[this.toggleSelectAll, this.toggleSort]}
         iconsToShowOnSelected={[RestoreIcon, DeleteIcon]}
@@ -281,10 +287,10 @@ class RecyclingBinPage extends React.Component {
         handleActionIconClick={() => this.setState({ selectedCardIds: [] })}
         handleVideoDeletion={this.handleVideoDeletion}
         toggleDeletionDialog={this.toggleDeletionDialog}
-        hideDeletionError={this.hideDeletionError}
         handleSelect={handleSelect}
         handleDateSelect={handleDateSelect}
         deleteForever
+        isLoading={isLoading}
       >
         <EmptyRecyclingBinContent />
       </VideoCardPage>

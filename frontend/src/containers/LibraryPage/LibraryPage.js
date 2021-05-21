@@ -33,10 +33,12 @@ class LibraryPage extends React.Component {
       showDownloadInProgress: false,
       showVideoRetrievalError: false,
       showDeletionSuccess: false,
+      isLoading: false,
     };
   }
 
   componentDidMount() {
+    this.setState({ isLoading: true });
     getAllVideos()
       .then((response) => {
         if (response.data.length !== 0) {
@@ -57,6 +59,9 @@ class LibraryPage extends React.Component {
       })
       .catch(() => {
         this.setState({ showVideoRetrievalError: true });
+      })
+      .finally(() => {
+        this.setState({ isLoading: false });
       });
 
     getUserVideosSize()
@@ -174,6 +179,7 @@ class LibraryPage extends React.Component {
       showDownloadSuccess,
       showVideoRetrievalError,
       showDeletionSuccess,
+      isLoading,
     } = this.state;
 
     const handleSelect = (id) => {
@@ -283,7 +289,6 @@ class LibraryPage extends React.Component {
         sortedVideoDates={sortedVideoDates}
         showDeletionDialog={showDeletionDialog}
         selectedCardIds={selectedCardIds}
-        showDeletionError={showDeletionError}
         iconsToShow={[SelectAllIcon, SortIcon, UploadIcon]}
         handleIconsClick={[
           this.toggleSelectAll,
@@ -303,7 +308,7 @@ class LibraryPage extends React.Component {
         toggleUploadModal={this.toggleUploadModal}
         handleVideoDeletion={this.handleVideoDeletion}
         toggleDeletionDialog={this.toggleDeletionDialog}
-        hideDeletionError={this.hideDeletionError}
+        isLoading={isLoading}
       >
         <EmptyLibraryContent />
       </VideoCardPage>

@@ -7,6 +7,7 @@ import VideoCardsByDate from '../VideoCardsByDate/VideoCardsByDate';
 import NavDrawer from '../NavDrawer/NavDrawer';
 import CustomSnackbar from '../CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../DeleteConfirmationDialog/DeleteConfirmationDialog';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 
 const VideoCardPage = ({
   renderSnackbars,
@@ -17,7 +18,6 @@ const VideoCardPage = ({
   showUploadModal,
   showDeletionDialog,
   selectedCardIds,
-  showDeletionError,
   iconsToShow,
   iconsToShowOnSelected,
   handleIconsClick,
@@ -31,9 +31,9 @@ const VideoCardPage = ({
   toggleUploadModal,
   handleVideoDeletion,
   toggleDeletionDialog,
-  hideDeletionError,
   deleteForever,
   children,
+  isLoading,
 }) => (
   <>
     {renderSnackbars()}
@@ -57,17 +57,6 @@ const VideoCardPage = ({
         multipleVideos={selectedCardIds.length > 1}
         deleteForever={deleteForever}
       />
-      {showDeletionError && (
-        <CustomSnackbar
-          message={
-            selectedCardIds.length === 1
-              ? 'Oops... Something wrong happened. We could not delete your video'
-              : 'Oops... Something wrong happened. Some videos might not have been deleted'
-          }
-          onClose={hideDeletionError}
-          severity="error"
-        />
-      )}
       <Grid item>
         {selectedCardIds.length === 0 ? (
           <TopBar
@@ -92,7 +81,10 @@ const VideoCardPage = ({
           />
         )}
       </Grid>
-      {Object.keys(videosInformation).length !== 0 ? (
+      {/* eslint-disable-next-line */}
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : Object.keys(videosInformation).length !== 0 ? (
         <Grid
           className="card_container"
           container
