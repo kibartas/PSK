@@ -57,7 +57,7 @@ export default function TopBar({
         elevation={1}
       >
         <Toolbar>
-          <Grid container direction='row' alignItems="center" spacing={1}>
+          <Grid container direction='row' alignItems="center">
             <Grid item>
               <IconButton edge="start" onClick={onActionIconClick}>
                 {showArrow ? (
