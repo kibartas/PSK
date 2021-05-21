@@ -16,6 +16,7 @@ namespace RestAPI.Middleware
     {
         private const string ResponseMessageTemplate = "HTTP RESPONSE {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms Response Body: {ResponseBody}. {User}";
         private const string RequestMessageTemplate = "HTTP REQUEST {RequestMethod} {RequestPath} QueryString: {QueryString} RequestBody: {RequestBody}";
+        private const int MaxContentLength = 20480;
 
         private static readonly ILogger Logger = Log.ForContext<LoggingMiddleware>();
         private readonly RecyclableMemoryStreamManager _recyclableMemoryStreamManager;
@@ -91,13 +92,13 @@ namespace RestAPI.Middleware
             httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
 
             var responseLength = httpContext.Response.Body.Length;
-            if (responseLength is < 20480 and > 0)
+            if (responseLength is < MaxContentLength and > 0)
             {
                 responseBody = await new StreamReader(httpContext.Response.Body).ReadToEndAsync();
             }
-            else if (responseLength > 20480)
+            else if (responseLength > MaxContentLength)
             {
-                responseBody = "Request Body exceeded 20480 characters";
+                responseBody = $"Request Body exceeded {MaxContentLength} characters";
             }
             else
             {
@@ -134,15 +135,15 @@ namespace RestAPI.Middleware
             httpContext.Request.Body.Position = 0;
 
             var requestBody = string.Empty;
-            if (httpContext.Request.ContentLength is not null && httpContext.Request.ContentLength <= 20480)
+            if (httpContext.Request.ContentLength is not null && httpContext.Request.ContentLength <= MaxContentLength)
             {
                 await using var requestStream = _recyclableMemoryStreamManager.GetStream();
                 await httpContext.Request.Body.CopyToAsync(requestStream);
                 requestBody = ReadStreamInChunks(requestStream);
             }
-            else if(httpContext.Request.ContentLength > 20480)
+            else if(httpContext.Request.ContentLength > MaxContentLength)
             {
-                requestBody = "Request Body exceeded 20480 characters";
+                requestBody = $"Request Body exceeded {MaxContentLength} characters";
             }
             else
             {
