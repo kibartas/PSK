@@ -217,5 +217,21 @@ namespace BusinessLogic.Services.VideoService
             video.DeleteDate = null;
             await _videosRepository.Save();
         }
+
+        public async Task DeleteVideosAutomation()
+        {
+            var videos = await _videosRepository.GetDeletedVideosOlderThanDate(DateTime.Now);
+            foreach(var video in videos)
+            {
+                try
+                {
+                    await DeleteVideo(video, video.UserId);
+                }
+                catch(Exception)
+                {
+                    continue;
+                }
+            }
+        }
     }
 }

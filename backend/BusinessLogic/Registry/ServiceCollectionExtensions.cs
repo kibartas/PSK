@@ -1,5 +1,7 @@
 ﻿using BusinessLogic.Services.EmailService;
 using BusinessLogic.Services.VideoService;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogic.Registry
@@ -10,7 +12,13 @@ namespace BusinessLogic.Registry
         {
             return services
                     .AddScoped<IEmailService, EmailService>()
-                    .AddScoped<IVideoService, VideoService>();
+                    .AddScoped<IVideoService, VideoService>()
+                    .AddHangfireServer()
+                    .AddHangfire(config =>
+                    config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                    .UseSimpleAssemblyNameTypeSerializer()
+                    .UseDefaultTypeSerializer()
+                    .UseMemoryStorage());
         }
     }
 }

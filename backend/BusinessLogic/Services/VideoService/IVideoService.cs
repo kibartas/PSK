@@ -18,5 +18,6 @@ namespace BusinessLogic.Services.VideoService
         Task<long> GetUserVideosSize(Guid userId);
         Task MarkVideoForDeletion(Video video);
         Task RestoreVideo(Video video);
+        Task DeleteVideosAutomation();
     }
 }
