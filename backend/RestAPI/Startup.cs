@@ -11,7 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using RestAPI.Middleware;
 using RestAPI.Registry;
+using Serilog;
 
 namespace RestAPI
 {
@@ -77,6 +79,12 @@ namespace RestAPI
             });
 
             services.AddJwtAuthentication(Configuration);
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .CreateLogger();
+
+            services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,6 +97,7 @@ namespace RestAPI
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "backend v1"));
             }
 
+            app.UseMiddleware<LoggingMiddleware>();
             //app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -102,7 +111,7 @@ namespace RestAPI
             {
                 endpoints.MapControllers();
             });
-            
+
             ApplyMigrations(backendContext);
         }
 
