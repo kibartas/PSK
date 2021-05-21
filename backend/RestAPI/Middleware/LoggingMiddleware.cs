@@ -37,7 +37,6 @@ namespace RestAPI.Middleware
             var sw = new Stopwatch();
             try
             {
-                
                 await LogRequest(httpContext);
                 await LogResponse(httpContext, jwtAuthentication, sw);
             }
@@ -158,7 +157,6 @@ namespace RestAPI.Middleware
 
             Logger.Information(RequestMessageTemplate, httpContext.Request.Method, httpContext.Request.Path, queryString, requestBody);
         }
-
 
         private static string ReadStreamInChunks(Stream stream)
         {
