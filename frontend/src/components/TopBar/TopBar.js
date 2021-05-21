@@ -46,11 +46,7 @@ export default function TopBar({
       </Grid>
     ));
 
-    return (
-      <Grid container alignItems="center" spacing={1}>
-        {iconItems}
-      </Grid>
-    );
+    return iconItems;
   };
 
   return (
@@ -61,7 +57,7 @@ export default function TopBar({
         elevation={1}
       >
         <Toolbar>
-          <Grid container alignItems="center" spacing={1}>
+          <Grid container direction='row' alignItems="center" spacing={1}>
             <Grid item>
               <IconButton edge="start" onClick={onActionIconClick}>
                 {showArrow ? (
@@ -83,17 +79,26 @@ export default function TopBar({
                 </IconButton>
               </Grid>
             )}
-            <Grid item xs>
-              <Hidden xsDown>
+            <Hidden xsDown>
+              <Grid item>
                 <Typography style={{ color: fontColor }} variant="h6">
                   {title}
                 </Typography>
-              </Hidden>
+              </Grid>
+            </Hidden>
+            <Grid
+              item
+              xs
+              container
+              direction='row'
+              justify='flex-end'
+              alignItems='center'
+            >
+              {renderIcons()}
             </Grid>
-            <Grid item>{renderIcons()}</Grid>
             {showAvatarAndLogout && (
               <Grid item>
-                <Grid container spacing={2} alignItems="center">
+                <Grid container alignItems='center' spacing={1}>
                   <Grid item>
                     <IconButton edge="end" href="/profile">
                       <Avatar style={{ backgroundColor: SUNFLOWER }}>
