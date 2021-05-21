@@ -39,7 +39,7 @@ const VideoCardPage = ({
     {renderSnackbars()}
     <Grid
       className="root"
-      style={{ height: videosInformation.length === 0 ? '100vh' : 'auto' }}
+      style={{ height: Object.keys(videosInformation).length === 0 ? '100vh' : 'auto' }}
       container
       direction="column"
     >
@@ -103,7 +103,7 @@ const VideoCardPage = ({
           ))}
         </Grid>
       ) : (
-        <Grid container className="flex_grow">
+        <Grid item container className="flex_grow">
           {children}
         </Grid>
       )}
