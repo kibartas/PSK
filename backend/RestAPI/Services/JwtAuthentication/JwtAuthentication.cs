@@ -101,7 +101,7 @@ namespace RestAPI.Services.JwtAuthentication
                     return principal.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
