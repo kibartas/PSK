@@ -13,6 +13,7 @@ Api.interceptors.response.use(
       sessionStorage.clear();
       window.location.href = '/';
     }
+    return Promise.reject(error);
   },
 );
 
