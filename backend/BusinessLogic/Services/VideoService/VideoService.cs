@@ -220,7 +220,7 @@ namespace BusinessLogic.Services.VideoService
 
         public async Task DeleteVideosAutomation()
         {
-            var videos = await _videosRepository.GetDeletedVideosOlderThanDate(DateTime.Now);
+            var videos = await _videosRepository.GetDeletedVideosOlderThanDays(30);
             foreach(var video in videos)
             {
                 try
