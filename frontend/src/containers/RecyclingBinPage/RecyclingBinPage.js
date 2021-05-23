@@ -37,8 +37,7 @@ class RecyclingBinPage extends React.Component {
   }
 
   componentDidMount() {
-    const { videosInformation, sortAscending } = this.state;
-    console.log(videosInformation);
+    const { sortAscending } = this.state;
     getRecycledVideos()
       .then((response) => {
         if (response.data.length !== 0) {

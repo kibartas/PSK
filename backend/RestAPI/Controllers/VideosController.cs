@@ -313,14 +313,16 @@ namespace RestAPI.Controllers
 
                 return Ok(response);
             }
-            catch(Exception)
+            catch(Exception e)
             {
                 try
                 {
+                    Console.WriteLine(e);
                     _videoService.DeleteAllChunks(fileName);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Console.WriteLine(ex);
                     return StatusCode(500);
                 }
                 return StatusCode(500);

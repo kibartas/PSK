@@ -3,13 +3,15 @@ import ReactPlayer from 'react-player';
 import { withRouter } from 'react-router';
 import fileDownload from 'js-file-download';
 import TopBar from '../../components/TopBar/TopBar';
-import { DeleteIcon, DownloadIcon, InfoIcon } from '../../assets';
+import { DeleteIcon, DownloadIcon, InfoIcon, RestoreIcon } from '../../assets';
 import './styles.css';
 import {
   changeTitle,
+  deleteVideos,
   downloadVideo,
   getVideoDetails,
   markForDeletion,
+  restoreVideos,
 } from '../../api/VideoAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
@@ -31,6 +33,7 @@ class PlayerPage extends React.Component {
       showDeletionDialog: false,
       showDeletionError: false,
       showInformationDrawer: false,
+      showVideoRestorationError: false,
     };
     this.topBarRef = React.createRef();
   }
@@ -77,7 +80,19 @@ class PlayerPage extends React.Component {
     });
 
   handleArrowBackClick = () => {
-    window.location.href = '/library';
+    const { history } = this.props;
+    history.goBack();
+  };
+
+  handleRestore = () => {
+    const { video } = this.state;
+    restoreVideos([video.id])
+      .then(() => {
+        this.handleArrowBackClick();
+      })
+      .catch(() => {
+        this.setState({ showVideoRestorationError: true });
+      });
   };
 
   toggleDeletionDialog = () => {
@@ -85,9 +100,19 @@ class PlayerPage extends React.Component {
     this.setState({ showDeletionDialog: !showDeletionDialog });
   };
 
-  handleVideoDeletion = () => {
+  handleVideoMarkForDeletion = () => {
     const { video } = this.state;
     markForDeletion([video.id])
+      .then(() => this.handleArrowBackClick())
+      .catch(() => {
+        this.setState({ showDeletionError: true });
+        this.toggleDeletionDialog();
+      });
+  };
+
+  handleVideoDeletion = () => {
+    const { video } = this.state;
+    deleteVideos([video.id])
       .then(() => this.handleArrowBackClick())
       .catch(() => {
         this.setState({ showDeletionError: true });
@@ -122,7 +147,10 @@ class PlayerPage extends React.Component {
       showDeletionDialog,
       showDeletionError,
       showInformationDrawer,
+      showVideoRestorationError,
     } = this.state;
+    const { location } = this.props;
+    const { isFromBin } = location.state;
 
     // This fallback height is needed, since TopBar is not rendered until video information is fetched, so ref will be null
     const fallBackTopBarHeight = screenWidth > 600 ? 64 : 56; // These values are from Material UI AppBar source code
@@ -208,12 +236,24 @@ class PlayerPage extends React.Component {
             {renderDownloadSnackbars()}
             <DeleteConfirmationDialog
               open={showDeletionDialog}
-              onConfirm={this.handleVideoDeletion}
+              onConfirm={
+                isFromBin
+                  ? this.handleVideoDeletion
+                  : this.handleVideoMarkForDeletion
+              }
               onCancel={this.toggleDeletionDialog}
+              deleteForever={isFromBin}
             />
             {showDeletionError && (
               <CustomSnackbar
                 message="Oops... Something wrong happened, we could not delete your video"
+                onClose={this.hideDeletionError}
+                severity="error"
+              />
+            )}
+            {showVideoRestorationError && (
+              <CustomSnackbar
+                message="Oops... Something wrong happened, we could not restore your video"
                 onClose={this.hideDeletionError}
                 severity="error"
               />
@@ -225,13 +265,25 @@ class PlayerPage extends React.Component {
                 lastName={window.sessionStorage.getItem('lastName')}
                 title={video.title}
                 showArrow
-                onIconsClick={[
-                  this.toggleInformationDrawer,
-                  handleVideoDownload,
-                  this.toggleDeletionDialog,
-                ]}
+                onIconsClick={
+                  !isFromBin
+                    ? [
+                        this.toggleInformationDrawer,
+                        handleVideoDownload,
+                        this.toggleDeletionDialog,
+                      ]
+                    : [
+                        this.toggleInformationDrawer,
+                        this.handleRestore,
+                        this.toggleDeletionDialog,
+                      ]
+                }
                 onActionIconClick={this.handleArrowBackClick}
-                iconsToShow={[InfoIcon, DownloadIcon, DeleteIcon]}
+                iconsToShow={
+                  !isFromBin
+                    ? [InfoIcon, DownloadIcon, DeleteIcon]
+                    : [InfoIcon, RestoreIcon, DeleteIcon]
+                }
               />
             </div>
             <InformationDrawer
