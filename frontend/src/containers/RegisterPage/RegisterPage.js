@@ -39,8 +39,6 @@ class RegisterPage extends React.Component {
         const { status } = ex.response;
         if (status === 409) this.setState({ showUserExistsError: true });
         else this.setState({ showGeneralError: true });
-      })
-      .finally(() => {
       });
   };
 
