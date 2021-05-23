@@ -4,6 +4,7 @@ import { withRouter } from 'react-router';
 import { register } from '../../api/PublicAPI';
 import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import RegistrationForm from '../../components/RegistrationForm/RegistrationForm';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 class RegisterPage extends React.Component {
   constructor(props) {
@@ -11,10 +12,12 @@ class RegisterPage extends React.Component {
     this.state = {
       showGeneralError: false,
       showUserExistsError: false,
+      isLoading: false,
     };
   }
 
   handleRegister = (firstName, lastName, email, password) => {
+    this.setState({ isLoading: true });
     const data = {
       firstName,
       lastName,
@@ -34,11 +37,14 @@ class RegisterPage extends React.Component {
         const { status } = ex.response;
         if (status === 409) this.setState({ showUserExistsError: true });
         else this.setState({ showGeneralError: true });
+      })
+      .finally(() => {
+        this.setState({ isLoading: false });
       });
   };
 
   render() {
-    const { showGeneralError, showUserExistsError } = this.state;
+    const { showGeneralError, showUserExistsError, isLoading } = this.state;
 
     const hideGeneralError = () => {
       this.setState({ showGeneralError: false });
@@ -52,7 +58,7 @@ class RegisterPage extends React.Component {
         {showGeneralError && (
           <CustomSnackbar
             topCenter
-            message="A server error has occured. Please try again later"
+            message="A server error has occurred. Please try again later"
             onClose={hideGeneralError}
             severity="error"
           />
@@ -73,7 +79,11 @@ class RegisterPage extends React.Component {
           justify="center"
         >
           <Grid item xs={10} sm={6} md={4}>
-            <RegistrationForm onRegister={this.handleRegister} />
+            {isLoading ? (
+              <LoadingSpinner />
+            ) : (
+              <RegistrationForm onRegister={this.handleRegister} />
+            )}
           </Grid>
         </Grid>
       </>
