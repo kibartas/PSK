@@ -101,18 +101,25 @@ namespace BusinessLogic.Services.VideoService
         {
             string snapshotPath = Path.Combine(Path.Combine(_uploadPath, userId.ToString()), "Snapshots\\" + video.Id + ".png");
 
-            if (!File.Exists(video.Path))
+            // two try-catch to try deleting both separately
+            try
             {
-                throw new FileNotFoundException("This video file does not exist");
+                File.Delete(video.Path);
+            }
+            catch
+            {
+                // ignored
             }
 
-            if (!File.Exists(snapshotPath))
+            try
             {
-                throw new FileNotFoundException("Video file's snapshot does not exist");
+                File.Delete(snapshotPath);
+            }
+            catch
+            {
+                // ignored
             }
 
-            File.Delete(video.Path);
-            File.Delete(snapshotPath);
             _videosRepository.RemoveVideo(video);
             await _videosRepository.Save();
         }
