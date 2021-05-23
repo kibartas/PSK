@@ -192,8 +192,7 @@ class LibraryPage extends React.Component {
       } else {
         const newSelectedCards = selectedCards.slice();
         ids.forEach((id) => {
-          if (!selectedCards.includes(id))
-            newSelectedCards.push(id);
+          if (!selectedCards.includes(id)) newSelectedCards.push(id);
         });
         this.setState({ selectedCards: newSelectedCards });
       }
@@ -288,8 +287,8 @@ class LibraryPage extends React.Component {
                 title="Video Library"
                 onActionIconClick={this.toggleNavDrawer}
                 showAvatarAndLogout
-                firstName={window.sessionStorage.getItem('firstName')}
-                lastName={window.sessionStorage.getItem('lastName')}
+                firstName={window.localStorage.getItem('firstName')}
+                lastName={window.localStorage.getItem('lastName')}
                 iconsToShow={[SelectAllIcon, SortIcon, UploadIcon]}
                 onIconsClick={[
                   this.toggleSelectAll,

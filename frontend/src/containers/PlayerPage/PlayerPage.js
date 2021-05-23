@@ -42,7 +42,7 @@ class PlayerPage extends React.Component {
 
     getVideoDetails(videoId)
       .then((response) => {
-        const token = sessionStorage.getItem('token');
+        const token = localStorage.getItem('token');
         const url = `http://localhost:61346/api/Videos/stream?videoId=${videoId}&token=${token}`;
 
         const video = this.transformVideo(response.data);
@@ -132,7 +132,7 @@ class PlayerPage extends React.Component {
         : fallBackTopBarHeight;
 
     const handleVideoDownload = () => {
-      const userId = window.sessionStorage.getItem('id');
+      const userId = window.localStorage.getItem('id');
       this.setState({ showDownloadInProgress: true });
       downloadVideo(video.id, userId)
         .then((response) => {
@@ -221,8 +221,8 @@ class PlayerPage extends React.Component {
             <div ref={this.topBarRef}>
               <TopBar
                 darkMode
-                firstName={window.sessionStorage.getItem('firstName')}
-                lastName={window.sessionStorage.getItem('lastName')}
+                firstName={window.localStorage.getItem('firstName')}
+                lastName={window.localStorage.getItem('lastName')}
                 title={video.title}
                 showArrow
                 onIconsClick={[
