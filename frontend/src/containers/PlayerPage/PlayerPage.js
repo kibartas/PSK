@@ -313,7 +313,7 @@ class PlayerPage extends React.Component {
                 config={{
                   file: {
                     attributes: {
-                      oncontextmenu: (e) => e.preventDefault(),
+                      onContextMenu: (e) => e.preventDefault(),
                       controlsList: 'nodownload',
                     },
                   },
