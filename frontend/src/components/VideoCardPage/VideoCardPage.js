@@ -1,7 +1,6 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import TopBar from '../TopBar/TopBar';
-import UploadModal from '../UploadModal/UploadModal';
 import './styles.css';
 import VideoCardsByDate from '../VideoCardsByDate/VideoCardsByDate';
 import NavDrawer from '../NavDrawer/NavDrawer';
@@ -14,7 +13,6 @@ const VideoCardPage = ({
   size,
   showNavDrawer,
   videosInformation,
-  showUploadModal,
   showDeletionDialog,
   selectedCardIds,
   iconsToShow,
@@ -27,7 +25,6 @@ const VideoCardPage = ({
   showDownloadInProgress,
   handleActionIconClick,
   toggleNavDrawer,
-  toggleUploadModal,
   handleVideoDeletion,
   toggleDeletionDialog,
   deleteForever,
@@ -51,7 +48,6 @@ const VideoCardPage = ({
         onClose={toggleNavDrawer}
         spaceTaken={size}
       />
-      <UploadModal show={showUploadModal} onClose={toggleUploadModal} />
       <DeleteConfirmationDialog
         open={showDeletionDialog}
         onConfirm={handleVideoDeletion}
