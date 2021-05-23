@@ -1,7 +1,7 @@
 import React from 'react';
 import SortIcon from '@material-ui/icons/Sort';
 import SelectAllIcon from '../../assets/generic/SelectAllIcon';
-import { DeleteIcon } from '../../assets';
+import { DeleteForeverIcon } from '../../assets';
 import './styles.css';
 import {
   deleteVideos,
@@ -123,6 +123,12 @@ class RecyclingBinPage extends React.Component {
           showDeletionSuccess: true,
         });
         this.toggleDeletionDialog();
+
+        getUserVideosSize()
+          .then((response) => this.setState({ size: response.data }))
+          .catch(() => {
+            this.setState({ size: 0 });
+          });
       })
       .catch(() => this.setState({ showDeletionError: true }));
   };
@@ -284,7 +290,7 @@ class RecyclingBinPage extends React.Component {
         selectedCardIds={selectedCardIds}
         iconsToShow={[SelectAllIcon, SortIcon]}
         handleIconsClick={[this.toggleSelectAll, this.toggleSort]}
-        iconsToShowOnSelected={[RestoreIcon, DeleteIcon]}
+        iconsToShowOnSelected={[RestoreIcon, DeleteForeverIcon]}
         handleIconsClickOnSelected={[
           this.handleRestore,
           this.toggleDeletionDialog,
@@ -296,6 +302,7 @@ class RecyclingBinPage extends React.Component {
         handleDateSelect={handleDateSelect}
         deleteForever
         isLoading={isLoading}
+        dateType="deleteDate"
       >
         <EmptyRecyclingBinContent />
       </VideoCardPage>

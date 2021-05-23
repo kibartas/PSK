@@ -33,6 +33,7 @@ const VideoCardPage = ({
   deleteForever,
   children,
   isLoading,
+  dateType,
 }) => (
   <>
     {renderSnackbars()}
@@ -100,6 +101,7 @@ const VideoCardPage = ({
               videosInformation={videosInformation[uploadDate]}
               onSelectDate={handleDateSelect}
               selectedCardIds={selectedCardIds}
+              dateType={dateType}
             />
           ))}
         </Grid>

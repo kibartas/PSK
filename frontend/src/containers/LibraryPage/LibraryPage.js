@@ -323,6 +323,7 @@ class LibraryPage extends React.Component {
         handleVideoDeletion={this.handleVideoDeletion}
         toggleDeletionDialog={this.toggleDeletionDialog}
         isLoading={isLoading}
+        dateType="uploadDate"
       >
         <EmptyLibraryContent />
       </VideoCardPage>

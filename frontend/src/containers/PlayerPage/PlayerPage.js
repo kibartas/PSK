@@ -3,7 +3,13 @@ import ReactPlayer from 'react-player';
 import { withRouter } from 'react-router';
 import fileDownload from 'js-file-download';
 import TopBar from '../../components/TopBar/TopBar';
-import { DeleteIcon, DownloadIcon, InfoIcon, RestoreIcon } from '../../assets';
+import {
+  DeleteIcon,
+  DownloadIcon,
+  InfoIcon,
+  RestoreIcon,
+  DeleteForeverIcon,
+} from '../../assets';
 import './styles.css';
 import {
   changeTitle,
@@ -282,7 +288,7 @@ class PlayerPage extends React.Component {
                 iconsToShow={
                   !isFromBin
                     ? [InfoIcon, DownloadIcon, DeleteIcon]
-                    : [InfoIcon, RestoreIcon, DeleteIcon]
+                    : [InfoIcon, RestoreIcon, DeleteForeverIcon]
                 }
               />
             </div>
