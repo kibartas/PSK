@@ -27,7 +27,7 @@ class LibraryPage extends React.Component {
       showNavDrawer: false,
       showDeletionDialog: false,
       showDeletionError: false,
-      sortAscending: false,
+      sortAscending: true,
       showDownloadError: false,
       showDownloadSuccess: false,
       showDownloadInProgress: false,
@@ -39,6 +39,7 @@ class LibraryPage extends React.Component {
 
   componentDidMount() {
     this.setState({ isLoading: true });
+    const { sortAscending } = this.state;
     getAllVideos()
       .then((response) => {
         if (response.data.length !== 0) {
@@ -46,7 +47,10 @@ class LibraryPage extends React.Component {
             response.data,
             'uploadDate',
           );
-          const sortedDates = sortCardDates(transformedVideosInformation);
+          const sortedDates = sortCardDates(
+            transformedVideosInformation,
+            sortAscending,
+          );
           this.setState({
             videosInformation: transformedVideosInformation,
             sortedVideoDates: sortedDates,
@@ -75,7 +79,7 @@ class LibraryPage extends React.Component {
     const { sortAscending, videosInformation } = this.state;
     this.setState({
       sortAscending: !sortAscending,
-      sortedVideoDates: sortCardDates(videosInformation, sortAscending),
+      sortedVideoDates: sortCardDates(videosInformation, !sortAscending),
     });
   };
 
@@ -169,8 +173,8 @@ class LibraryPage extends React.Component {
       showUploadModal,
       showNavDrawer,
       showDeletionDialog,
-      showDeletionError,
       videosInformation,
+      showDeletionError,
       size,
       sortedVideoDates,
       selectedCardIds,
@@ -250,6 +254,16 @@ class LibraryPage extends React.Component {
           <CustomSnackbar
             message="Ooops.. Something wrong happened. Please try again later"
             onClose={() => this.setState({ showDownloadError: false })}
+            severity="error"
+          />
+        );
+      }
+
+      if (showDeletionError) {
+        return (
+          <CustomSnackbar
+            message="Could not delete your selection. Please try again later"
+            onClose={() => this.setState({ showDeletionError: false })}
             severity="error"
           />
         );

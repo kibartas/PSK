@@ -31,7 +31,7 @@ class ProfilePage extends React.Component {
 
     const handleArrowBackClick = () => {
       const { history } = this.props;
-      history.goBack();
+      history.go(-1);
     };
 
     const hideGeneralError = () => {
@@ -113,7 +113,7 @@ class ProfilePage extends React.Component {
             severity="success"
           />
         )}
-        <Grid className="root" container direction='column'>
+        <Grid className="root" container direction="column">
           <Grid item>
             <TopBar
               showArrow
@@ -124,7 +124,12 @@ class ProfilePage extends React.Component {
               lastName={lastName}
             />
           </Grid>
-          <Grid className="profileFormContainer" container alignItems="center" justify="center">
+          <Grid
+            className="profileFormContainer"
+            container
+            alignItems="center"
+            justify="center"
+          >
             <Grid item xs={11} sm={6} md={4} lg={3}>
               <ChangeProfileForm
                 firstName={firstName}

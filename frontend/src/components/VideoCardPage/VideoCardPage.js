@@ -5,7 +5,6 @@ import UploadModal from '../UploadModal/UploadModal';
 import './styles.css';
 import VideoCardsByDate from '../VideoCardsByDate/VideoCardsByDate';
 import NavDrawer from '../NavDrawer/NavDrawer';
-import CustomSnackbar from '../CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../DeleteConfirmationDialog/DeleteConfirmationDialog';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 
@@ -39,7 +38,9 @@ const VideoCardPage = ({
     {renderSnackbars()}
     <Grid
       className="root"
-      style={{ height: Object.keys(videosInformation).length === 0 ? '100vh' : 'auto' }}
+      style={{
+        height: Object.keys(videosInformation).length === 0 ? '100vh' : 'auto',
+      }}
       container
       direction="column"
     >

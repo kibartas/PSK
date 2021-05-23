@@ -22,7 +22,7 @@ class RecyclingBinPage extends React.Component {
       videosInformation: {},
       size: 0,
       sortedVideoDates: [],
-      sortAscending: false,
+      sortAscending: true,
       selectedCardIds: [],
       showUploadModal: false,
       showNavDrawer: false,
@@ -31,11 +31,14 @@ class RecyclingBinPage extends React.Component {
       showDeletionSuccess: false,
       showVideoRetrievalError: false,
       showVideoRestorationError: false,
+      showVideoRestorationSuccess: false,
       isLoading: true,
     };
   }
 
   componentDidMount() {
+    const { videosInformation, sortAscending } = this.state;
+    console.log(videosInformation);
     getRecycledVideos()
       .then((response) => {
         if (response.data.length !== 0) {
@@ -43,7 +46,10 @@ class RecyclingBinPage extends React.Component {
             response.data,
             'deleteDate',
           );
-          const sortedDates = sortCardDates(transformedVideosInformation);
+          const sortedDates = sortCardDates(
+            transformedVideosInformation,
+            sortAscending,
+          );
           this.setState({
             videosInformation: transformedVideosInformation,
             sortedVideoDates: sortedDates,
@@ -72,7 +78,7 @@ class RecyclingBinPage extends React.Component {
     const { sortAscending, videosInformation } = this.state;
     this.setState({
       sortAscending: !sortAscending,
-      sortedVideoDates: sortCardDates(videosInformation, sortAscending),
+      sortedVideoDates: sortCardDates(videosInformation, !sortAscending),
     });
   };
 
@@ -155,7 +161,7 @@ class RecyclingBinPage extends React.Component {
           videosInformation: transformedVideosInformation,
           sortedVideoDates: newSortedVideoCardDates,
           selectedCardIds: videoIds,
-          showDeletionSuccess: true,
+          showVideoRestorationSuccess: true,
         });
       })
       .catch(() => {
