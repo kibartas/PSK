@@ -44,8 +44,8 @@ class RecyclingBinPage extends React.Component {
             title="Recycling Bin"
             onActionIconClick={this.toggleNavDrawer}
             showAvatarAndLogout
-            firstName={window.sessionStorage.getItem('firstName')}
-            lastName={window.sessionStorage.getItem('lastName')}
+            firstName={window.localStorage.getItem('firstName')}
+            lastName={window.localStorage.getItem('lastName')}
           />
         </Grid>
         <Grid item className="flexGrow">

@@ -10,7 +10,7 @@ Api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response.status === 401) {
-      sessionStorage.clear();
+      localStorage.clear();
       window.location.href = '/';
     }
   },

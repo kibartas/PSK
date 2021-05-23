@@ -29,7 +29,7 @@ export default function TopBar({
   const fontColor = darkMode ? GRAY_5 : GRAY_1;
 
   const onLogout = () => {
-    window.sessionStorage.clear();
+    window.localStorage.clear();
     window.location.reload();
   };
 

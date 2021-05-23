@@ -22,7 +22,7 @@ function App() {
   return (
     <Router>
       <CssBaseline />
-      {!window.sessionStorage.getItem('token') ? (
+      {!window.localStorage.getItem('token') ? (
         <Switch>
           <Route exact path="/">
             <LoginPage />
