@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BusinessLogic.Configuration.Email;
 using BusinessLogic.Registry;
+using BusinessLogic.Services.VideoService;
 using DataAccess;
 using DataAccess.Registry;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +14,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using RestAPI.Middleware;
 using RestAPI.Registry;
+using Serilog;
 
 namespace RestAPI
 {
@@ -77,10 +82,20 @@ namespace RestAPI
             });
 
             services.AddJwtAuthentication(Configuration);
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .CreateLogger();
+
+            services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, BackendContext backendContext)
+        public void Configure(IApplicationBuilder app, 
+            IWebHostEnvironment env, 
+            BackendContext backendContext, 
+            IRecurringJobManager recurringJobManager, 
+            IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -90,6 +105,7 @@ namespace RestAPI
             }
 
             app.UseHttpsRedirection();
+            app.UseMiddleware<LoggingMiddleware>();
 
             app.UseRouting();
 
@@ -102,6 +118,12 @@ namespace RestAPI
             {
                 endpoints.MapControllers();
             });
+
+            app.UseHangfireDashboard(); //remove in production
+            recurringJobManager.AddOrUpdate(
+                "Automated video deletion", 
+                () => serviceProvider.GetService<IVideoService>().DeleteVideosAutomation(),
+                Cron.Daily);
             
             ApplyMigrations(backendContext);
         }
