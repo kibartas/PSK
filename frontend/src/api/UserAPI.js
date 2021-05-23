@@ -2,7 +2,7 @@ import Api from './Api';
 
 Api.defaults.headers = {
   'Content-Type': 'application/json',
-  Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+  Authorization: `Bearer ${localStorage.getItem('token')}`,
 };
 
 export const updateCredentials = (id, credentials) =>
