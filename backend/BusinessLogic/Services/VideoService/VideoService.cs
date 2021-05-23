@@ -59,7 +59,7 @@ namespace BusinessLogic.Services.VideoService
                 .OrderBy(x => int.Parse(Regex.Match(x, RegexValidation.CHUNK_NUMBER_REGEX).Value))
                 .ToArray();
 
-            foreach (var chunk in filePaths)
+            foreach (string chunk in filePaths)
             {
                 MergeChunks(tempFilePath, chunk);
             }
@@ -71,9 +71,9 @@ namespace BusinessLogic.Services.VideoService
                 Title = Path.GetFileNameWithoutExtension(fileName),
                 Size = size,
                 UploadDate = DateTime.Now,
-                Id = Guid.NewGuid(),
             };
 
+            video.Id = Guid.NewGuid();
 
             string finalFilePath = Path.Combine(userPath, video.Id + Path.GetExtension(fileName));
             File.Move(tempFilePath, finalFilePath);
@@ -150,7 +150,7 @@ namespace BusinessLogic.Services.VideoService
             {
                 fs1 = File.Open(chunk1, FileMode.Append);
                 fs2 = File.Open(chunk2, FileMode.Open);
-                var fs2Content = new byte[fs2.Length];
+                byte[] fs2Content = new byte[fs2.Length];
                 fs2.Read(fs2Content, 0, (int)fs2.Length);
                 fs1.Write(fs2Content, 0, (int)fs2.Length);
             }
@@ -160,8 +160,8 @@ namespace BusinessLogic.Services.VideoService
             }
             finally
             {
-                fs1?.Close();
-                fs2?.Close();
+                if (fs1 != null) fs1.Close();
+                if (fs2 != null) fs2.Close();
                 File.Delete(chunk2);
             }
         }
@@ -180,7 +180,7 @@ namespace BusinessLogic.Services.VideoService
             string zipName = Guid.NewGuid() + ".zip";
             string zipCreatePath = Path.Combine(_uploadPath, zipName);
 
-            using (var archive = ZipFile.Open(zipCreatePath, ZipArchiveMode.Create))
+            using (ZipArchive archive = ZipFile.Open(zipCreatePath, ZipArchiveMode.Create))
             {
                 foreach(var video in videos)
                 {
@@ -208,7 +208,7 @@ namespace BusinessLogic.Services.VideoService
 
         public async Task MarkVideoForDeletion(Video video)
         {
-            video.DeleteDate = DateTime.Now;
+            video.DeleteDate = DateTime.Today.AddMonths(1);
             await _videosRepository.Save();
         }
 
