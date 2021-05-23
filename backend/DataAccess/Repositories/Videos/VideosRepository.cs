@@ -48,11 +48,9 @@ namespace DataAccess.Repositories.Videos
             return videos;
         }
 
-        public async Task<IEnumerable<Video>> GetDeletedVideosOlderThanDays(int days)
+        public async Task<IEnumerable<Video>> GetDeletedVideosOlderThanDate(DateTime date)
         {
-            var videos = await _db.Videos.Where(video => video.DeleteDate != null 
-                                                         && video.DeleteDate.Value.AddDays(days) >= DateTime.Now)
-                .ToListAsync();
+            var videos = await _db.Videos.Where(video => video.DeleteDate != null && video.DeleteDate <= date).ToListAsync();
             return videos;
         }
 
