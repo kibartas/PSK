@@ -26,10 +26,12 @@ class RegisterPage extends React.Component {
     };
     register(data)
       .then(() => {
+        this.setState({ isLoading: false });
         const { history } = this.props;
         history.push('/confirm-email');
       })
       .catch((ex) => {
+        this.setState({ isLoading: false });
         if (ex.response === undefined) {
           this.setState({ showGeneralError: true });
           return;
@@ -39,7 +41,6 @@ class RegisterPage extends React.Component {
         else this.setState({ showGeneralError: true });
       })
       .finally(() => {
-        this.setState({ isLoading: false });
       });
   };
 
