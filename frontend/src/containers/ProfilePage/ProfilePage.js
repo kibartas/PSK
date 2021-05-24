@@ -31,7 +31,7 @@ class ProfilePage extends React.Component {
 
     const handleArrowBackClick = () => {
       const { history } = this.props;
-      history.goBack();
+      history.go(-1);
     };
 
     const hideGeneralError = () => {

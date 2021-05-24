@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   Button,
   CardContent,
@@ -246,7 +247,12 @@ export default function RegistrationForm({ onRegister }) {
                   </Button>
                 </Grid>
                 <Grid item xs={6}>
-                  <Button variant="outlined" fullWidth href="/">
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    component={RouterLink}
+                    to="/"
+                  >
                     Back to login
                   </Button>
                 </Grid>

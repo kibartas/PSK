@@ -109,7 +109,7 @@ namespace RestAPI.Controllers
 
             if (token is null)
             {
-                return Unauthorized();
+                return NotFound();
             }
 
             return Ok(token);

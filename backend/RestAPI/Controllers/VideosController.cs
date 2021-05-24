@@ -195,8 +195,8 @@ namespace RestAPI.Controllers
             return response;
         }
 
-        [HttpPost, Route("DownloadMultiple")]
-        public async Task<IActionResult> DownloadMultiple([FromBody] List<Guid> videoIds)
+        [HttpPost, Route("Download")]
+        public async Task<IActionResult> Download([FromBody] List<Guid> videoIds)
         {
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null)
@@ -313,7 +313,7 @@ namespace RestAPI.Controllers
 
                 return Ok(response);
             }
-            catch(Exception)
+            catch
             {
                 try
                 {
@@ -393,6 +393,8 @@ namespace RestAPI.Controllers
                 return NotFound();
             }
 
+            var markedVideos = new LinkedList<Guid>();
+            
             foreach(Guid id in ids)
             {
                 var video = await _videosRepository.GetVideoById(id);
@@ -406,10 +408,19 @@ namespace RestAPI.Controllers
                     return NotFound();
                 }
 
-                await _videoService.MarkVideoForDeletion(video);
+                try
+                {
+                    await _videoService.MarkVideoForDeletion(video);
+                    markedVideos.AddLast(id);
+                }
+                catch
+                {
+                    // https://stackoverflow.com/questions/8472935/http-status-code-for-a-partial-successful-request
+                    return StatusCode(207, markedVideos);
+                }
             }
 
-            return Ok();
+            return Ok(markedVideos);
         }
 
         [HttpPatch, Route("Restore")]
@@ -432,6 +443,7 @@ namespace RestAPI.Controllers
                 return NotFound();
             }
 
+            var restoredVideos = new LinkedList<Guid>();
             foreach (Guid id in ids)
             {
                 var video = await _videosRepository.GetVideoById(id);
@@ -445,10 +457,19 @@ namespace RestAPI.Controllers
                     return Unauthorized();
                 }
 
-                await _videoService.RestoreVideo(video);
+                try
+                {
+                    await _videoService.RestoreVideo(video);
+                    restoredVideos.AddLast(id);
+                }
+                catch
+                {
+                    // https://stackoverflow.com/questions/8472935/http-status-code-for-a-partial-successful-request
+                    return StatusCode(207, restoredVideos);
+                }
             }
 
-            return Ok();
+            return Ok(restoredVideos);
         }
 
         //For recycle bin page

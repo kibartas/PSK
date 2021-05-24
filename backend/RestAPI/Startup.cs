@@ -105,7 +105,6 @@ namespace RestAPI
             }
 
             app.UseMiddleware<LoggingMiddleware>();
-            //app.UseHttpsRedirection();
 
             app.UseRouting();
 

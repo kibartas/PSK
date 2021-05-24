@@ -40,7 +40,7 @@ class LoginPage extends React.Component {
           return;
         }
         const { status } = ex.response;
-        if (status === 401) this.setState({ showWrongCredentialsError: true });
+        if (status === 404) this.setState({ showWrongCredentialsError: true });
         else this.setState({ showGeneralError: true });
       });
   };

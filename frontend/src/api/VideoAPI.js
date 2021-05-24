@@ -47,11 +47,10 @@ export const getAllVideos = () => Api.get('/videos/all');
 export const getVideoThumbnail = (videoId) =>
   Api.get('/Videos/thumbnail/', { params: { videoId }, responseType: 'blob' });
 
-export const downloadVideo = (videoId, userId) =>
-  Api.get('/Videos/stream/', {
-    params: { videoId, userId },
-    responseType: 'blob',
-  });
+export const downloadVideos = (videosIds) =>
+  Api.post('/Videos/download', videosIds, { responseType: 'blob' });
 
-export const downloadMultipleVideos = (videosIds) =>
-  Api.post('/Videos/downloadMultiple', videosIds, { responseType: 'blob' });
+export const getRecycledVideos = () => Api.get('/videos/recycled');
+
+export const restoreVideos = (videoIds) =>
+  Api.patch('/videos/restore', videoIds);
