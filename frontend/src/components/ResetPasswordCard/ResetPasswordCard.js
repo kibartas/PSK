@@ -167,7 +167,7 @@ const ResetPasswordCard = ({ onSend, requestInProgress }) => {
                   color="primary"
                   disabled={requestInProgress}
                 >
-                  Send
+                  Reset
                 </Button>
               </Grid>
               <Grid xs={6} item>
