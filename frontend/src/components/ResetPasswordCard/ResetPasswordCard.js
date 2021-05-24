@@ -16,7 +16,7 @@ import {
   visibilityOffIcon,
 } from '../../assets';
 
-const ResetPasswordCard = ({ onSend, requestInProgress }) => {
+const ResetPasswordCard = ({ onReset, requestInProgress }) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -44,7 +44,7 @@ const ResetPasswordCard = ({ onSend, requestInProgress }) => {
     setShowConfirmPasswordError(false);
   };
 
-  const handleSendClick = (event) => {
+  const handleResetClick = (event) => {
     event.preventDefault();
     if (!PASSWORD_REGEX.test(password)) {
       setShowPasswordError(true);
@@ -54,7 +54,7 @@ const ResetPasswordCard = ({ onSend, requestInProgress }) => {
       setShowConfirmPasswordError(true);
       return;
     }
-    onSend(password);
+    onReset(password);
   };
 
   return (
@@ -68,7 +68,7 @@ const ResetPasswordCard = ({ onSend, requestInProgress }) => {
         <Typography style={{ marginBottom: 16 }}>
           Enter a new password for your account
         </Typography>
-        <form noValidate onSubmit={handleSendClick}>
+        <form noValidate onSubmit={handleResetClick}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField

@@ -22,7 +22,7 @@ class ResetPasswordPage extends React.Component {
     this.setState({ token });
   }
 
-  onSend = (password) => {
+  onReset = (password) => {
     this.setState({ requestInProgress: true });
     const { history } = this.props;
     const { token } = this.state;
@@ -81,7 +81,7 @@ class ResetPasswordPage extends React.Component {
         >
           <Grid item xs={10} sm={6} md={4} lg={3}>
             <ResetPasswordCard
-              onSend={this.onSend}
+              onReset={this.onReset}
               requestInProgress={requestInProgress}
             />
           </Grid>
