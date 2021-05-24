@@ -195,8 +195,8 @@ namespace RestAPI.Controllers
             return response;
         }
 
-        [HttpPost, Route("DownloadMultiple")]
-        public async Task<IActionResult> DownloadMultiple([FromBody] List<Guid> videoIds)
+        [HttpPost, Route("Download")]
+        public async Task<IActionResult> Download([FromBody] List<Guid> videoIds)
         {
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null)
