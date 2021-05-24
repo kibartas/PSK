@@ -1,7 +1,7 @@
 import Api from './Api';
 
 Api.defaults.headers = {
-  Authorization: `Bearer ${window.sessionStorage.getItem('token')}`,
+  Authorization: `Bearer ${window.localStorage.getItem('token')}`,
 };
 
 export const uploadChunk = async (

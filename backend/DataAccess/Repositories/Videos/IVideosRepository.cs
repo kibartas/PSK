@@ -11,7 +11,7 @@ namespace DataAccess.Repositories.Videos
         Task<IEnumerable<Video>> GetAllVideos();
         Task<IEnumerable<Video>> GetAllVideosByUserId(Guid userId);
         Task<IEnumerable<Video>> GetVideosByUserId(Guid userId);
-        Task<IEnumerable<Video>> GetDeletedVideosOlderThanDate(DateTime date);
+        Task<IEnumerable<Video>> GetDeletedVideosOlderThanDays(int days);
         Task<IEnumerable<Video>> GetDeletedVideosByUserId(Guid userId);
         Task InsertVideo(Video video);
         void RemoveVideo(Video video);

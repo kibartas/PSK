@@ -29,7 +29,7 @@ export default function TopBar({
   const fontColor = darkMode ? GRAY_5 : GRAY_1;
 
   const onLogout = () => {
-    window.sessionStorage.clear();
+    window.localStorage.clear();
     window.location.reload();
   };
 
@@ -57,7 +57,7 @@ export default function TopBar({
         elevation={1}
       >
         <Toolbar>
-          <Grid container direction='row' alignItems="center">
+          <Grid container direction="row" alignItems="center">
             <Grid item>
               <IconButton edge="start" onClick={onActionIconClick}>
                 {showArrow ? (
@@ -90,15 +90,15 @@ export default function TopBar({
               item
               xs
               container
-              direction='row'
-              justify='flex-end'
-              alignItems='center'
+              direction="row"
+              justify="flex-end"
+              alignItems="center"
             >
               {renderIcons()}
             </Grid>
             {showAvatarAndLogout && (
               <Grid item>
-                <Grid container alignItems='center' spacing={1}>
+                <Grid container alignItems="center" spacing={1}>
                   <Grid item>
                     <IconButton edge="end" href="/profile">
                       <Avatar style={{ backgroundColor: SUNFLOWER }}>

@@ -19,9 +19,9 @@ class ProfilePage extends React.Component {
   }
 
   render() {
-    const firstName = window.sessionStorage.getItem('firstName');
-    const lastName = window.sessionStorage.getItem('lastName');
-    const email = window.sessionStorage.getItem('email');
+    const firstName = window.localStorage.getItem('firstName');
+    const lastName = window.localStorage.getItem('lastName');
+    const email = window.localStorage.getItem('email');
     const {
       showSuccess,
       showConflictError,
@@ -56,9 +56,9 @@ class ProfilePage extends React.Component {
         oldPassword,
         newPassword,
       };
-      updateCredentials(window.sessionStorage.getItem('id'), credentials)
+      updateCredentials(window.localStorage.getItem('id'), credentials)
         .then(() => {
-          window.sessionStorage.setItem('email', mail);
+          window.localStorage.setItem('email', mail);
           this.setState({ showSuccess: true });
         })
         .catch((ex) => {

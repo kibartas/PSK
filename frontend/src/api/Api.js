@@ -10,15 +10,4 @@ const Api = axios.create({
   },
 });
 
-Api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response.status === 401) {
-      sessionStorage.clear();
-      window.location.href = '/';
-    }
-    return Promise.reject(error);
-  },
-);
-
 export default Api;
