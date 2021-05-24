@@ -61,8 +61,8 @@ const VideoCardPage = ({
             title={title}
             onActionIconClick={toggleNavDrawer}
             showAvatarAndLogout
-            firstName={window.sessionStorage.getItem('firstName')}
-            lastName={window.sessionStorage.getItem('lastName')}
+            firstName={window.localStorage.getItem('firstName')}
+            lastName={window.localStorage.getItem('lastName')}
             iconsToShow={iconsToShow}
             onIconsClick={handleIconsClick}
           />
