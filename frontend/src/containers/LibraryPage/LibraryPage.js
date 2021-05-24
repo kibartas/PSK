@@ -38,7 +38,10 @@ class LibraryPage extends React.Component {
     };
   }
 
-  // eslint-disable-next-line react/sort-comp
+  componentDidMount() {
+    this.fetchData();
+  }
+
   fetchData = () => {
     this.setState({ isLoading: true });
     const { sortAscending } = this.state;
@@ -75,10 +78,6 @@ class LibraryPage extends React.Component {
       .catch(() => {
         this.setState({ size: 0 });
       });
-  }
-
-  componentDidMount() {
-    this.fetchData();
   }
 
   toggleSort = () => {
