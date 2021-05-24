@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   Button,
   CardContent,
@@ -29,7 +30,13 @@ export default function VerifiedAccountCard() {
             </Grid>
           </Grid>
           <Grid item xs={12}>
-            <Button variant="contained" color="primary" fullWidth href="/login">
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              component={RouterLink}
+              to="/login"
+            >
               Back to login
             </Button>
           </Grid>

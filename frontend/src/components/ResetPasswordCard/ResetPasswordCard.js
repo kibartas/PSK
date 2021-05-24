@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   Button,
   CardContent,
@@ -171,7 +172,12 @@ const ResetPasswordCard = ({ onReset, requestInProgress }) => {
                 </Button>
               </Grid>
               <Grid xs={6} item>
-                <Button variant="outlined" fullWidth href="/login">
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  component={RouterLink}
+                  to="/login"
+                >
                   Back to login
                 </Button>
               </Grid>

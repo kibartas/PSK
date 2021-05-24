@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   Button,
   CardContent,
@@ -124,7 +125,11 @@ export default function LoginForm({ onLogin }) {
             </Grid>
             <Grid item xs={12}>
               <Typography align="left">
-                <Link href="/forgot-password" variant="body2">
+                <Link
+                  component={RouterLink}
+                  to="forgot-password"
+                  variant="body2"
+                >
                   Forgot your password?
                 </Link>
               </Typography>
@@ -140,7 +145,12 @@ export default function LoginForm({ onLogin }) {
               </Button>
             </Grid>
             <Grid item xs={6}>
-              <Button variant="outlined" fullWidth href="/register">
+              <Button
+                variant="outlined"
+                fullWidth
+                component={RouterLink}
+                to="/register"
+              >
                 Register
               </Button>
             </Grid>
