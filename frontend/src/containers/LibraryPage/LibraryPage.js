@@ -38,7 +38,8 @@ class LibraryPage extends React.Component {
     };
   }
 
-  componentDidMount() {
+  // eslint-disable-next-line react/sort-comp
+  fetchData = () => {
     this.setState({ isLoading: true });
     const { sortAscending } = this.state;
     getAllVideos()
@@ -76,6 +77,10 @@ class LibraryPage extends React.Component {
       });
   }
 
+  componentDidMount() {
+    this.fetchData();
+  }
+
   toggleSort = () => {
     const { sortAscending, videosInformation } = this.state;
     this.setState({
@@ -98,10 +103,13 @@ class LibraryPage extends React.Component {
     this.setState({ showNavDrawer: !showNavDrawer });
   };
 
-  toggleUploadModal = () => {
-    const { showUploadModal } = this.state;
-    this.setState({ showUploadModal: !showUploadModal });
-  };
+  showUploadModal = () => 
+    this.setState({ showUploadModal: true });
+
+  hideUploadModal = (shouldFetchData) => {
+    this.setState({ showUploadModal: false });
+    if (shouldFetchData) this.fetchData();
+  }
 
   toggleDeletionDialog = () => {
     const { showDeletionDialog } = this.state;
@@ -308,7 +316,7 @@ class LibraryPage extends React.Component {
           handleIconsClick={[
             this.toggleSelectAll,
             this.toggleSort,
-            this.toggleUploadModal,
+            this.showUploadModal,
           ]}
           iconsToShowOnSelected={[DownloadIcon, DeleteIcon]}
           handleIconsClickOnSelected={[
@@ -327,7 +335,7 @@ class LibraryPage extends React.Component {
         >
           <EmptyLibraryContent />
         </VideoCardPage>
-        <UploadModal show={showUploadModal} onClose={this.toggleUploadModal} />
+        <UploadModal show={showUploadModal} onClose={this.hideUploadModal} />
       </>
     );
   }

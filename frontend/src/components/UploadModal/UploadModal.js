@@ -68,9 +68,27 @@ export default function UploadModal({ show, onClose }) {
   const handleReject = () =>
     setShowSnackbar({ ...showSnackbar, onlyVideoFileTypesAccepted: true });
 
-  const handleClose = () => {
-    window.location.reload();
-    onClose();
+  const handleClose = (shouldFetchData) => {
+    setVideosToUpload([]);
+    uploadedVideos.current = [];
+    setIsMultipleUpload(false);
+    setAreTitlesMissing(false);
+    setInUploadVideo(undefined);
+    totalChunkCount.current = undefined;
+    chunkIndex.current = 1;
+    chunkStart.current = 0;
+    chunkEnd.current = CHUNK_SIZE;
+    setProgress(0);
+    cancelTokenSource.current = undefined;
+    setShowSnackbar({
+      onlyVideoFileTypesAccepted: false,
+      noVideoAttached: false,
+      uploadInProgress: false,
+      videoTitleMissing: false,
+      uploadError: false,
+      serverError: false,
+    });
+    onClose(shouldFetchData);
   };
 
   const handleCancel = () => {
@@ -106,7 +124,7 @@ export default function UploadModal({ show, onClose }) {
     } else if (areTitlesMissing) {
       setShowSnackbar({ ...showSnackbar, videoTitleMissing: true });
     } else {
-      handleClose();
+      handleClose(true);
     }
   };
 
