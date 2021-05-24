@@ -1,13 +1,14 @@
 import React from 'react';
+import { useHistory } from 'react-router';
 import {
   AppBar,
-  Button,
-  Toolbar,
-  IconButton,
-  Typography,
-  Grid,
   Avatar,
+  Button,
+  Grid,
   Hidden,
+  IconButton,
+  Toolbar,
+  Typography,
 } from '@material-ui/core';
 import { ArrowBackIcon, MenuIcon, productIcon } from '../../assets';
 import { GRAY_1, GRAY_5, GRAY_6, SUNFLOWER } from '../../constants';
@@ -24,6 +25,7 @@ export default function TopBar({
   lastName,
   disableIcons,
 }) {
+  const history = useHistory();
   const backgroundColor = darkMode ? GRAY_1 : GRAY_6;
   const iconFillColor = darkMode ? GRAY_5 : GRAY_1;
   const fontColor = darkMode ? GRAY_5 : GRAY_1;
@@ -33,8 +35,8 @@ export default function TopBar({
     window.location.reload();
   };
 
-  const renderIcons = () => {
-    const iconItems = iconsToShow.map((Icon, index) => (
+  const renderIcons = () =>
+    iconsToShow.map((Icon, index) => (
       <Grid item key={index.toString()}>
         <IconButton
           onClick={onIconsClick[index]}
@@ -45,9 +47,6 @@ export default function TopBar({
         </IconButton>
       </Grid>
     ));
-
-    return iconItems;
-  };
 
   return (
     <>
@@ -69,7 +68,10 @@ export default function TopBar({
             </Grid>
             {!showArrow && (
               <Grid item>
-                <IconButton edge="start" href="/library">
+                <IconButton
+                  edge="start"
+                  onClick={() => history.push('/library')}
+                >
                   <img
                     src={productIcon}
                     alt="Product icon"
@@ -100,7 +102,14 @@ export default function TopBar({
               <Grid item>
                 <Grid container alignItems="center" spacing={1}>
                   <Grid item>
-                    <IconButton edge="end" href="/profile">
+                    <IconButton
+                      edge="end"
+                      onClick={() =>
+                        history.push('/profile', {
+                          url: window.location.pathname,
+                        })
+                      }
+                    >
                       <Avatar style={{ backgroundColor: SUNFLOWER }}>
                         {firstName[0] + lastName[0]}
                       </Avatar>
