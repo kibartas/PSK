@@ -5,7 +5,7 @@ import SelectAllIcon from '../../assets/generic/SelectAllIcon';
 import { DeleteIcon, DownloadIcon, UploadIcon } from '../../assets';
 import './styles.css';
 import {
-  downloadMultipleVideos,
+  downloadVideos,
   getAllVideos,
   markForDeletion,
 } from '../../api/VideoAPI';
@@ -150,7 +150,7 @@ class LibraryPage extends React.Component {
   handleVideosDownload = () => {
     const { selectedCardIds } = this.state;
     this.setState({ showDownloadInProgress: true });
-    downloadMultipleVideos(selectedCardIds)
+    downloadVideos(selectedCardIds)
       .then((response) => {
         const contentDisposition = response.headers['content-disposition'];
         const filename = contentDisposition.split(';')[1].split('filename=')[1];

@@ -14,7 +14,7 @@ import './styles.css';
 import {
   changeTitle,
   deleteVideos,
-  downloadVideo,
+  downloadVideos,
   getVideoDetails,
   markForDeletion,
   restoreVideos,
@@ -166,9 +166,8 @@ class PlayerPage extends React.Component {
         : fallBackTopBarHeight;
 
     const handleVideoDownload = () => {
-      const userId = window.localStorage.getItem('id');
       this.setState({ showDownloadInProgress: true });
-      downloadVideo(video.id, userId)
+      downloadVideos([video.id])
         .then((response) => {
           const contentDisposition = response.headers['content-disposition'];
           let filename = contentDisposition.split(';')[1].replaceAll('"', '');
