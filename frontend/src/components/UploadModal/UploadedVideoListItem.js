@@ -15,7 +15,7 @@ export default function UploadedVideoListItem({
     onVideoTitleChange(newTitle);
   };
 
-  const debouncedHandleTitleChange = useCallback(debounce(handleTitleChange, 300), []);
+  const debouncedHandleTitleChange = useCallback(debounce(handleTitleChange, 500), []);
 
   const delayedHandleTitleChange = (event) => {
     const newTitle = event.target.value;
