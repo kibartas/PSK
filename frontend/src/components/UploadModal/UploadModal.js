@@ -34,6 +34,7 @@ export default function UploadModal({ show, onClose }) {
 
   const [videosToUpload, setVideosToUpload] = useState([]);
   const uploadedVideos = useRef([]); // Stores video entities from BE
+  const videoTitles = useRef([]);
 
   const [isMultipleUpload, setIsMultipleUpload] = useState(false);
   const [areTitlesMissing, setAreTitlesMissing] = useState(false);
@@ -158,6 +159,7 @@ export default function UploadModal({ show, onClose }) {
       .then((response) => {
         setProgress(100);
         uploadedVideos.current = [response.data, ...uploadedVideos.current];
+        videoTitles.current = [response.data.title, ...videoTitles.current];
         resetUploadState();
       })
       .catch((error) => handleUploadInterruption(isCancel(error)));
@@ -221,26 +223,35 @@ export default function UploadModal({ show, onClose }) {
     }
   };
 
-  const handleVideoTitleChange = (videoId) => (newTitle, rowVersion) => {
+  const handleVideoTitleChange = (videoId) => (newTitle) => {
     if (newTitle === '') {
       setAreTitlesMissing(true);
       return;
     }
-    console.log(rowVersion);
+    const index = uploadedVideos.current.findIndex(
+      (video) => video.id === videoId,
+    );
+    const { rowVersion } = uploadedVideos.current[index];
     changeTitle(videoId, newTitle, rowVersion)
       .then((response) => {
-        const index = uploadedVideos.current.findIndex(
-          (video) => video.id === videoId,
-        );
         const uploadedVideosCopy = uploadedVideos.current.slice();
         uploadedVideosCopy.splice(index, 1, response.data);
         uploadedVideos.current = [...uploadedVideosCopy];
         setAreTitlesMissing(false);
         forceUpdate();
-        console.log(response.data);
       })
       .catch(() => setShowSnackbar({ ...showSnackbar, serverError: false }));
   };
+
+  const handleVideoTitleTextFieldChange = (videoId) => (newTitle) => {
+    const index = uploadedVideos.current.findIndex(
+      (video) => video.id === videoId,
+    );
+    const videoTitleCopy = videoTitles.current.slice();
+    videoTitleCopy.splice(index, 1, newTitle);
+    videoTitles.current = [...videoTitleCopy];
+    forceUpdate();
+  }
 
   const handleVideoDeletion = (videoId) => () =>
     deleteVideos([videoId])
@@ -392,6 +403,8 @@ export default function UploadModal({ show, onClose }) {
                     uploadProgress={progress}
                     onUploadCancel={handleUploadCancel}
                     uploadedVideos={uploadedVideos.current}
+                    videoTitles={videoTitles.current}
+                    onVideoTitleTextFieldChange={handleVideoTitleTextFieldChange}
                     onVideoTitleChange={handleVideoTitleChange}
                     onVideoDeletion={handleVideoDeletion}
                   />

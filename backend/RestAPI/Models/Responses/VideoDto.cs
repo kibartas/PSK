@@ -9,6 +9,5 @@ namespace RestAPI.Models.Responses
         public string Title { get; set; }
         public string UploadDate { get; set; }
         public string RowVersion { get; set; }
-
     }
 }

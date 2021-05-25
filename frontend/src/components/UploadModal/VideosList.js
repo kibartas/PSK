@@ -11,6 +11,8 @@ export default function VideosList({
   uploadProgress,
   onUploadCancel,
   uploadedVideos,
+  videoTitles,
+  onVideoTitleTextFieldChange,
   onVideoTitleChange,
   onVideoDeletion,
 }) {
@@ -44,11 +46,12 @@ export default function VideosList({
 
   const renderUploadedVideosListItems = () => {
     if (uploadedVideos.length > 0) {
-      console.log(uploadedVideos);
-      return uploadedVideos.map((video) => (
+      return uploadedVideos.map((video, index) => (
         <UploadedVideoListItem
           key={video.id}
           video={video}
+          title={videoTitles[index]}
+          onVideoTitleTextFieldChange={onVideoTitleTextFieldChange(video.id)}
           onVideoTitleChange={onVideoTitleChange(video.id)}
           onVideoDeletion={onVideoDeletion(video.id)}
         />

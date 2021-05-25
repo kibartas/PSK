@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { debounce } from 'lodash';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import {
@@ -12,13 +12,13 @@ import { formatBytesToString } from '../../util';
 
 export default function UploadedVideoListItem({
   video,
-  onVideoTitleChange,
+  title,
+  onVideoTitleTextFieldChange,
+  onVideoTitleChange, // for changes in BE
   onVideoDeletion,
 }) {
-  const [title, setTitle] = useState(video.title);
-
   const handleTitleChange = (newTitle) => {
-    onVideoTitleChange(newTitle, video.rowVersion);
+    onVideoTitleChange(newTitle);
   };
 
   const debouncedHandleTitleChange = useCallback(
@@ -28,7 +28,7 @@ export default function UploadedVideoListItem({
 
   const delayedHandleTitleChange = (event) => {
     const newTitle = event.target.value;
-    setTitle(newTitle);
+    onVideoTitleTextFieldChange(newTitle);
 
     debouncedHandleTitleChange.cancel();
     debouncedHandleTitleChange(newTitle);

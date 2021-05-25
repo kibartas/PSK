@@ -19,9 +19,9 @@ export default function InformationDrawer({
   videoSize = '',
   videoResolution = '',
   videoFormat = '',
-  onVideoTitleChange,
+  onVideoTitleChange, // for changes in BE
   title,
-  setTitle,
+  setTitle, // for textfield
   disableTextField,
 }) {
   const handleTitleChange = (newTitle) => {
