@@ -68,15 +68,16 @@ class PlayerPage extends React.Component {
     const size = formatBytesToString(source.size);
     const resolution = `${source.width}x${source.height}`;
     const duration = secondsToHms(source.duration);
-    const output = {
+    const isFromBin = !!source?.deleteDate;
+    return {
       id: source.id,
       title: source.title,
       format: source.format,
       duration,
       resolution,
       size,
+      isFromBin,
     };
-    return output;
   };
 
   updateWindowDimensions = () =>
@@ -156,7 +157,6 @@ class PlayerPage extends React.Component {
       showVideoRestorationError,
     } = this.state;
     const { location } = this.props;
-    const { isFromBin } = location.state;
 
     // This fallback height is needed, since TopBar is not rendered until video information is fetched, so ref will be null
     const fallBackTopBarHeight = screenWidth > 600 ? 64 : 56; // These values are from Material UI AppBar source code
@@ -242,12 +242,12 @@ class PlayerPage extends React.Component {
             <DeleteConfirmationDialog
               open={showDeletionDialog}
               onConfirm={
-                isFromBin
+                video.isFromBin
                   ? this.handleVideoDeletion
                   : this.handleVideoMarkForDeletion
               }
               onCancel={this.toggleDeletionDialog}
-              deleteForever={isFromBin}
+              deleteForever={video.isFromBin}
             />
             {showDeletionError && (
               <CustomSnackbar
@@ -271,7 +271,7 @@ class PlayerPage extends React.Component {
                 title={video.title}
                 showArrow
                 onIconsClick={
-                  !isFromBin
+                  !video.isFromBin
                     ? [
                         this.toggleInformationDrawer,
                         handleVideoDownload,
@@ -285,7 +285,7 @@ class PlayerPage extends React.Component {
                 }
                 onActionIconClick={this.handleArrowBackClick}
                 iconsToShow={
-                  !isFromBin
+                  !video.isFromBin
                     ? [InfoIcon, DownloadIcon, DeleteIcon]
                     : [InfoIcon, RestoreIcon, DeleteForeverIcon]
                 }

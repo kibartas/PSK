@@ -96,7 +96,8 @@ namespace RestAPI.Controllers
                 Duration = video.Duration,
                 Format = video.Format,
                 Height = video.Height,
-                Width = video.Width
+                Width = video.Width,
+                DeleteDate = video.DeleteDate?.ToString("yyyy-MM-dd")
             };
 
             return Ok(videoDto);
