@@ -29,7 +29,7 @@ export default function InformationDrawer({
   };
 
   const debouncedHandleTitleChange = useCallback(
-    debounce(handleTitleChange, 300),
+    debounce(handleTitleChange, 500),
     [],
   );
 
