@@ -12,7 +12,7 @@ export default function VideosList({
   onUploadCancel,
   uploadedVideos,
   onVideoTitleChange,
-  onVideoDeletion
+  onVideoDeletion,
 }) {
   const renderVideosToUploadListItems = () => {
     if (videosToUploadNames.length > 0) {
@@ -30,19 +30,22 @@ export default function VideosList({
 
   const renderInUploadVideoListItem = () => {
     if (inUploadVideoName !== undefined) {
-      return <InUploadVideoListItem
-        key={inUploadVideoName}
-        videoName={inUploadVideoName}
-        progress={uploadProgress}
-        onUploadCancel={onUploadCancel}
-      />
+      return (
+        <InUploadVideoListItem
+          key={inUploadVideoName}
+          videoName={inUploadVideoName}
+          progress={uploadProgress}
+          onUploadCancel={onUploadCancel}
+        />
+      );
     }
     return null;
   };
 
   const renderUploadedVideosListItems = () => {
     if (uploadedVideos.length > 0) {
-      return uploadedVideos.map(video => (
+      console.log(uploadedVideos);
+      return uploadedVideos.map((video) => (
         <UploadedVideoListItem
           key={video.id}
           video={video}

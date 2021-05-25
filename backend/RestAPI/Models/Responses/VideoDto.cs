@@ -8,6 +8,7 @@ namespace RestAPI.Models.Responses
         public long Size { get; set; }
         public string Title { get; set; }
         public string UploadDate { get; set; }
+        public string RowVersion { get; set; }
 
     }
 }

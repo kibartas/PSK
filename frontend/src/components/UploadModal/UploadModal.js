@@ -221,12 +221,13 @@ export default function UploadModal({ show, onClose }) {
     }
   };
 
-  const handleVideoTitleChange = (videoId) => (newTitle) => {
+  const handleVideoTitleChange = (videoId) => (newTitle, rowVersion) => {
     if (newTitle === '') {
       setAreTitlesMissing(true);
       return;
     }
-    changeTitle(videoId, newTitle)
+    console.log(rowVersion);
+    changeTitle(videoId, newTitle, rowVersion)
       .then((response) => {
         const index = uploadedVideos.current.findIndex(
           (video) => video.id === videoId,
@@ -236,6 +237,7 @@ export default function UploadModal({ show, onClose }) {
         uploadedVideos.current = [...uploadedVideosCopy];
         setAreTitlesMissing(false);
         forceUpdate();
+        console.log(response.data);
       })
       .catch(() => setShowSnackbar({ ...showSnackbar, serverError: false }));
   };

@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Buffers.Text;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using BusinessLogic.Services.VideoService;
 using DataAccess.Models;
@@ -9,6 +13,8 @@ using DataAccess.Repositories.Users;
 using DataAccess.Repositories.Videos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using RestAPI.Models.Responses;
 using RestAPI.Services.JwtAuthentication;
 
@@ -97,7 +103,8 @@ namespace RestAPI.Controllers
                 Format = video.Format,
                 Height = video.Height,
                 Width = video.Width,
-                DeleteDate = video.DeleteDate?.ToString("yyyy-MM-dd")
+                DeleteDate = video.DeleteDate?.ToString("yyyy-MM-dd"),
+                RowVersion = Convert.ToBase64String(video.RowVersion)
             };
 
             return Ok(videoDto);
@@ -309,7 +316,8 @@ namespace RestAPI.Controllers
                     Id = video.Id,
                     Title = video.Title,
                     Size = video.Size,
-                    UploadDate = video.UploadDate.ToString("yyyy-MM-dd")
+                    UploadDate = video.UploadDate.ToString("yyyy-MM-dd"),
+                    RowVersion = Convert.ToBase64String(video.RowVersion)
                 };
 
                 return Ok(response);
@@ -342,7 +350,7 @@ namespace RestAPI.Controllers
         }
 
         [HttpPatch, Route("Title")]
-        public async Task<ActionResult<VideoDto>> ChangeTitle(Guid id, string newTitle)
+        public async Task<ActionResult<VideoDto>> ChangeTitle(Guid id, string newTitle, string rowVersion )
         {
             if (id == Guid.Empty)
             {
@@ -354,21 +362,53 @@ namespace RestAPI.Controllers
                 return BadRequest("Empty new title");
             }
 
+            if (string.IsNullOrWhiteSpace(rowVersion))
+            {
+                return BadRequest("Empty row version");
+            }
+
             var video = await _videosRepository.GetVideoById(id);
             if (video == null)
             {
                 return NotFound();
             }
+            
+            var newRowVersion = rowVersion;
+            var oldRowVersion = Convert.ToBase64String(video.RowVersion);
+            if (newRowVersion != oldRowVersion)
+            {
+                var conflictResponse = new ConflictVideoDto()
+                {
+                    Id = video.Id,
+                    Title = newTitle,
+                    Size = video.Size,
+                    UploadDate = video.UploadDate.ToString("yyyy-MM-dd"),
+                    RowVersion = oldRowVersion,
+                    OldTitle = video.Title
+                };
+                return Conflict(conflictResponse);
+            }
 
             video.Title = newTitle;
-            await _videosRepository.Save();
+
+            try
+            {
+                await _videosRepository.Save();
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+
+            var newVideo = await _videosRepository.GetVideoById(video.Id);
 
             var response = new VideoDto()
             {
                 Id = video.Id,
                 Title = video.Title,
                 Size = video.Size,
-                UploadDate = video.UploadDate.ToString("yyyy-MM-dd")
+                UploadDate = video.UploadDate.ToString("yyyy-MM-dd"),
+                RowVersion = Convert.ToBase64String(newVideo.RowVersion)
             };
 
             return Ok(response);

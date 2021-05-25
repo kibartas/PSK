@@ -23,6 +23,7 @@ namespace DataAccess.EntityConfigurations
             builder.Property(c => c.Format);
             builder.Property(c => c.UploadDate);
             builder.Property(c => c.DeleteDate);
+            builder.Property(c => c.RowVersion);
 
             builder.HasOne(c => c.User)
                 .WithMany(c => c.Videos)

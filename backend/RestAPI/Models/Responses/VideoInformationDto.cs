@@ -16,5 +16,6 @@ namespace RestAPI.Models.Responses
         public string Format { get; set; }
         public string UploadDate { get; set; }
         public string DeleteDate { get; set; }
+        public string RowVersion { get; set; }
     }
 }
