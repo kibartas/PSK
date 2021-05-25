@@ -90,6 +90,37 @@ class PlayerPage extends React.Component {
     history.goBack();
   };
 
+  handleVideoTitleChange = (title) => {
+    changeTitle(video.id, title).then(() => {
+      video.title = title;
+      this.setState({ video });
+    });
+  };
+
+  handleVideoDownload = () => {
+    const { video } = this.state;
+    this.setState({ showDownloadInProgress: true });
+    downloadVideos([video.id])
+      .then((response) => {
+        const contentDisposition = response.headers['content-disposition'];
+        let filename = contentDisposition.split(';')[1].replaceAll('"', '');
+        if (filename.includes('=')) {
+          filename = filename.replace('filename=', '');
+        }
+        fileDownload(response.data, filename);
+        this.setState({
+          showDownloadInProgress: false,
+          showDownloadSuccess: true,
+        });
+      })
+      .catch(() =>
+        this.setState({
+          showDownloadInProgress: false,
+          showDownloadError: true,
+        }),
+      );
+  };
+
   handleRestore = () => {
     const { video } = this.state;
     restoreVideos([video.id])
@@ -140,6 +171,42 @@ class PlayerPage extends React.Component {
     this.setState({ showInformationDrawer: !showInformationDrawer });
   };
 
+  renderDownloadSnackbars = () => {
+    const {
+      showDownloadError,
+      showDownloadInProgress,
+      showDownloadSuccess
+    } = this.state;
+
+    if (showDownloadError) {
+      return (
+        <CustomSnackbar
+          message="Ooops.. Something wrong happened. Please try again later"
+          onClose={() => this.setState({ showDownloadError: false })}
+          severity="error"
+        />
+      );
+    }
+    if (showDownloadInProgress) {
+      return (
+        <CustomSnackbar
+          message="We are crunching the video for you"
+          severity="info"
+        />
+      );
+    }
+    if (showDownloadSuccess) {
+      return (
+        <CustomSnackbar
+          message="Video is ready to be downloaded"
+          onClose={() => this.setState({ showDownloadSuccess: false })}
+          severity="success"
+        />
+      );
+    }
+    return null;
+  };
+
   render() {
     const {
       url,
@@ -147,9 +214,6 @@ class PlayerPage extends React.Component {
       screenWidth,
       screenHeight,
       showPlaybackError,
-      showDownloadError,
-      showDownloadInProgress,
-      showDownloadSuccess,
       showDeletionDialog,
       showDeletionError,
       showInformationDrawer,
@@ -165,66 +229,6 @@ class PlayerPage extends React.Component {
         ? this.topBarRef.current.clientHeight
         : fallBackTopBarHeight;
 
-    const handleVideoDownload = () => {
-      this.setState({ showDownloadInProgress: true });
-      downloadVideos([video.id])
-        .then((response) => {
-          const contentDisposition = response.headers['content-disposition'];
-          let filename = contentDisposition.split(';')[1].replaceAll('"', '');
-          if (filename.includes('=')) {
-            filename = filename.replace('filename=', '');
-          }
-          fileDownload(response.data, filename);
-          this.setState({
-            showDownloadInProgress: false,
-            showDownloadSuccess: true,
-          });
-        })
-        .catch(() =>
-          this.setState({
-            showDownloadInProgress: false,
-            showDownloadError: true,
-          }),
-        );
-    };
-
-    const handleVideoTitleChange = (title) => {
-      changeTitle(video.id, title).then(() => {
-        video.title = title;
-        this.setState({ video });
-      });
-    };
-
-    const renderDownloadSnackbars = () => {
-      if (showDownloadError) {
-        return (
-          <CustomSnackbar
-            message="Ooops.. Something wrong happened. Please try again later"
-            onClose={() => this.setState({ showDownloadError: false })}
-            severity="error"
-          />
-        );
-      }
-      if (showDownloadInProgress) {
-        return (
-          <CustomSnackbar
-            message="We are crunching the video for you"
-            severity="info"
-          />
-        );
-      }
-      if (showDownloadSuccess) {
-        return (
-          <CustomSnackbar
-            message="Video is ready to be downloaded"
-            onClose={() => this.setState({ showDownloadSuccess: false })}
-            severity="success"
-          />
-        );
-      }
-      return null;
-    };
-
     return (
       <div className="root">
         {video === undefined ? (
@@ -238,7 +242,7 @@ class PlayerPage extends React.Component {
           )
         ) : (
           <>
-            {renderDownloadSnackbars()}
+            {this.renderDownloadSnackbars()}
             <DeleteConfirmationDialog
               open={showDeletionDialog}
               onConfirm={
@@ -274,7 +278,7 @@ class PlayerPage extends React.Component {
                   !isFromBin
                     ? [
                         this.toggleInformationDrawer,
-                        handleVideoDownload,
+                        this.handleVideoDownload,
                         this.toggleDeletionDialog,
                       ]
                     : [
@@ -300,7 +304,7 @@ class PlayerPage extends React.Component {
               videoSize={video.size}
               videoFormat={video.format}
               videoResolution={video.resolution}
-              onVideoTitleChange={handleVideoTitleChange}
+              onVideoTitleChange={this.handleVideoTitleChange}
             />
             <div className="player-wrapper">
               <ReactPlayer
