@@ -24,9 +24,7 @@ const VideoCard = ({ title, onSelect, id, isSelected }) => {
   }, []);
 
   const handleClick = () => {
-    history.push(`/player/${id}`, {
-      isFromBin: window.location.pathname.includes('bin'),
-    });
+    history.push(`/player/${id}`);
   };
 
   return (

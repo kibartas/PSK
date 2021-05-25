@@ -215,7 +215,7 @@ namespace BusinessLogic.Services.VideoService
 
         public async Task MarkVideoForDeletion(Video video)
         {
-            video.DeleteDate = DateTime.Today.AddMonths(1);
+            video.DeleteDate = DateTime.Today;
             await _videosRepository.Save();
         }
 

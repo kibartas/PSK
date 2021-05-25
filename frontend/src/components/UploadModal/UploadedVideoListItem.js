@@ -1,25 +1,34 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { debounce } from 'lodash';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
-import { Grid, TextField, InputAdornment, ListItem, IconButton } from '@material-ui/core';
+import {
+  Grid,
+  TextField,
+  InputAdornment,
+  ListItem,
+  IconButton,
+} from '@material-ui/core';
 import { formatBytesToString } from '../../util';
 
 export default function UploadedVideoListItem({
   video,
-  onVideoTitleChange,
-  onVideoDeletion
+  title,
+  onVideoTitleTextFieldChange,
+  onVideoTitleChange, // for changes in BE
+  onVideoDeletion,
 }) {
-  const [ title, setTitle ] = useState(video.title);
-
   const handleTitleChange = (newTitle) => {
     onVideoTitleChange(newTitle);
   };
 
-  const debouncedHandleTitleChange = useCallback(debounce(handleTitleChange, 500), []);
+  const debouncedHandleTitleChange = useCallback(
+    debounce(handleTitleChange, 500),
+    [],
+  );
 
   const delayedHandleTitleChange = (event) => {
     const newTitle = event.target.value;
-    setTitle(newTitle);
+    onVideoTitleTextFieldChange(newTitle);
 
     debouncedHandleTitleChange.cancel();
     debouncedHandleTitleChange(newTitle);
@@ -29,9 +38,9 @@ export default function UploadedVideoListItem({
     <ListItem key={video.id}>
       <Grid
         container
-        direction='row'
-        alignItems='center'
-        justify='space-evenly'
+        direction="row"
+        alignItems="center"
+        justify="space-evenly"
       >
         <Grid item xs>
           <TextField
@@ -46,7 +55,6 @@ export default function UploadedVideoListItem({
               endAdornment: (
                 <InputAdornment position="end">
                   {formatBytesToString(video.size)}
-                    
                 </InputAdornment>
               ),
             }}

@@ -19,24 +19,26 @@ export const uploadChunk = async (
     cancelToken: cancelTokenSource.token,
   });
 
-export const finishUpload = async (videoFileName, cancelTokenSource) =>
+export const finishUpload = (videoFileName, cancelTokenSource) =>
   Api.post('/Videos/UploadComplete', null, {
     params: { fileName: videoFileName },
     cancelToken: cancelTokenSource.token,
   });
 
-export const deleteChunks = async (videoFileName) =>
+export const deleteChunks = (videoFileName) =>
   Api.delete('/Videos/DeleteChunks', {
     params: { fileName: videoFileName },
   });
 
-export const changeTitle = async (videoId, newTitle) =>
-  Api.patch('/Videos/title', null, { params: { id: videoId, newTitle } });
+export const changeTitle = (videoId, newTitle, rowVersion) =>
+  Api.patch('/Videos/title', null, {
+    params: { id: videoId, newTitle, rowVersion },
+  });
 
-export const deleteVideos = async (videoIds) =>
+export const deleteVideos = (videoIds) =>
   Api.delete(`/Videos`, { data: videoIds });
 
-export const markForDeletion = async (videoIds) =>
+export const markForDeletion = (videoIds) =>
   Api.patch('/Videos/markForDeletion', videoIds);
 
 export const getVideoDetails = (videoId) =>

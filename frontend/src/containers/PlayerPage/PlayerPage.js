@@ -23,6 +23,7 @@ import CustomSnackbar from '../../components/CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../../components/DeleteConfirmationDialog/DeleteConfirmationDialog';
 import InformationDrawer from '../../components/InformationDrawer/InformationDrawer';
 import { formatBytesToString, secondsToHms } from '../../util';
+import OverwriteTitleDialog from '../../components/OverwriteTitleDialog/OverwriteTitleDialog';
 
 class PlayerPage extends React.Component {
   constructor(props) {
@@ -40,6 +41,10 @@ class PlayerPage extends React.Component {
       showDeletionError: false,
       showInformationDrawer: false,
       showVideoRestorationError: false,
+      showChangeTitleError: false,
+      showChangeTitleConflict: false,
+      oldTitle: '',
+      informationDrawerTitle: '',
     };
     this.topBarRef = React.createRef();
   }
@@ -55,7 +60,7 @@ class PlayerPage extends React.Component {
         const url = `http://localhost:61346/api/Videos/stream?videoId=${videoId}&token=${token}`;
 
         const video = this.transformVideo(response.data);
-        this.setState({ url, video });
+        this.setState({ url, video, informationDrawerTitle: video.title });
       })
       .catch(() => this.setState({ showPlaybackError: true }));
   }
@@ -68,15 +73,17 @@ class PlayerPage extends React.Component {
     const size = formatBytesToString(source.size);
     const resolution = `${source.width}x${source.height}`;
     const duration = secondsToHms(source.duration);
-    const output = {
+    const isFromBin = !!source?.deleteDate;
+    return {
       id: source.id,
       title: source.title,
       format: source.format,
       duration,
       resolution,
       size,
+      isFromBin,
+      rowVersion: source.rowVersion,
     };
-    return output;
   };
 
   updateWindowDimensions = () =>
@@ -91,10 +98,34 @@ class PlayerPage extends React.Component {
   };
 
   handleVideoTitleChange = (title) => {
-    changeTitle(video.id, title).then(() => {
-      video.title = title;
-      this.setState({ video });
-    });
+    const { video } = this.state;
+    this.setState({ showChangeTitleError: false });
+    this.setState({ showChangeTitleConflict: false });
+    changeTitle(video.id, title, video.rowVersion)
+      .then(({ data }) => {
+        video.title = data.title;
+        video.rowVersion = data.rowVersion;
+        this.setState({ video });
+      })
+      .catch((error) => {
+        if (error === undefined) {
+          this.setState({ showChangeTitleError: true });
+        }
+        if (error.response.status === 409) {
+          const { data } = error.response;
+          video.title = data.title;
+          video.rowVersion = data.rowVersion;
+          this.setState({
+            oldTitle: data.oldTitle,
+            video,
+            showChangeTitleConflict: true,
+          });
+        }
+      });
+  };
+
+  handleInformationDrawerTitleChange = (newTitle) => {
+    this.setState({ informationDrawerTitle: newTitle });
   };
 
   handleVideoDownload = () => {
@@ -175,7 +206,7 @@ class PlayerPage extends React.Component {
     const {
       showDownloadError,
       showDownloadInProgress,
-      showDownloadSuccess
+      showDownloadSuccess,
     } = this.state;
 
     if (showDownloadError) {
@@ -207,6 +238,22 @@ class PlayerPage extends React.Component {
     return null;
   };
 
+  handleOverwriteTitleDialogCancel = () => {
+    const { video, oldTitle } = this.state;
+    video.title = oldTitle;
+    this.setState({
+      showChangeTitleConflict: false,
+      video,
+      informationDrawerTitle: oldTitle,
+    });
+  };
+
+  handleOverwriteTitleDialogConfirm = () => {
+    const { informationDrawerTitle } = this.state;
+    this.setState({ showChangeTitleConflict: false });
+    this.handleVideoTitleChange(informationDrawerTitle);
+  };
+
   render() {
     const {
       url,
@@ -218,9 +265,11 @@ class PlayerPage extends React.Component {
       showDeletionError,
       showInformationDrawer,
       showVideoRestorationError,
+      showChangeTitleError,
+      showChangeTitleConflict,
+      oldTitle,
+      informationDrawerTitle,
     } = this.state;
-    const { location } = this.props;
-    const { isFromBin } = location.state;
 
     // This fallback height is needed, since TopBar is not rendered until video information is fetched, so ref will be null
     const fallBackTopBarHeight = screenWidth > 600 ? 64 : 56; // These values are from Material UI AppBar source code
@@ -231,6 +280,13 @@ class PlayerPage extends React.Component {
 
     return (
       <div className="root">
+        <OverwriteTitleDialog
+          open={showChangeTitleConflict}
+          oldTitle={oldTitle}
+          newTitle={video?.title}
+          onCancel={this.handleOverwriteTitleDialogCancel}
+          onConfirm={this.handleOverwriteTitleDialogConfirm}
+        />
         {video === undefined ? (
           showPlaybackError && (
             <CustomSnackbar
@@ -246,12 +302,12 @@ class PlayerPage extends React.Component {
             <DeleteConfirmationDialog
               open={showDeletionDialog}
               onConfirm={
-                isFromBin
+                video.isFromBin
                   ? this.handleVideoDeletion
                   : this.handleVideoMarkForDeletion
               }
               onCancel={this.toggleDeletionDialog}
-              deleteForever={isFromBin}
+              deleteForever={video.isFromBin}
             />
             {showDeletionError && (
               <CustomSnackbar
@@ -267,6 +323,13 @@ class PlayerPage extends React.Component {
                 severity="error"
               />
             )}
+            {showChangeTitleError && (
+              <CustomSnackbar
+                message="Oops... Something wrong happened, we could not restore your video"
+                onClose={this.hideDeletionError}
+                severity="error"
+              />
+            )}
             <div ref={this.topBarRef}>
               <TopBar
                 darkMode
@@ -275,7 +338,7 @@ class PlayerPage extends React.Component {
                 title={video.title}
                 showArrow
                 onIconsClick={
-                  !isFromBin
+                  !video.isFromBin
                     ? [
                         this.toggleInformationDrawer,
                         this.handleVideoDownload,
@@ -289,7 +352,7 @@ class PlayerPage extends React.Component {
                 }
                 onActionIconClick={this.handleArrowBackClick}
                 iconsToShow={
-                  !isFromBin
+                  !video.isFromBin
                     ? [InfoIcon, DownloadIcon, DeleteIcon]
                     : [InfoIcon, RestoreIcon, DeleteForeverIcon]
                 }
@@ -299,12 +362,14 @@ class PlayerPage extends React.Component {
               open={showInformationDrawer}
               onOpen={this.toggleInformationDrawer}
               onClose={this.toggleInformationDrawer}
-              videoTitle={video.title}
+              title={informationDrawerTitle}
+              setTitle={this.handleInformationDrawerTitleChange}
               videoDuration={video.duration}
               videoSize={video.size}
               videoFormat={video.format}
               videoResolution={video.resolution}
               onVideoTitleChange={this.handleVideoTitleChange}
+              disableTextField={showChangeTitleConflict}
             />
             <div className="player-wrapper">
               <ReactPlayer
