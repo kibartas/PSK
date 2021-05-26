@@ -199,7 +199,7 @@ namespace RestAPI.Controllers
                 return Unauthorized();
             }
 
-            var response = File(System.IO.File.OpenRead(video.Path), "video/mp4",video.Title + Path.GetExtension(video.Path), enableRangeProcessing: true);
+            var response = File((await _videoService.Stream(video)), "video/mp4",video.Title + Path.GetExtension(video.Path), enableRangeProcessing: true);
             return response;
         }
 
