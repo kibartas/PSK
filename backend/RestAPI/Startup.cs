@@ -99,6 +99,7 @@ namespace RestAPI
         {
             if (env.IsDevelopment())
             {
+                app.UseHangfireDashboard(); //remove in production
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "backend v1"));
@@ -118,7 +119,6 @@ namespace RestAPI
                 endpoints.MapControllers();
             });
 
-            app.UseHangfireDashboard(); //remove in production
             recurringJobManager.AddOrUpdate(
                 "Automated video deletion", 
                 () => serviceProvider.GetService<IVideoService>().DeleteVideosAutomation(),
