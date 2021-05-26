@@ -19,5 +19,6 @@ namespace BusinessLogic.Services.VideoService
         Task MarkVideoForDeletion(Video video);
         Task RestoreVideo(Video video);
         Task DeleteVideosAutomation();
+        Task<Stream> Stream(Video video);
     }
 }

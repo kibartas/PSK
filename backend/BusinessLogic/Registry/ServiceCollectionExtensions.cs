@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Services.EmailService;
+using BusinessLogic.Services.VideoFileService;
 using BusinessLogic.Services.VideoService;
 using Hangfire;
 using Hangfire.MemoryStorage;
@@ -13,6 +14,7 @@ namespace BusinessLogic.Registry
             return services
                     .AddScoped<IEmailService, EmailService>()
                     .AddScoped<IVideoService, VideoService>()
+                    .AddScoped<IVideoFileService, AzureVideoFileService>()
                     .AddHangfireServer()
                     .AddHangfire(config =>
                     config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
