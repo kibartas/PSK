@@ -1,12 +1,11 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import TopBar from '../TopBar/TopBar';
-import UploadModal from '../UploadModal/UploadModal';
 import './styles.css';
 import VideoCardsByDate from '../VideoCardsByDate/VideoCardsByDate';
 import NavDrawer from '../NavDrawer/NavDrawer';
-import CustomSnackbar from '../CustomSnackbar/CustomSnackbar';
 import DeleteConfirmationDialog from '../DeleteConfirmationDialog/DeleteConfirmationDialog';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 
 const VideoCardPage = ({
   renderSnackbars,
@@ -14,10 +13,8 @@ const VideoCardPage = ({
   size,
   showNavDrawer,
   videosInformation,
-  showUploadModal,
   showDeletionDialog,
   selectedCardIds,
-  showDeletionError,
   iconsToShow,
   iconsToShowOnSelected,
   handleIconsClick,
@@ -28,18 +25,20 @@ const VideoCardPage = ({
   showDownloadInProgress,
   handleActionIconClick,
   toggleNavDrawer,
-  toggleUploadModal,
   handleVideoDeletion,
   toggleDeletionDialog,
-  hideDeletionError,
   deleteForever,
   children,
+  isLoading,
+  dateType,
 }) => (
   <>
     {renderSnackbars()}
     <Grid
       className="root"
-      style={{ height: videosInformation.length === 0 ? '100vh' : 'auto' }}
+      style={{
+        height: Object.keys(videosInformation).length === 0 ? '100vh' : 'auto',
+      }}
       container
       direction="column"
     >
@@ -49,7 +48,6 @@ const VideoCardPage = ({
         onClose={toggleNavDrawer}
         spaceTaken={size}
       />
-      <UploadModal show={showUploadModal} onClose={toggleUploadModal} />
       <DeleteConfirmationDialog
         open={showDeletionDialog}
         onConfirm={handleVideoDeletion}
@@ -57,25 +55,14 @@ const VideoCardPage = ({
         multipleVideos={selectedCardIds.length > 1}
         deleteForever={deleteForever}
       />
-      {showDeletionError && (
-        <CustomSnackbar
-          message={
-            selectedCardIds.length === 1
-              ? 'Oops... Something wrong happened. We could not delete your video'
-              : 'Oops... Something wrong happened. Some videos might not have been deleted'
-          }
-          onClose={hideDeletionError}
-          severity="error"
-        />
-      )}
       <Grid item>
         {selectedCardIds.length === 0 ? (
           <TopBar
             title={title}
             onActionIconClick={toggleNavDrawer}
             showAvatarAndLogout
-            firstName={window.sessionStorage.getItem('firstName')}
-            lastName={window.sessionStorage.getItem('lastName')}
+            firstName={window.localStorage.getItem('firstName')}
+            lastName={window.localStorage.getItem('lastName')}
             iconsToShow={iconsToShow}
             onIconsClick={handleIconsClick}
           />
@@ -92,7 +79,10 @@ const VideoCardPage = ({
           />
         )}
       </Grid>
-      {Object.keys(videosInformation).length !== 0 ? (
+      {/* eslint-disable-next-line */}
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : Object.keys(videosInformation).length !== 0 ? (
         <Grid
           className="card_container"
           container
@@ -107,11 +97,12 @@ const VideoCardPage = ({
               videosInformation={videosInformation[uploadDate]}
               onSelectDate={handleDateSelect}
               selectedCardIds={selectedCardIds}
+              dateType={dateType}
             />
           ))}
         </Grid>
       ) : (
-        <Grid container className="flex_grow">
+        <Grid item container className="flex_grow">
           {children}
         </Grid>
       )}

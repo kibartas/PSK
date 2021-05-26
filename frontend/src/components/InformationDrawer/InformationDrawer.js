@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { debounce } from 'lodash';
 import {
   List,
@@ -15,21 +15,21 @@ export default function InformationDrawer({
   open,
   onOpen,
   onClose,
-  videoTitle = '',
   videoDuration = '',
   videoSize = '',
   videoResolution = '',
   videoFormat = '',
-  onVideoTitleChange,
+  onVideoTitleChange, // for changes in BE
+  title,
+  setTitle, // for textfield
+  disableTextField,
 }) {
-  const [title, setTitle] = useState(videoTitle);
-
   const handleTitleChange = (newTitle) => {
     onVideoTitleChange(newTitle);
   };
 
   const debouncedHandleTitleChange = useCallback(
-    debounce(handleTitleChange, 300),
+    debounce(handleTitleChange, 500),
     [],
   );
 
@@ -76,6 +76,7 @@ export default function InformationDrawer({
         onChange={delayedHandleTitleChange}
         variant="outlined"
         style={{ width: '100%' }}
+        disabled={disableTextField}
       />
     </ListItem>
   );

@@ -8,6 +8,7 @@ const VideoCardsByDate = ({
   onSelect,
   selectedCardIds,
   onSelectDate,
+  dateType,
 }) => (
   <Grid container item direction="column">
     <Grid item container alignItems="center">
@@ -22,7 +23,7 @@ const VideoCardsByDate = ({
         />
       </Grid>
       <Grid item>
-        <Typography variant="h6">{videosInformation[0].uploadDate}</Typography>
+        <Typography variant="h6">{videosInformation[0][dateType]}</Typography>
       </Grid>
       <Grid item xs={12}>
         <Divider />

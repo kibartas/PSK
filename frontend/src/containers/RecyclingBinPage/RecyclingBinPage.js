@@ -1,7 +1,7 @@
 import React from 'react';
 import SortIcon from '@material-ui/icons/Sort';
 import SelectAllIcon from '../../assets/generic/SelectAllIcon';
-import { DeleteIcon } from '../../assets';
+import { DeleteForeverIcon } from '../../assets';
 import './styles.css';
 import {
   deleteVideos,
@@ -22,7 +22,7 @@ class RecyclingBinPage extends React.Component {
       videosInformation: {},
       size: 0,
       sortedVideoDates: [],
-      sortAscending: false,
+      sortAscending: true,
       selectedCardIds: [],
       showUploadModal: false,
       showNavDrawer: false,
@@ -31,10 +31,13 @@ class RecyclingBinPage extends React.Component {
       showDeletionSuccess: false,
       showVideoRetrievalError: false,
       showVideoRestorationError: false,
+      showVideoRestorationSuccess: false,
+      isLoading: true,
     };
   }
 
   componentDidMount() {
+    const { sortAscending } = this.state;
     getRecycledVideos()
       .then((response) => {
         if (response.data.length !== 0) {
@@ -42,7 +45,10 @@ class RecyclingBinPage extends React.Component {
             response.data,
             'deleteDate',
           );
-          const sortedDates = sortCardDates(transformedVideosInformation);
+          const sortedDates = sortCardDates(
+            transformedVideosInformation,
+            sortAscending,
+          );
           this.setState({
             videosInformation: transformedVideosInformation,
             sortedVideoDates: sortedDates,
@@ -55,6 +61,9 @@ class RecyclingBinPage extends React.Component {
       })
       .catch(() => {
         this.setState({ showVideoRetrievalError: true });
+      })
+      .finally(() => {
+        this.setState({ isLoading: false });
       });
 
     getUserVideosSize()
@@ -68,7 +77,7 @@ class RecyclingBinPage extends React.Component {
     const { sortAscending, videosInformation } = this.state;
     this.setState({
       sortAscending: !sortAscending,
-      sortedVideoDates: sortCardDates(videosInformation, sortAscending),
+      sortedVideoDates: sortCardDates(videosInformation, !sortAscending),
     });
   };
 
@@ -114,6 +123,12 @@ class RecyclingBinPage extends React.Component {
           showDeletionSuccess: true,
         });
         this.toggleDeletionDialog();
+
+        getUserVideosSize()
+          .then((response) => this.setState({ size: response.data }))
+          .catch(() => {
+            this.setState({ size: 0 });
+          });
       })
       .catch(() => this.setState({ showDeletionError: true }));
   };
@@ -151,7 +166,7 @@ class RecyclingBinPage extends React.Component {
           videosInformation: transformedVideosInformation,
           sortedVideoDates: newSortedVideoCardDates,
           selectedCardIds: videoIds,
-          showDeletionSuccess: true,
+          showVideoRestorationSuccess: true,
         });
       })
       .catch(() => {
@@ -173,6 +188,7 @@ class RecyclingBinPage extends React.Component {
       showVideoRestorationError,
       showVideoRestorationSuccess,
       showDeletionSuccess,
+      isLoading,
     } = this.state;
 
     const renderSnackbars = () => {
@@ -222,7 +238,9 @@ class RecyclingBinPage extends React.Component {
       if (showDeletionError) {
         return (
           <CustomSnackbar
-            message="There was an error deleting your video"
+            message={`There was an error deleting your ${
+              selectedCardIds.length === 1 ? 'video' : 'videos'
+            }. Please try again later`}
             onClose={() => this.setState({ showVideoRetrievalError: false })}
             severity="error"
           />
@@ -270,10 +288,9 @@ class RecyclingBinPage extends React.Component {
         sortedVideoDates={sortedVideoDates}
         showDeletionDialog={showDeletionDialog}
         selectedCardIds={selectedCardIds}
-        showDeletionError={showDeletionError}
         iconsToShow={[SelectAllIcon, SortIcon]}
         handleIconsClick={[this.toggleSelectAll, this.toggleSort]}
-        iconsToShowOnSelected={[RestoreIcon, DeleteIcon]}
+        iconsToShowOnSelected={[RestoreIcon, DeleteForeverIcon]}
         handleIconsClickOnSelected={[
           this.handleRestore,
           this.toggleDeletionDialog,
@@ -281,10 +298,11 @@ class RecyclingBinPage extends React.Component {
         handleActionIconClick={() => this.setState({ selectedCardIds: [] })}
         handleVideoDeletion={this.handleVideoDeletion}
         toggleDeletionDialog={this.toggleDeletionDialog}
-        hideDeletionError={this.hideDeletionError}
         handleSelect={handleSelect}
         handleDateSelect={handleDateSelect}
         deleteForever
+        isLoading={isLoading}
+        dateType="deleteDate"
       >
         <EmptyRecyclingBinContent />
       </VideoCardPage>

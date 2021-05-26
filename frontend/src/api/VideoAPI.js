@@ -1,7 +1,7 @@
 import Api from './Api';
 
 Api.defaults.headers = {
-  Authorization: `Bearer ${window.sessionStorage.getItem('token')}`,
+  Authorization: `Bearer ${window.localStorage.getItem('token')}`,
 };
 
 export const uploadChunk = async (
@@ -19,24 +19,26 @@ export const uploadChunk = async (
     cancelToken: cancelTokenSource.token,
   });
 
-export const finishUpload = async (videoFileName, cancelTokenSource) =>
+export const finishUpload = (videoFileName, cancelTokenSource) =>
   Api.post('/Videos/UploadComplete', null, {
     params: { fileName: videoFileName },
     cancelToken: cancelTokenSource.token,
   });
 
-export const deleteChunks = async (videoFileName) =>
+export const deleteChunks = (videoFileName) =>
   Api.delete('/Videos/DeleteChunks', {
     params: { fileName: videoFileName },
   });
 
-export const changeTitle = async (videoId, newTitle) =>
-  Api.patch('/Videos/title', null, { params: { id: videoId, newTitle } });
+export const changeTitle = (videoId, newTitle, rowVersion) =>
+  Api.patch('/Videos/title', null, {
+    params: { id: videoId, newTitle, rowVersion },
+  });
 
-export const deleteVideos = async (videoIds) =>
+export const deleteVideos = (videoIds) =>
   Api.delete(`/Videos`, { data: videoIds });
 
-export const markForDeletion = async (videoIds) =>
+export const markForDeletion = (videoIds) =>
   Api.patch('/Videos/markForDeletion', videoIds);
 
 export const getVideoDetails = (videoId) =>
@@ -47,14 +49,8 @@ export const getAllVideos = () => Api.get('/videos/all');
 export const getVideoThumbnail = (videoId) =>
   Api.get('/Videos/thumbnail/', { params: { videoId }, responseType: 'blob' });
 
-export const downloadVideo = (videoId, userId) =>
-  Api.get('/Videos/stream/', {
-    params: { videoId, userId },
-    responseType: 'blob',
-  });
-
-export const downloadMultipleVideos = (videosIds) =>
-  Api.post('/Videos/downloadMultiple', videosIds, { responseType: 'blob' });
+export const downloadVideos = (videosIds) =>
+  Api.post('/Videos/download', videosIds, { responseType: 'blob' });
 
 export const getRecycledVideos = () => Api.get('/videos/recycled');
 

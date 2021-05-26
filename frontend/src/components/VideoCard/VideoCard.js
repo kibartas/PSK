@@ -7,6 +7,7 @@ import {
   CardMedia,
   Grid,
 } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import './styles.css';
 import { missingImageIcon } from '../../assets';
@@ -14,6 +15,7 @@ import { getVideoThumbnail } from '../../api/VideoAPI';
 
 const VideoCard = ({ title, onSelect, id, isSelected }) => {
   const [thumbnail, setThumbnail] = useState(undefined);
+  const history = useHistory();
 
   useEffect(() => {
     getVideoThumbnail(id)
@@ -22,7 +24,7 @@ const VideoCard = ({ title, onSelect, id, isSelected }) => {
   }, []);
 
   const handleClick = () => {
-    window.location.href = `/player/${id}`;
+    history.push(`/player/${id}`);
   };
 
   return (

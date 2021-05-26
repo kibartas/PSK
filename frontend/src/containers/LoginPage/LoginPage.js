@@ -22,16 +22,16 @@ class LoginPage extends React.Component {
         getCurrentUser(token)
           .then((responseUserData) => {
             const { id, firstName, lastName, email } = responseUserData.data;
-            window.sessionStorage.setItem('token', token);
-            sessionStorage.setItem('id', id);
-            sessionStorage.setItem('firstName', firstName);
-            sessionStorage.setItem('lastName', lastName);
-            sessionStorage.setItem('email', email);
+            window.localStorage.setItem('token', token);
+            localStorage.setItem('id', id);
+            localStorage.setItem('firstName', firstName);
+            localStorage.setItem('lastName', lastName);
+            localStorage.setItem('email', email);
             window.location.reload();
           })
           .catch(() => {
             this.setState({ showGeneralError: true });
-            window.sessionStorage.clear();
+            window.localStorage.clear();
           });
       })
       .catch((ex) => {
@@ -40,7 +40,7 @@ class LoginPage extends React.Component {
           return;
         }
         const { status } = ex.response;
-        if (status === 401) this.setState({ showWrongCredentialsError: true });
+        if (status === 404) this.setState({ showWrongCredentialsError: true });
         else this.setState({ showGeneralError: true });
       });
   };

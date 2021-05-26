@@ -5,7 +5,7 @@ import SelectAllIcon from '../../assets/generic/SelectAllIcon';
 import { DeleteIcon, DownloadIcon, UploadIcon } from '../../assets';
 import './styles.css';
 import {
-  downloadMultipleVideos,
+  downloadVideos,
   getAllVideos,
   markForDeletion,
 } from '../../api/VideoAPI';
@@ -14,6 +14,7 @@ import { getUserVideosSize } from '../../api/UserAPI';
 import { normalizeCards, sortCardDates, transformCards } from '../../util/card';
 import VideoCardPage from '../../components/VideoCardPage/VideoCardPage';
 import EmptyLibraryContent from '../../components/EmptyLibraryContent/EmptyLibraryContent';
+import UploadModal from '../../components/UploadModal/UploadModal';
 
 class LibraryPage extends React.Component {
   constructor(props) {
@@ -27,16 +28,23 @@ class LibraryPage extends React.Component {
       showNavDrawer: false,
       showDeletionDialog: false,
       showDeletionError: false,
-      sortAscending: false,
+      sortAscending: true,
       showDownloadError: false,
       showDownloadSuccess: false,
       showDownloadInProgress: false,
       showVideoRetrievalError: false,
       showDeletionSuccess: false,
+      isLoading: false,
     };
   }
 
   componentDidMount() {
+    this.fetchData();
+  }
+
+  fetchData = () => {
+    this.setState({ isLoading: true });
+    const { sortAscending } = this.state;
     getAllVideos()
       .then((response) => {
         if (response.data.length !== 0) {
@@ -44,7 +52,10 @@ class LibraryPage extends React.Component {
             response.data,
             'uploadDate',
           );
-          const sortedDates = sortCardDates(transformedVideosInformation);
+          const sortedDates = sortCardDates(
+            transformedVideosInformation,
+            sortAscending,
+          );
           this.setState({
             videosInformation: transformedVideosInformation,
             sortedVideoDates: sortedDates,
@@ -57,6 +68,9 @@ class LibraryPage extends React.Component {
       })
       .catch(() => {
         this.setState({ showVideoRetrievalError: true });
+      })
+      .finally(() => {
+        this.setState({ isLoading: false });
       });
 
     getUserVideosSize()
@@ -70,7 +84,7 @@ class LibraryPage extends React.Component {
     const { sortAscending, videosInformation } = this.state;
     this.setState({
       sortAscending: !sortAscending,
-      sortedVideoDates: sortCardDates(videosInformation, sortAscending),
+      sortedVideoDates: sortCardDates(videosInformation, !sortAscending),
     });
   };
 
@@ -88,10 +102,13 @@ class LibraryPage extends React.Component {
     this.setState({ showNavDrawer: !showNavDrawer });
   };
 
-  toggleUploadModal = () => {
-    const { showUploadModal } = this.state;
-    this.setState({ showUploadModal: !showUploadModal });
-  };
+  showUploadModal = () => 
+    this.setState({ showUploadModal: true });
+
+  hideUploadModal = (shouldFetchData) => {
+    this.setState({ showUploadModal: false });
+    if (shouldFetchData) this.fetchData();
+  }
 
   toggleDeletionDialog = () => {
     const { showDeletionDialog } = this.state;
@@ -140,7 +157,7 @@ class LibraryPage extends React.Component {
   handleVideosDownload = () => {
     const { selectedCardIds } = this.state;
     this.setState({ showDownloadInProgress: true });
-    downloadMultipleVideos(selectedCardIds)
+    downloadVideos(selectedCardIds)
       .then((response) => {
         const contentDisposition = response.headers['content-disposition'];
         const filename = contentDisposition.split(';')[1].split('filename=')[1];
@@ -164,8 +181,8 @@ class LibraryPage extends React.Component {
       showUploadModal,
       showNavDrawer,
       showDeletionDialog,
-      showDeletionError,
       videosInformation,
+      showDeletionError,
       size,
       sortedVideoDates,
       selectedCardIds,
@@ -174,6 +191,7 @@ class LibraryPage extends React.Component {
       showDownloadSuccess,
       showVideoRetrievalError,
       showDeletionSuccess,
+      isLoading,
     } = this.state;
 
     const handleSelect = (id) => {
@@ -249,6 +267,16 @@ class LibraryPage extends React.Component {
         );
       }
 
+      if (showDeletionError) {
+        return (
+          <CustomSnackbar
+            message="Could not delete your selection. Please try again later"
+            onClose={() => this.setState({ showDeletionError: false })}
+            severity="error"
+          />
+        );
+      }
+
       if (showDeletionSuccess) {
         return (
           <CustomSnackbar
@@ -273,40 +301,41 @@ class LibraryPage extends React.Component {
     };
 
     return (
-      <VideoCardPage
-        renderSnackbars={renderSnackbars}
-        title="Library"
-        size={size}
-        showNavDrawer={showNavDrawer}
-        videosInformation={videosInformation}
-        showUploadModal={showUploadModal}
-        sortedVideoDates={sortedVideoDates}
-        showDeletionDialog={showDeletionDialog}
-        selectedCardIds={selectedCardIds}
-        showDeletionError={showDeletionError}
-        iconsToShow={[SelectAllIcon, SortIcon, UploadIcon]}
-        handleIconsClick={[
-          this.toggleSelectAll,
-          this.toggleSort,
-          this.toggleUploadModal,
-        ]}
-        iconsToShowOnSelected={[DownloadIcon, DeleteIcon]}
-        handleIconsClickOnSelected={[
-          this.handleVideosDownload,
-          this.toggleDeletionDialog,
-        ]}
-        handleActionIconClick={() => this.setState({ selectedCardIds: [] })}
-        handleDateSelect={handleDateSelect}
-        handleSelect={handleSelect}
-        showDownloadInProgress={showDownloadInProgress}
-        toggleNavDrawer={this.toggleNavDrawer}
-        toggleUploadModal={this.toggleUploadModal}
-        handleVideoDeletion={this.handleVideoDeletion}
-        toggleDeletionDialog={this.toggleDeletionDialog}
-        hideDeletionError={this.hideDeletionError}
-      >
-        <EmptyLibraryContent />
-      </VideoCardPage>
+      <>
+        <VideoCardPage
+          renderSnackbars={renderSnackbars}
+          title="Library"
+          size={size}
+          showNavDrawer={showNavDrawer}
+          videosInformation={videosInformation}
+          sortedVideoDates={sortedVideoDates}
+          showDeletionDialog={showDeletionDialog}
+          selectedCardIds={selectedCardIds}
+          iconsToShow={[SelectAllIcon, SortIcon, UploadIcon]}
+          handleIconsClick={[
+            this.toggleSelectAll,
+            this.toggleSort,
+            this.showUploadModal,
+          ]}
+          iconsToShowOnSelected={[DownloadIcon, DeleteIcon]}
+          handleIconsClickOnSelected={[
+            this.handleVideosDownload,
+            this.toggleDeletionDialog,
+          ]}
+          handleActionIconClick={() => this.setState({ selectedCardIds: [] })}
+          handleDateSelect={handleDateSelect}
+          handleSelect={handleSelect}
+          showDownloadInProgress={showDownloadInProgress}
+          toggleNavDrawer={this.toggleNavDrawer}
+          handleVideoDeletion={this.handleVideoDeletion}
+          toggleDeletionDialog={this.toggleDeletionDialog}
+          isLoading={isLoading}
+          dateType="uploadDate"
+        >
+          <EmptyLibraryContent />
+        </VideoCardPage>
+        <UploadModal show={showUploadModal} onClose={this.hideUploadModal} />
+      </>
     );
   }
 }

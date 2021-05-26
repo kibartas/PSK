@@ -1,20 +1,26 @@
 import React, { useState, useRef } from 'react';
-import { List, ListItem, ListItemIcon, ListItemText, SwipeableDrawer, Typography } from '@material-ui/core';
+import { useHistory } from 'react-router';
+import {
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  SwipeableDrawer,
+  Typography,
+} from '@material-ui/core';
 import VideoLibraryIcon from '@material-ui/icons/VideoLibrary';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { formatBytesToString } from '../../util';
 
-export default function NavDrawer({
-  open,
-  onOpen,
-  onClose,
-  spaceTaken
-}) {
+export default function NavDrawer({ open, onOpen, onClose, spaceTaken }) {
+  const history = useHistory();
 
-  const tabs = useRef(new Map([
-   ["Videos", { icon: <VideoLibraryIcon />, href: '/library' }],
-   ["Recycling Bin", { icon: <DeleteIcon />, href: '/bin' }] 
-  ]));
+  const tabs = useRef(
+    new Map([
+      ['Videos', { icon: <VideoLibraryIcon />, href: '/library' }],
+      ['Recycling Bin', { icon: <DeleteIcon />, href: '/bin' }],
+    ]),
+  );
 
   const getSelectedTabKey = () => {
     let selected = null;
@@ -22,7 +28,7 @@ export default function NavDrawer({
       if (window.location.href.includes(value.href)) {
         selected = key;
       }
-    })
+    });
     return selected;
   };
 
@@ -30,7 +36,7 @@ export default function NavDrawer({
 
   const handleTabClick = (key) => () => {
     setSelectedTabKey(key);
-    window.location.href = tabs.current.get(key).href;
+    history.push(tabs.current.get(key).href);
   };
 
   const renderTabListItems = () => {
@@ -43,27 +49,29 @@ export default function NavDrawer({
           onClick={handleTabClick(key)}
           selected={selectedTabKey === key}
         >
-          <ListItemIcon>
-            {value.icon}
-          </ListItemIcon>
+          <ListItemIcon>{value.icon}</ListItemIcon>
           <ListItemText primary={key} />
-        </ListItem>
-    )});
+        </ListItem>,
+      );
+    });
 
     return listItems;
   };
 
   const renderSpaceTakenListItem = () => (
-    <ListItem key="SpaceTakenLabel" style={{ position: 'absolute', bottom: '1px' }}>
+    <ListItem
+      key="SpaceTakenLabel"
+      style={{ position: 'absolute', bottom: '1px' }}
+    >
       <Typography style={{ fontWeight: '600' }}>
         {`Total space taken: ${formatBytesToString(spaceTaken)}`}
       </Typography>
     </ListItem>
   );
 
-  return(
+  return (
     <SwipeableDrawer
-      anchor='left'
+      anchor="left"
       open={open}
       onOpen={onOpen}
       onClose={onClose}

@@ -12,6 +12,7 @@ import UploadIcon from './generic/UploadIcon';
 import productIcon from './generic/product-icon.svg';
 import visibilityIcon from './generic/visibility.svg';
 import visibilityOffIcon from './generic/visibility-off.svg';
+import spinner from './generic/spinner.svg';
 
 import confirmEmailDrawing from './ConfirmEmailPage/ill-mail.svg';
 
@@ -40,7 +41,7 @@ export {
   UploadIcon,
 };
 
-export { productIcon, visibilityIcon, visibilityOffIcon };
+export { productIcon, visibilityIcon, visibilityOffIcon, spinner };
 
 export { confirmEmailDrawing };
 

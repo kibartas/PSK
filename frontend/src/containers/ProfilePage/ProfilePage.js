@@ -19,9 +19,9 @@ class ProfilePage extends React.Component {
   }
 
   render() {
-    const firstName = window.sessionStorage.getItem('firstName');
-    const lastName = window.sessionStorage.getItem('lastName');
-    const email = window.sessionStorage.getItem('email');
+    const firstName = window.localStorage.getItem('firstName');
+    const lastName = window.localStorage.getItem('lastName');
+    const email = window.localStorage.getItem('email');
     const {
       showSuccess,
       showConflictError,
@@ -31,7 +31,7 @@ class ProfilePage extends React.Component {
 
     const handleArrowBackClick = () => {
       const { history } = this.props;
-      history.goBack();
+      history.go(-1);
     };
 
     const hideGeneralError = () => {
@@ -56,9 +56,9 @@ class ProfilePage extends React.Component {
         oldPassword,
         newPassword,
       };
-      updateCredentials(window.sessionStorage.getItem('id'), credentials)
+      updateCredentials(window.localStorage.getItem('id'), credentials)
         .then(() => {
-          window.sessionStorage.setItem('email', mail);
+          window.localStorage.setItem('email', mail);
           this.setState({ showSuccess: true });
         })
         .catch((ex) => {
@@ -113,7 +113,7 @@ class ProfilePage extends React.Component {
             severity="success"
           />
         )}
-        <Grid className="root" container direction='column'>
+        <Grid className="root" container direction="column">
           <Grid item>
             <TopBar
               showArrow
@@ -124,7 +124,12 @@ class ProfilePage extends React.Component {
               lastName={lastName}
             />
           </Grid>
-          <Grid className="profileFormContainer" container alignItems="center" justify="center">
+          <Grid
+            className="profileFormContainer"
+            container
+            alignItems="center"
+            justify="center"
+          >
             <Grid item xs={11} sm={6} md={4} lg={3}>
               <ChangeProfileForm
                 firstName={firstName}
