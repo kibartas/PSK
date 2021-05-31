@@ -19,6 +19,22 @@ namespace RestAPI.Migrations
                 .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("DataAccess.Models.StagedBlockBlob", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("StagedBlockBlob");
+                });
+
             modelBuilder.Entity("DataAccess.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -104,6 +120,17 @@ namespace RestAPI.Migrations
                     b.ToTable("Videos");
                 });
 
+            modelBuilder.Entity("DataAccess.Models.StagedBlockBlob", b =>
+                {
+                    b.HasOne("DataAccess.Models.User", "User")
+                        .WithMany("StagedBlockBlobs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DataAccess.Models.Video", b =>
                 {
                     b.HasOne("DataAccess.Models.User", "User")
@@ -117,6 +144,8 @@ namespace RestAPI.Migrations
 
             modelBuilder.Entity("DataAccess.Models.User", b =>
                 {
+                    b.Navigation("StagedBlockBlobs");
+
                     b.Navigation("Videos");
                 });
 #pragma warning restore 612, 618

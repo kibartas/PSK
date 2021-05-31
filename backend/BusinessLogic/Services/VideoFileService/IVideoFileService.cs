@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace BusinessLogic.Services.VideoFileService
         Task Move(string pathFrom, string pathTo);
         Task ArchiveCreateEntry(ZipArchive archive, string videoPath, string entryName);
         Task<Stream> Stream(Video video);
-        Task CreateDirectories(Guid userId, string uploadPath, string tempPath);
+        void CreateDirectories(Guid userId, string uploadPath, string tempPath);
+        Task Write(Stream streamFrom, string pathTo, string base64BlockId = null);
+        Task FinishWrite(string filePath, IEnumerable<string> base64BlockIds);
     }
 }

@@ -199,7 +199,9 @@ namespace RestAPI.Controllers
                 return Unauthorized();
             }
 
-            var response = File((await _videoService.Stream(video)), "video/mp4",video.Title + Path.GetExtension(video.Path), enableRangeProcessing: true);
+            // var response = File((await _videoService.Stream(video)), "video/mp4",video.Title + ".mp4", enableRangeProcessing: true);
+            var response = File((await _videoService.Stream(video)), "video/mp4",video.Title + ".mp4", enableRangeProcessing: true);
+            
             return response;
         }
 
@@ -249,7 +251,7 @@ namespace RestAPI.Controllers
         }
 
         [HttpPost, Route("UploadChunks")]
-        public async Task<IActionResult> UploadChunk(string chunkNumber, string fileName)
+        public async Task<IActionResult> UploadChunk(string base64BlockId, Guid videoId)
         {
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null)
@@ -270,14 +272,14 @@ namespace RestAPI.Controllers
 
             try
             {
-                await _videoService.UploadChunk(Request.Body, user.Id, chunkNumber, fileName);
+                await _videoService.UploadChunk(Request.Body, user.Id, base64BlockId, videoId);
                 return Ok();
             }
             catch
             {
                 try
                 {
-                    _videoService.DeleteAllChunks(fileName);
+                    _videoService.DeleteAllChunks(videoId.ToString());
                 }
                 catch
                 {
@@ -288,7 +290,7 @@ namespace RestAPI.Controllers
         }
 
         [HttpPost, Route("UploadComplete")]
-        public async Task<IActionResult> UploadComplete(string fileName)
+        public async Task<IActionResult> UploadComplete(string fileName, [FromBody]List<string> base64BlockIds, Guid videoId)
         {
             var userIdClaim = User.FindFirst(x => x.Type == ClaimTypes.NameIdentifier);
             if (userIdClaim is null)
@@ -309,7 +311,13 @@ namespace RestAPI.Controllers
 
             try
             {
-                var video = await _videoService.CompleteUpload(user.Id, fileName);
+                
+                var video = await _videoService.CompleteUpload(user.Id, fileName, base64BlockIds, videoId);
+
+                if (video == null)
+                {
+                    return Conflict("Video with id " + videoId.ToString() + " already exists");
+                }
 
                 var response = new VideoDto
                 {
@@ -326,7 +334,7 @@ namespace RestAPI.Controllers
             {
                 try
                 {
-                    _videoService.DeleteAllChunks(fileName);
+                    _videoService.DeleteAllChunks(videoId.ToString());
                 }
                 catch
                 {

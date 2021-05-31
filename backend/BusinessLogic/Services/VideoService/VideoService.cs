@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BusinessLogic.Services.VideoFileService;
 using DataAccess.Models;
 using DataAccess.Repositories.Videos;
-using DataAccess.Utils;
-using Microsoft.AspNetCore.StaticFiles;
-using Xabe.FFmpeg;
 
 namespace BusinessLogic.Services.VideoService
 {
@@ -29,59 +25,48 @@ namespace BusinessLogic.Services.VideoService
             _videoFileService = videoFileService;
         }
 
-        public async Task UploadChunk(Stream requestBody, Guid userId, string chunkNumber, string fileName)
+        public async Task UploadChunk(Stream requestBody, Guid userId, string base64BlockId, Guid videoId)
         {
             CreateUserVideoDirectory(userId); // Creates storage folders for users if needed
-            
-            string newPath = Path.Combine(_tempPath, Path.GetFileNameWithoutExtension(fileName) + "-" + userId + Path.GetExtension(fileName));
 
-            await using var stream = new FileStream(newPath, FileMode.Append);
+            var userPath = Path.Combine(_uploadPath, userId.ToString());
+            var filePath = Path.Combine(userPath, videoId.ToString() + ".mp4");
 
-            await requestBody.CopyToAsync(stream);
+            try
+            {
+                await _videoFileService.Write(requestBody, filePath, base64BlockId);
+            }
+            catch
+            {
+                await _videoFileService.Delete(filePath);
+            }
         }
 
-        public async Task<Video> CompleteUpload(Guid userId, string fileName)
+        public async Task<Video> CompleteUpload(Guid userId, string fileName, List<string> base64BlockIds, Guid videoId)
         {
-            string userPath = Path.Combine(_uploadPath, userId.ToString());
-            string tempFilePath = Path.Combine(_tempPath, fileName);
-            string filePath = Directory.GetFiles(_tempPath)
-                .Where(p => p.Contains(Path.GetFileNameWithoutExtension(fileName))
-                            && p.Contains(userId.ToString())).ToArray()[0];
+            if (await _videosRepository.GetVideoById(videoId) != null)
+            {
+                return null;
+            }
             
-            File.Move(filePath, tempFilePath);
+            var userPath = Path.Combine(_uploadPath, userId.ToString());
+            var filePath = Path.Combine(userPath, videoId.ToString() + ".mp4");
 
-            long size = new FileInfo(tempFilePath).Length;
+            await _videoFileService.FinishWrite(filePath, base64BlockIds);
 
             var video = new Video
             {
                 UserId = userId,
                 Title = Path.GetFileNameWithoutExtension(fileName),
-                Size = size,
+                Size = 0,
+                Height = 1,
+                Width = 1,
+                Format = "mp4",
+                Duration = 10,
                 UploadDate = DateTime.Now,
-                Id = Guid.NewGuid(),
+                Id = videoId,
+                Path = filePath
             };
-
-
-            var info = await FFmpeg.GetMediaInfo(tempFilePath);
-            video.Duration = (int)info.Duration.TotalSeconds;
-            var streamInfo = info.VideoStreams.ToList()[0];
-            video.Width = streamInfo.Width;
-            video.Height = streamInfo.Height;
-            video.Format = Path.GetExtension(tempFilePath).Replace(".", "");
-
-            string snapshotFolderPath = Path.Combine(userPath, "Snapshots");
-            string snapshotPath = Path.Combine(snapshotFolderPath, video.Id + ".png");
-            IConversion conversion = await FFmpeg.Conversions.FromSnippet.Snapshot(tempFilePath, snapshotPath, TimeSpan.FromSeconds(1));
-            await conversion.Start();
-
-            // no-op if locally
-            await _videoFileService.Move(snapshotPath, snapshotPath);
-            
-            string finalFilePath = Path.Combine(userPath, video.Id + Path.GetExtension(fileName));
-            
-            await _videoFileService.Move(tempFilePath, finalFilePath);
-            
-            video.Path = finalFilePath;
 
 
             await _videosRepository.InsertVideo(video);
@@ -133,27 +118,6 @@ namespace BusinessLogic.Services.VideoService
             }
         }
 
-        private async Task<long> MergeChunks(string chunk1, string chunk2)
-        {
-            try
-            {
-                await using var fs1 = _videoFileService.Open(chunk1, FileMode.Append);
-                await using var fs2 = _videoFileService.Open(chunk2, FileMode.Open);
-                await fs2.CopyToAsync(fs1);
-                return fs1.Length;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message + " : " + ex.StackTrace);
-            }
-            finally
-            {
-                await _videoFileService.Delete(chunk2);
-            }
-
-            return 0;
-        }
-
         public async Task<byte[]> GetVideoThumbnail(Guid userId, Guid videoId)
         {
             string userPath = Path.Combine(_uploadPath, userId.ToString());
@@ -163,7 +127,7 @@ namespace BusinessLogic.Services.VideoService
             return videoBytes;
         }
 
-        public async Task<MemoryStream> GetVideosZipFileStream(List<Video> videos)
+        public async Task<MemoryStream> GetVideosZipFileStream(IEnumerable<Video> videos)
         {
             string zipName = Guid.NewGuid() + ".zip";
             string zipCreatePath = Path.Combine(_uploadPath, zipName);

@@ -60,20 +60,26 @@ class PlayerPage extends React.Component {
     getVideoDetails(videoId)
       .then((response) => {
         const token = localStorage.getItem('token');
-        const url = `http://localhost:61346/api/Videos/stream?videoId=${videoId}&token=${token}`;
+        const url = `http://13.81.9.144/api/Videos/stream?videoId=${videoId}&token=${token}`;
         const video = this.transformVideo(response.data);
-        this.setState({url, video, informationDrawerTitle: video.title});
+        this.setState({ url, video, informationDrawerTitle: video.title });
 
-        const videoElement = document.getElementsByTagName("video")[0];
-        videoElement.addEventListener("loadedmetadata", this.setResolutionAndDuration(videoElement));
+        const videoElement = document.getElementsByTagName('video')[0];
+        videoElement.addEventListener(
+          'loadedmetadata',
+          this.setResolutionAndDuration(videoElement),
+        );
       })
       .catch(() => this.setState({ showPlaybackError: true }));
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateWindowDimensions);
-    const videoElement = document.getElementsByTagName("video")[0];
-    videoElement.removeEventListener("loadedmetadata", this.setResolutionAndDuration(videoElement));
+    const videoElement = document.getElementsByTagName('video')[0];
+    videoElement.removeEventListener(
+      'loadedmetadata',
+      this.setResolutionAndDuration(videoElement),
+    );
   }
 
   transformVideo = (source) => {
@@ -96,7 +102,7 @@ class PlayerPage extends React.Component {
       resolution,
       duration,
     });
-  }
+  };
 
   updateWindowDimensions = () =>
     this.setState({
@@ -305,12 +311,12 @@ class PlayerPage extends React.Component {
           onConfirm={this.handleOverwriteTitleDialogConfirm}
         />
         {showPlaybackError && (
-            <CustomSnackbar
-              topCenter
-              message="A playback error has occurred. Please try again later"
-              onClose={this.hidePlaybackError}
-              severity="error"
-            />
+          <CustomSnackbar
+            topCenter
+            message="A playback error has occurred. Please try again later"
+            onClose={this.hidePlaybackError}
+            severity="error"
+          />
         )}
         {this.renderDownloadSnackbars()}
         <DeleteConfirmationDialog

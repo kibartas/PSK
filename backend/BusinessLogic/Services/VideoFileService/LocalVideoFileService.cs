@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
@@ -41,7 +42,7 @@ namespace BusinessLogic.Services.VideoFileService
             return Task.FromResult(File.OpenRead(video.Path) as Stream);
         }
 
-        public Task CreateDirectories(Guid userId, string uploadPath, string tempPath)
+        public void CreateDirectories(Guid userId, string uploadPath, string tempPath)
         {
             if (!Directory.Exists(uploadPath))
             {
@@ -62,13 +63,17 @@ namespace BusinessLogic.Services.VideoFileService
             {
                 Directory.CreateDirectory(tempPath);
             }
-            return Task.CompletedTask;
         }
 
-        public async Task Write(string filePath, Stream stream)
+        public async Task Write(Stream streamFrom, string pathTo, string base64BlockId)
         {
-            var file = File.OpenWrite(filePath);
-            await stream.CopyToAsync(file);
+            await using var fileStream = File.OpenWrite(pathTo);
+            await streamFrom.CopyToAsync(fileStream);
+        }
+
+        public Task FinishWrite(string filePath, IEnumerable<string> base64BlockIds)
+        {
+            return Task.CompletedTask;
         }
     }
 }
