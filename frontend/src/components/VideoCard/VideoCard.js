@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef } from 'react';
 import {
   Card,
   CardHeader,
@@ -7,21 +7,15 @@ import {
   CardMedia,
   Grid,
 } from '@material-ui/core';
+import HoverVideoPlayer from 'react-hover-video-player';
 import { useHistory } from 'react-router-dom';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import './styles.css';
-import { missingImageIcon } from '../../assets';
-import { getVideoThumbnail } from '../../api/VideoAPI';
+import { spinner } from '../../assets';
 
 const VideoCard = ({ title, onSelect, id, isSelected }) => {
-  const [thumbnail, setThumbnail] = useState(undefined);
   const history = useHistory();
-
-  useEffect(() => {
-    getVideoThumbnail(id)
-      .then((response) => setThumbnail(URL.createObjectURL(response.data)))
-      .catch(() => setThumbnail(missingImageIcon));
-  }, []);
+  const url = useRef(`http://localhost:61346/api/Videos/stream?videoId=${id}&token=${localStorage.getItem('token')}`);
 
   const handleClick = () => {
     history.push(`/player/${id}`);
@@ -35,7 +29,7 @@ const VideoCard = ({ title, onSelect, id, isSelected }) => {
     >
       <CardHeader
         classes={{
-          content: 'card_content',
+          content: 'card__content',
         }}
         disableTypography
         title={
@@ -51,12 +45,18 @@ const VideoCard = ({ title, onSelect, id, isSelected }) => {
           </Grid>
         }
       />
-      <CardMedia
+      <CardMedia 
+        className='card__media'
         onClick={handleClick}
-        component="img"
-        className="card_image"
-        src={thumbnail}
-      />
+      >
+        <HoverVideoPlayer
+          videoSrc={url.current}
+          preload="metadata"
+          restartOnPaused
+          loadingOverlay={<img style={{ width: '100%', height: '100%' }} src={spinner} alt="Loading spinner" />}
+          loadingStateTimeout={0}
+        />
+      </CardMedia>
     </Card>
   );
 };

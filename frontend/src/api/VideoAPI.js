@@ -51,9 +51,6 @@ export const getVideoDetails = (videoId) =>
 
 export const getAllVideos = () => Api.get('/videos/all');
 
-export const getVideoThumbnail = (videoId) =>
-  Api.get('/Videos/thumbnail/', { params: { videoId }, responseType: 'blob' });
-
 export const downloadVideos = (videosIds) =>
   Api.post('/Videos/download', videosIds, { responseType: 'blob' });
 

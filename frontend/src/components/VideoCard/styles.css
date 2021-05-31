@@ -1,16 +1,13 @@
-.card_content {
+.card__content {
   overflow: hidden;
 }
 
 .card {
-  height: 30vh;
-  width: 30vh;
+  width: 40vh;
   display: flex;
   flex-direction: column;
 }
 
-.card_image {
-  background-color: rgba(0, 0, 0, 0.12);
-  flex-grow: 1;
+.card__media {
   cursor: pointer;
 }
