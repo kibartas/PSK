@@ -5,23 +5,28 @@ Api.defaults.headers = {
 };
 
 export const uploadChunk = async (
-  chunkNumber,
-  videoFileName,
+  base64BlockId,
+  videoId,
   chunk,
   cancelTokenSource,
 ) =>
   Api.post('/Videos/UploadChunks', chunk, {
     params: {
-      chunkNumber,
-      fileName: videoFileName,
+      base64BlockId,
+      videoId,
     },
     headers: { 'Content-Type': 'application/json' },
     cancelToken: cancelTokenSource.token,
   });
 
-export const finishUpload = (videoFileName, cancelTokenSource) =>
-  Api.post('/Videos/UploadComplete', null, {
-    params: { fileName: videoFileName },
+export const finishUpload = (
+  videoFileName,
+  base64BlockIds,
+  videoId,
+  cancelTokenSource,
+) =>
+  Api.post('/Videos/UploadComplete', base64BlockIds, {
+    params: { fileName: videoFileName, videoId },
     cancelToken: cancelTokenSource.token,
   });
 

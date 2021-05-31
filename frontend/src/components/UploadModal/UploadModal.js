@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { v4 as uuid } from 'uuid';
 import {
   Modal,
   Fade,
@@ -57,6 +58,9 @@ export default function UploadModal({ show, onClose }) {
     serverError: false,
   });
 
+  const base64BlockIds = useRef([]);
+  const uploadVideoId = useRef(null);
+
   const handleAdd = (acceptedVideoFiles) => {
     if (acceptedVideoFiles.length > 1) {
       setIsMultipleUpload(true);
@@ -70,6 +74,8 @@ export default function UploadModal({ show, onClose }) {
     setShowSnackbar({ ...showSnackbar, onlyVideoFileTypesAccepted: true });
 
   const handleClose = (shouldFetchData) => {
+    uploadVideoId.current = null;
+    base64BlockIds.current = [];
     setVideosToUpload([]);
     uploadedVideos.current = [];
     setIsMultipleUpload(false);
@@ -130,6 +136,8 @@ export default function UploadModal({ show, onClose }) {
   };
 
   const resetUploadState = () => {
+    base64BlockIds.current = [];
+    uploadVideoId.current = null;
     totalChunkCount.current = undefined;
     chunkIndex.current = 1;
     chunkStart.current = 0;
@@ -155,7 +163,12 @@ export default function UploadModal({ show, onClose }) {
 
   const finishVideoUpload = () => {
     cancelTokenSource.current = CancelToken.source();
-    finishUpload(inUploadVideo.name, cancelTokenSource.current)
+    finishUpload(
+      inUploadVideo.name,
+      base64BlockIds.current,
+      uploadVideoId.current,
+      cancelTokenSource.current,
+    )
       .then((response) => {
         setProgress(100);
         uploadedVideos.current = [response.data, ...uploadedVideos.current];
@@ -167,13 +180,19 @@ export default function UploadModal({ show, onClose }) {
 
   const uploadNextChunk = (chunk) => {
     cancelTokenSource.current = CancelToken.source();
+    const base64BlockId = Buffer.from(uuid()).toString('base64');
+    if (uploadVideoId.current === null) {
+      uploadVideoId.current = uuid();
+    }
     uploadChunk(
-      chunkIndex.current,
-      inUploadVideo.name,
+      base64BlockId,
+      uploadVideoId.current,
       chunk,
       cancelTokenSource.current,
     )
       .then(() => {
+        base64BlockIds.current = base64BlockIds.current.concat(base64BlockId);
+        console.log(base64BlockIds.current);
         if (chunkIndex.current >= totalChunkCount.current) {
           finishVideoUpload();
         } else {
@@ -251,7 +270,7 @@ export default function UploadModal({ show, onClose }) {
     videoTitleCopy.splice(index, 1, newTitle);
     videoTitles.current = [...videoTitleCopy];
     forceUpdate();
-  }
+  };
 
   const handleVideoDeletion = (videoId) => () =>
     deleteVideos([videoId])
@@ -404,7 +423,9 @@ export default function UploadModal({ show, onClose }) {
                     onUploadCancel={handleUploadCancel}
                     uploadedVideos={uploadedVideos.current}
                     videoTitles={videoTitles.current}
-                    onVideoTitleTextFieldChange={handleVideoTitleTextFieldChange}
+                    onVideoTitleTextFieldChange={
+                      handleVideoTitleTextFieldChange
+                    }
                     onVideoTitleChange={handleVideoTitleChange}
                     onVideoDeletion={handleVideoDeletion}
                   />

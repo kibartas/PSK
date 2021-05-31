@@ -277,7 +277,7 @@ class PlayerPage extends React.Component {
       this.topBarRef.current !== null
         ? this.topBarRef.current.clientHeight
         : fallBackTopBarHeight;
-
+    console.log(url);
     return (
       <div className="root">
         <OverwriteTitleDialog
