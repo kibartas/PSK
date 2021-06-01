@@ -1,8 +1,7 @@
+using System;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Xabe.FFmpeg;
-using Xabe.FFmpeg.Downloader;
 
 namespace RestAPI
 {
@@ -10,8 +9,6 @@ namespace RestAPI
     {
         public static void Main(string[] args)
         {
-            FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official);
-            FFmpeg.SetExecutablesPath(Directory.GetCurrentDirectory());
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -19,7 +16,15 @@ namespace RestAPI
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    Directory.SetCurrentDirectory("/home/kibartas/release");
+                    webBuilder.UseKestrel(options =>
+                        {
+                            options.ListenLocalhost(5000, listenOptions =>
+                            {
+                                listenOptions.UseHttps(Path.Join(AppContext.BaseDirectory, "certificate.pfx"), "daunauskas");
+                            });
+                        })
+                        .UseStartup<Startup>();
                 });
     }
 }

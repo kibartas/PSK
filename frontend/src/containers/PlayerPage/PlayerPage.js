@@ -50,6 +50,7 @@ class PlayerPage extends React.Component {
     };
     this.setResolutionAndDuration = this.setResolutionAndDuration.bind(this);
     this.topBarRef = React.createRef();
+    this.videoRef = React.createRef();
   }
 
   componentDidMount() {
@@ -60,26 +61,20 @@ class PlayerPage extends React.Component {
     getVideoDetails(videoId)
       .then((response) => {
         const token = localStorage.getItem('token');
-        const url = `http://13.81.9.144/api/Videos/stream?videoId=${videoId}&token=${token}`;
+        let url;
+        if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+          url = `https://localhost:5000/api/Videos/stream?videoId=${videoId}&token=${token}`;
+        } else {
+          url = `https://playlist-destroyer.co/api/Videos/stream?videoId=${videoId}&token=${token}`;
+        }
         const video = this.transformVideo(response.data);
         this.setState({ url, video, informationDrawerTitle: video.title });
-
-        const videoElement = document.getElementsByTagName('video')[0];
-        videoElement.addEventListener(
-          'loadedmetadata',
-          this.setResolutionAndDuration(videoElement),
-        );
       })
       .catch(() => this.setState({ showPlaybackError: true }));
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateWindowDimensions);
-    const videoElement = document.getElementsByTagName('video')[0];
-    videoElement.removeEventListener(
-      'loadedmetadata',
-      this.setResolutionAndDuration(videoElement),
-    );
   }
 
   transformVideo = (source) => {
@@ -95,7 +90,7 @@ class PlayerPage extends React.Component {
     };
   };
 
-  setResolutionAndDuration = (videoElement) => () => {
+  setResolutionAndDuration = (videoElement) => {
     const resolution = `${videoElement.videoWidth}x${videoElement.videoHeight}`;
     const duration = secondsToHms(videoElement.duration);
     this.setState({
@@ -300,7 +295,6 @@ class PlayerPage extends React.Component {
       this.topBarRef.current !== null
         ? this.topBarRef.current.clientHeight
         : fallBackTopBarHeight;
-    console.log(url);
     return (
       <div className="root">
         <OverwriteTitleDialog
@@ -395,6 +389,10 @@ class PlayerPage extends React.Component {
         )}
         <div className="player-wrapper">
           <ReactPlayer
+            onReady={(e) =>
+              this.setResolutionAndDuration(e.getInternalPlayer())
+            }
+            onLoadedMetaData={this.setResolutionAndDuration}
             playing
             width={screenWidth}
             height={screenHeight - topBarHeight}

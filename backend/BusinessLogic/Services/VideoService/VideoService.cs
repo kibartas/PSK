@@ -52,16 +52,16 @@ namespace BusinessLogic.Services.VideoService
             var userPath = Path.Combine(_uploadPath, userId.ToString());
             var filePath = Path.Combine(userPath, videoId.ToString() + ".mp4");
 
-            await _videoFileService.FinishWrite(filePath, base64BlockIds);
+            var size = await _videoFileService.FinishWrite(filePath, base64BlockIds);
 
             var video = new Video
             {
                 UserId = userId,
                 Title = Path.GetFileNameWithoutExtension(fileName),
-                Size = 0,
+                Size = size,
                 Height = 1,
                 Width = 1,
-                Format = "mp4",
+                Format = Path.GetExtension(fileName),
                 Duration = 10,
                 UploadDate = DateTime.Now,
                 Id = videoId,

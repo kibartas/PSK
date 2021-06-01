@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Buffers.Text;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using BusinessLogic.Services.VideoService;
 using DataAccess.Models;
@@ -13,8 +10,6 @@ using DataAccess.Repositories.Users;
 using DataAccess.Repositories.Videos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using RestAPI.Models.Responses;
 using RestAPI.Services.JwtAuthentication;
 
@@ -29,6 +24,7 @@ namespace RestAPI.Controllers
         private readonly IUsersRepository _usersRepository;
         private readonly IVideoService _videoService;
         private readonly IJwtAuthentication _jwtAuthentication;
+        private const long StorageLimit = 1000_000_0000;
 
         public VideosController(
             IVideosRepository videosRepository, 
@@ -270,6 +266,11 @@ namespace RestAPI.Controllers
                 return NotFound();
             }
 
+            if ((await _videosRepository.GetAllVideosByUserId(userId)).Sum(e => e.Size) > StorageLimit)
+            {
+                return StatusCode(403, "User has used their allocated storage amount");
+            }
+
             try
             {
                 await _videoService.UploadChunk(Request.Body, user.Id, base64BlockId, videoId);
@@ -307,6 +308,11 @@ namespace RestAPI.Controllers
             if (user is null)
             {
                 return NotFound();
+            }
+
+            if (Path.GetExtension(fileName) != ".mp4")
+            {
+                return BadRequest("Only mp4 files allowed");
             }
 
             try

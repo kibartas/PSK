@@ -192,7 +192,6 @@ export default function UploadModal({ show, onClose }) {
     )
       .then(() => {
         base64BlockIds.current = base64BlockIds.current.concat(base64BlockId);
-        console.log(base64BlockIds.current);
         if (chunkIndex.current >= totalChunkCount.current) {
           finishVideoUpload();
         } else {

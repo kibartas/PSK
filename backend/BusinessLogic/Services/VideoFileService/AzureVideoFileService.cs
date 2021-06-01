@@ -81,7 +81,7 @@ namespace BusinessLogic.Services.VideoFileService
         {
             var path = new Regex(@".*(?=Uploads)").Replace(video.Path, "");
             var blob = _blobContainerClient.GetBlobClient(path);
-            await using var blobStream = await blob.OpenReadAsync();
+            var blobStream = await blob.OpenReadAsync();
             return blobStream;
         }
 
@@ -112,7 +112,7 @@ namespace BusinessLogic.Services.VideoFileService
             await blockBlobClient.StageBlockAsync(base64BlockId, memoryStream);
         }
 
-        public async Task FinishWrite(string filePath, IEnumerable<string> base64BlockIds)
+        public async Task<long> FinishWrite(string filePath, IEnumerable<string> base64BlockIds)
         {
             filePath = new Regex(@".*(?=Uploads)").Replace(filePath, "");
             var blockBlobClient = new BlockBlobClient(_configuration["BlobStorage"], "videos", filePath);
@@ -121,6 +121,7 @@ namespace BusinessLogic.Services.VideoFileService
             {
                 ContentType = "video/mp4"
             });
+            return (await blockBlobClient.GetPropertiesAsync()).Value.ContentLength;
         }
     }
 }

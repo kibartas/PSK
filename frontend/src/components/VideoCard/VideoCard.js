@@ -15,7 +15,20 @@ import { spinner } from '../../assets';
 
 const VideoCard = ({ title, onSelect, id, isSelected }) => {
   const history = useHistory();
-  const url = useRef(`http://localhost:61346/api/Videos/stream?videoId=${id}&token=${localStorage.getItem('token')}`);
+  let url;
+  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    url = useRef(
+      `https://localhost:61346/api/Videos/stream?videoId=${id}&token=${localStorage.getItem(
+        'token',
+      )}`,
+    );
+  } else {
+    url = useRef(
+      `https://playlist-destroyer.co/api/Videos/stream?videoId=${id}&token=${localStorage.getItem(
+        'token',
+      )}`,
+    );
+  }
 
   const handleClick = () => {
     history.push(`/player/${id}`);
@@ -45,15 +58,18 @@ const VideoCard = ({ title, onSelect, id, isSelected }) => {
           </Grid>
         }
       />
-      <CardMedia 
-        className='card__media'
-        onClick={handleClick}
-      >
+      <CardMedia className="card__media" onClick={handleClick}>
         <HoverVideoPlayer
           videoSrc={url.current}
           preload="metadata"
           restartOnPaused
-          loadingOverlay={<img style={{ width: '100%', height: '100%' }} src={spinner} alt="Loading spinner" />}
+          loadingOverlay={
+            <img
+              style={{ width: '100%', height: '100%' }}
+              src={spinner}
+              alt="Loading spinner"
+            />
+          }
           loadingStateTimeout={0}
         />
       </CardMedia>

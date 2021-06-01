@@ -17,6 +17,6 @@ namespace BusinessLogic.Services.VideoFileService
         Task<Stream> Stream(Video video);
         void CreateDirectories(Guid userId, string uploadPath, string tempPath);
         Task Write(Stream streamFrom, string pathTo, string base64BlockId = null);
-        Task FinishWrite(string filePath, IEnumerable<string> base64BlockIds);
+        Task<long> FinishWrite(string filePath, IEnumerable<string> base64BlockIds);
     }
 }

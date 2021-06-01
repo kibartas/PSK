@@ -112,6 +112,8 @@ namespace RestAPI
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseHttpsRedirection();
+
             app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>

@@ -71,9 +71,9 @@ namespace BusinessLogic.Services.VideoFileService
             await streamFrom.CopyToAsync(fileStream);
         }
 
-        public Task FinishWrite(string filePath, IEnumerable<string> base64BlockIds)
+        public Task<long> FinishWrite(string filePath, IEnumerable<string> base64BlockIds)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(new FileInfo(filePath).Length);
         }
     }
 }
